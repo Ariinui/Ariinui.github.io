@@ -8,11 +8,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const navLinks = document.querySelectorAll('nav ul li a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+    // Infobulles sur mobile (clic au lieu de survol)
+    const tooltips = document.querySelectorAll('.tooltip');
+    tooltips.forEach(tooltip => {
+        tooltip.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tooltipContent = this.querySelector(':scope::after');
+            if (tooltipContent) {
+                tooltipContent.style.opacity = tooltipContent.style.opacity === '1' ? '0' : '1';
+                tooltipContent.style.visibility = tooltipContent.style.visibility === 'visible' ? 'hidden' : 'visible';
+            }
         });
     });
 });
