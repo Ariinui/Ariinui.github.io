@@ -108,7 +108,6 @@ chapter_template = '''
 <body>
     <h1>{book_title}</h1>
     <h2>{chapter_title}</h2>
-    {previous_verse_html}
     {verses_html}
     {introduction_html}
     <p>
@@ -123,21 +122,7 @@ chapter_template = '''
 # Générer une page pour chaque chapitre
 for book_idx, book in enumerate(book_data, 1):
     for chap_idx, chapter in enumerate(book['chapters'], 1):
-        # Générer le HTML pour le dernier verset du chapitre précédent
-        previous_verse_html = ''
-        if chap_idx > 1:
-            # Récupérer le dernier verset du chapitre précédent dans le même livre
-            previous_chapter = book['chapters'][chap_idx - 2]
-            if previous_chapter['verses']:
-                last_verse = previous_chapter['verses'][-1]
-                previous_verse_html = '<div class="verse-container">'
-                previous_verse_html += f'<div class="tahitien">{last_verse["tahitien"]}</div>'
-                previous_verse_html += f'<div class="francais">{last_verse["francais"]}</div>'
-                previous_verse_html += '</div>'
-                # Exclure le dernier verset du chapitre précédent
-                previous_chapter['verses'] = previous_chapter['verses'][:-1]
-        
-        # Générer le HTML pour les versets du chapitre actuel
+        # Générer le HTML pour les versets
         verses_html = ''
         for verse in chapter['verses']:
             verses_html += '<div class="verse-container">'
@@ -161,7 +146,6 @@ for book_idx, book in enumerate(book_data, 1):
         chapter_html = chapter_template.format(
             book_title=book['book_title'],
             chapter_title=chapter['title'],
-            previous_verse_html=previous_verse_html,
             verses_html=verses_html,
             introduction_html=introduction_html,
             prev_link=prev_link,
