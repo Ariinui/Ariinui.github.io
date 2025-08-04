@@ -13,17 +13,14 @@ current_book = None
 chapter_list = []
 
 for chapter in chapters:
-    # Extraire le titre du chapitre (par exemple, "1 Ne Chapitre 1")
     chapter_title = chapter.text.strip()
-    # Déterminer le nom du livre (par exemple, "1 Néphi")
-    book_name = ' '.join(chapter_title.split()[:-2])  # Prend tout sauf "Chapitre X"
+    book_name = ' '.join(chapter_title.split()[:-2])
     if book_name != current_book:
         if current_book is not None:
             book_data.append({'book_title': current_book, 'chapters': chapter_list})
         current_book = book_name
         chapter_list = []
     
-    # Extraire les versets et l'introduction
     verses = []
     introduction = None
     next_element = chapter.find_next()
@@ -47,26 +44,25 @@ for chapter in chapters:
         'introduction': introduction
     })
 
-# Ajouter le dernier livre
 if current_book and chapter_list:
     book_data.append({'book_title': current_book, 'chapters': chapter_list})
 
-# Créer un dossier pour les chapitres
 os.makedirs('chapters', exist_ok=True)
 
-# Générer la table des matières avec menu dépliant
+# Générer la table des matières
 toc_html = '''
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Livre de Mormon - Table des matières</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <header>
-        <div class="navbar">
+    <header class="navbar">
+        <div class="container">
             <div class="logo">Livre de Mormon</div>
             <nav>
                 <ul>
@@ -80,42 +76,47 @@ toc_html = '''
         </div>
     </header>
     <section class="hero">
-        <h1>Bienvenue dans le Livre de Mormon</h1>
-        <p>Explorez une bibliothèque bilingue tahitienne et française, avec des écritures inspirantes.</p>
-        <a href="#library" class="cta-button">Découvrir la Bibliothèque</a>
+        <div class="container">
+            <h1>Bienvenue dans le Livre de Mormon</h1>
+            <p>Explorez une bibliothèque bilingue tahitienne et française, avec des écritures inspirantes.</p>
+            <a href="#library" class="cta-button">Découvrir la Bibliothèque</a>
+        </div>
     </section>
     <section id="library" class="library-section">
-        <h2>Table des matières</h2>
-        <div class="accordion">
+        <div class="container">
+            <h2>Table des matières</h2>
+            <div class="accordion">
 '''
 
 for book_idx, book in enumerate(book_data, 1):
     toc_html += f'''
-        <div class="accordion-item">
-            <button class="accordion-button">{book["book_title"]}</button>
-            <div class="accordion-content">
-                <ul>
+                <div class="accordion-item">
+                    <button class="accordion-button">{book['book_title']}</button>
+                    <div class="accordion-content">
+                        <ul>
     '''
     for chap_idx, chapter in enumerate(book['chapters'], 1):
         chapter_filename = f'chapters/chapter_{book_idx}_{chap_idx}.html'
         toc_html += f'<li><a href="{chapter_filename}">{chapter["title"]}</a></li>'
     toc_html += '''
-                </ul>
-            </div>
-        </div>
+                        </ul>
+                    </div>
+                </div>
     '''
 
 toc_html += '''
+            </div>
         </div>
     </section>
     <footer>
-        <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+        <div class="container">
+            <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+        </div>
     </footer>
 </body>
 </html>
 '''
 
-# Sauvegarder la table des matières
 with open('index.html', 'w', encoding='utf-8') as file:
     file.write(toc_html)
 
@@ -130,8 +131,8 @@ chapter_template = '''
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-    <header>
-        <div class="navbar">
+    <header class="navbar">
+        <div class="container">
             <div class="logo">Livre de Mormon</div>
             <nav>
                 <ul>
@@ -145,27 +146,30 @@ chapter_template = '''
         </div>
     </header>
     <section class="chapter-content">
-        <h1>{book_title}</h1>
-        <h2>{chapter_title}</h2>
-        {verses_html}
-        {introduction_html}
-        <nav class="chapter-nav">
-            {prev_link}
-            {next_link}
-            <a href="../index.html">Retour à la table des matières</a>
-        </nav>
+        <div class="container">
+            <h1>{book_title}</h1>
+            <h2>{chapter_title}</h2>
+            {verses_html}
+            {introduction_html}
+            <nav class="chapter-nav">
+                {prev_link}
+                {next_link}
+                <a href="../index.html">Retour à la table des matières</a>
+            </nav>
+        </div>
     </section>
     <footer>
-        <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+        <div class="container">
+            <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+        </div>
     </footer>
 </body>
 </html>
 '''
 
-# Générer une page pour chaque chapitre
+# Générer les pages de chapitres
 for book_idx, book in enumerate(book_data, 1):
     for chap_idx, chapter in enumerate(book['chapters'], 1):
-        # Générer le HTML pour les versets
         verses_html = ''
         for verse in chapter['verses']:
             verses_html += '<div class="verse-container">'
@@ -173,7 +177,6 @@ for book_idx, book in enumerate(book_data, 1):
             verses_html += f'<div class="francais">{verse["francais"]}</div>'
             verses_html += '</div>'
         
-        # Générer le HTML pour l'introduction (si présente)
         introduction_html = ''
         if chapter['introduction']:
             introduction_html = '<div class="verse-container introduction">'
@@ -181,11 +184,9 @@ for book_idx, book in enumerate(book_data, 1):
             introduction_html += f'<div class="francais">{chapter["introduction"]["francais"]}</div>'
             introduction_html += '</div>'
         
-        # Générer les liens précédent/suivant
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre précédent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
         
-        # Remplir le modèle
         chapter_html = chapter_template.format(
             book_title=book['book_title'],
             chapter_title=chapter['title'],
@@ -195,12 +196,11 @@ for book_idx, book in enumerate(book_data, 1):
             next_link=next_link
         )
         
-        # Sauvegarder la page du chapitre
         chapter_filename = f'chapters/chapter_{book_idx}_{chap_idx}.html'
         with open(chapter_filename, 'w', encoding='utf-8') as file:
             file.write(chapter_html)
 
-# Créer un fichier CSS pour le style
+# Écrire styles.css
 css_content = '''
 /* Réinitialisation de base */
 * {
@@ -213,23 +213,36 @@ body {
     font-family: 'Roboto', Arial, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f4f4f4;
+    background-color: #f9fafb;
+}
+
+/* Conteneur général */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 /* Barre de navigation */
 .navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fff;
-    padding: 15px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
 }
 
 .logo {
     font-size: 24px;
-    font-weight: bold;
-    color: #0066cc;
+    font-weight: 700;
+    color: #1d4ed8;
 }
 
 nav ul {
@@ -243,81 +256,87 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #333;
+    color: #374151;
     font-weight: 500;
+    font-size: 16px;
 }
 
 nav ul li a.active,
 nav ul li a:hover {
-    color: #0066cc;
+    color: #1d4ed8;
 }
 
 /* Section Hero */
 .hero {
     text-align: center;
-    padding: 50px 20px;
-    background-color: #e0e7ff;
+    padding: 60px 20px;
+    background-color: #eff6ff;
 }
 
 .hero h1 {
     font-size: 36px;
+    font-weight: 700;
+    color: #1f2937;
     margin-bottom: 20px;
 }
 
 .hero p {
     font-size: 18px;
+    color: #4b5563;
     margin-bottom: 30px;
 }
 
 .cta-button {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #0066cc;
-    color: #fff;
+    padding: 12px 24px;
+    background-color: #1d4ed8;
+    color: #ffffff;
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.3s;
 }
 
 .cta-button:hover {
-    background-color: #0052a3;
+    background-color: #1e40af;
 }
 
 /* Table des matières */
 .library-section {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    padding: 40px 0;
 }
 
-h1, h2 {
-    color: #333;
+.library-section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 20px;
 }
 
 .accordion-button {
-    background-color: #fff;
-    color: #333;
+    background-color: #ffffff;
+    color: #374151;
     cursor: pointer;
-    padding: 15px;
+    padding: 16px;
     width: 100%;
     text-align: left;
     border: none;
     outline: none;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
 }
 
 .accordion-button:hover {
-    background-color: #e0e7ff;
+    background-color: #f3f4f6;
 }
 
 .accordion-content {
     display: none;
-    padding: 0 15px;
-    background-color: #fff;
+    padding: 0 16px 16px;
+    background-color: #ffffff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -332,7 +351,7 @@ h1, h2 {
 
 .accordion-content a {
     text-decoration: none;
-    color: #0066cc;
+    color: #1d4ed8;
     font-size: 16px;
 }
 
@@ -342,28 +361,42 @@ h1, h2 {
 
 /* Mise en page des chapitres */
 .chapter-content {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    padding: 40px 0;
+}
+
+.chapter-content h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.chapter-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 20px;
 }
 
 .verse-container {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 5px;
+    padding: 12px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .verse-container.introduction {
-    background-color: #f9f9f9;
+    background-color: #f9fafb;
     font-style: italic;
 }
 
 .tahitien, .francais {
     width: 48%;
     font-size: 16px;
+    color: #1f2937;
 }
 
 .chapter-nav {
@@ -372,8 +405,9 @@ h1, h2 {
 
 .chapter-nav a {
     margin-right: 15px;
-    color: #0066cc;
+    color: #1d4ed8;
     text-decoration: none;
+    font-weight: 500;
 }
 
 .chapter-nav a:hover {
@@ -382,16 +416,19 @@ h1, h2 {
 
 /* Pied de page */
 footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    margin-top: 40px;
+    background-color: #ffffff;
+    padding: 20px 0;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+footer p {
+    color: #4b5563;
+    font-size: 14px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .navbar {
+    .navbar .container {
         flex-direction: column;
         text-align: center;
     }
@@ -427,7 +464,7 @@ footer {
 with open('styles.css', 'w', encoding='utf-8') as file:
     file.write(css_content)
 
-# Créer un fichier JavaScript pour le menu dépliant
+# Écrire script.js
 js_content = '''
 document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelectorAll('.accordion-button');
