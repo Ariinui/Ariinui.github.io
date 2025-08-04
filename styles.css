@@ -1,0 +1,60 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    line-height: 1.6;
+}
+h1, h2 {
+    color: #333;
+}
+.verse-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Espace vertical entre les versets */
+}
+.verse-container.introduction {
+    background-color: #f9f9f9;
+    font-style: italic;
+    margin-bottom: 10px; /* Même espace pour l'introduction */
+}
+.tahitien {
+    width: 48%;
+}
+.francais {
+    width: 48%;
+}
+.accordion-button {
+    background-color: #f4f4f4;
+    color: #333;
+    cursor: pointer;
+    padding: 15px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+.accordion-button:hover {
+    background-color: #e0e0e0;
+}
+.accordion-content {
+    display: none;
+    padding: 0 15px;
+    background-color: #fff;
+}
+.accordion-content ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+.accordion-content a {
+    text-decoration: none;
+    color: #0066cc;
+}
+.accordion-content a:hover {
+    text-decoration: underline;
+}
+.accordion-content.show {
+    display: block;
+}
