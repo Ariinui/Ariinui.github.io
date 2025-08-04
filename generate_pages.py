@@ -65,9 +65,28 @@ toc_html = '''
     <script src="script.js"></script>
 </head>
 <body>
-    <h1>Livre de Mormon</h1>
-    <h2>Table des matières</h2>
-    <div class="accordion">
+    <header>
+        <div class="navbar">
+            <div class="logo">Livre de Mormon</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Accueil</a></li>
+                    <li><a href="#library">Bibliothèque</a></li>
+                    <li><a href="#discover">Découvrir</a></li>
+                    <li><a href="#search">Recherche</a></li>
+                    <li><a href="#account">Compte</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <section class="hero">
+        <h1>Bienvenue dans le Livre de Mormon</h1>
+        <p>Explorez une bibliothèque bilingue tahitienne et française, avec des écritures inspirantes.</p>
+        <a href="#library" class="cta-button">Découvrir la Bibliothèque</a>
+    </section>
+    <section id="library" class="library-section">
+        <h2>Table des matières</h2>
+        <div class="accordion">
 '''
 
 for book_idx, book in enumerate(book_data, 1):
@@ -87,7 +106,11 @@ for book_idx, book in enumerate(book_data, 1):
     '''
 
 toc_html += '''
-    </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+    </footer>
 </body>
 </html>
 '''
@@ -102,19 +125,39 @@ chapter_template = '''
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{chapter_title}</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-    <h1>{book_title}</h1>
-    <h2>{chapter_title}</h2>
-    {verses_html}
-    {introduction_html}
-    <p>
-        {prev_link}
-        {next_link}
-        <a href="../index.html">Retour à la table des matières</a>
-    </p>
+    <header>
+        <div class="navbar">
+            <div class="logo">Livre de Mormon</div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Accueil</a></li>
+                    <li><a href="../index.html#library" class="active">Bibliothèque</a></li>
+                    <li><a href="#discover">Découvrir</a></li>
+                    <li><a href="#search">Recherche</a></li>
+                    <li><a href="#account">Compte</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <section class="chapter-content">
+        <h1>{book_title}</h1>
+        <h2>{chapter_title}</h2>
+        {verses_html}
+        {introduction_html}
+        <nav class="chapter-nav">
+            {prev_link}
+            {next_link}
+            <a href="../index.html">Retour à la table des matières</a>
+        </nav>
+    </section>
+    <footer>
+        <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+    </footer>
 </body>
 </html>
 '''
@@ -159,32 +202,100 @@ for book_idx, book in enumerate(book_data, 1):
 
 # Créer un fichier CSS pour le style
 css_content = '''
-body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-    line-height: 1.6;
+/* Réinitialisation de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
+
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+/* Barre de navigation */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0066cc;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+nav ul li a.active,
+nav ul li a:hover {
+    color: #0066cc;
+}
+
+/* Section Hero */
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #e0e7ff;
+}
+
+.hero h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0066cc;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.cta-button:hover {
+    background-color: #0052a3;
+}
+
+/* Table des matières */
+.library-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
 h1, h2 {
     color: #333;
 }
-.verse-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px; /* Espace vertical entre les versets */
-}
-.verse-container.introduction {
-    background-color: #f9f9f9;
-    font-style: italic;
-    margin-bottom: 10px; /* Même espace pour l'introduction */
-}
-.tahitien {
-    width: 48%;
-}
-.francais {
-    width: 48%;
-}
+
 .accordion-button {
-    background-color: #f4f4f4;
+    background-color: #fff;
     color: #333;
     cursor: pointer;
     padding: 15px;
@@ -192,31 +303,124 @@ h1, h2 {
     text-align: left;
     border: none;
     outline: none;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     margin-bottom: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
 }
+
 .accordion-button:hover {
-    background-color: #e0e0e0;
+    background-color: #e0e7ff;
 }
+
 .accordion-content {
     display: none;
     padding: 0 15px;
     background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
+.accordion-content.show {
+    display: block;
+}
+
 .accordion-content ul {
     list-style-type: none;
     padding-left: 20px;
 }
+
 .accordion-content a {
     text-decoration: none;
     color: #0066cc;
+    font-size: 16px;
 }
+
 .accordion-content a:hover {
     text-decoration: underline;
 }
-.accordion-content.show {
-    display: block;
+
+/* Mise en page des chapitres */
+.chapter-content {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.verse-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.verse-container.introduction {
+    background-color: #f9f9f9;
+    font-style: italic;
+}
+
+.tahitien, .francais {
+    width: 48%;
+    font-size: 16px;
+}
+
+.chapter-nav {
+    margin-top: 20px;
+}
+
+.chapter-nav a {
+    margin-right: 15px;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.chapter-nav a:hover {
+    text-decoration: underline;
+}
+
+/* Pied de page */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    margin-top: 40px;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    nav ul li {
+        margin: 10px 0;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .verse-container {
+        flex-direction: column;
+    }
+
+    .tahitien, .francais {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
 '''
 
@@ -231,6 +435,14 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const content = this.nextElementSibling;
             content.classList.toggle('show');
+        });
+    });
+
+    const navLinks = document.querySelectorAll('nav ul li a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
         });
     });
 });
