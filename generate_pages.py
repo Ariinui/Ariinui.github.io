@@ -1,11 +1,6 @@
 from bs4 import BeautifulSoup
 import os
 import re
-import json
-
-# Charger le dictionnaire de traductions
-with open('translations.json', 'r', encoding='utf-8') as file:
-    translations = json.load(file)
 
 # Lire le fichier HTML
 with open('livre_de_mormon.html', 'r', encoding='utf-8') as file:
@@ -123,35 +118,22 @@ chapter_template = '''
 </html>
 '''
 
-# Fonction pour ajouter des infobulles aux mots tahitiens
-def add_tooltips(text, translations):
-    for tahitian_word, french_translation in translations.items():
-        # Échapper les caractères spéciaux pour l'expression régulière
-        escaped_word = re.escape(tahitian_word)
-        # Ajouter une balise span avec infobulle, en respectant les limites de mots
-        text = re.sub(r'\b' + escaped_word + r'\b', 
-                      f'<span class="tooltip" data-tooltip="{french_translation}">{tahitian_word}</span>', 
-                      text)
-    return text
-
 # Générer une page pour chaque chapitre
 for book_idx, book in enumerate(book_data, 1):
     for chap_idx, chapter in enumerate(book['chapters'], 1):
-        # Générer le HTML pour les versets avec infobulles
+        # Générer le HTML pour les versets
         verses_html = ''
         for verse in chapter['verses']:
-            tahitian_with_tooltips = add_tooltips(verse['tahitien'], translations)
             verses_html += '<div class="verse-container">'
-            verses_html += f'<div class="tahitien">{tahitian_with_tooltips}</div>'
+            verses_html += f'<div class="tahitien">{verse["tahitien"]}</div>'
             verses_html += f'<div class="francais">{verse["francais"]}</div>'
             verses_html += '</div>'
         
-        # Générer le HTML pour l'introduction avec infobulles
+        # Générer le HTML pour l'introduction (si présente)
         introduction_html = ''
         if chapter['introduction']:
-            tahitian_intro_with_tooltips = add_tooltips(chapter['introduction']['tahitien'], translations)
             introduction_html = '<div class="verse-container introduction">'
-            introduction_html += f'<div class="tahitien">{tahitian_intro_with_tooltips}</div>'
+            introduction_html += f'<div class="tahitien">{chapter["introduction"]["tahitien"]}</div>'
             introduction_html += f'<div class="francais">{chapter["introduction"]["francais"]}</div>'
             introduction_html += '</div>'
         
@@ -224,59 +206,12 @@ h1, h2 {
 .tahitien, .francais {
     width: 48%;
 }
-
-/* Infobulles */
-.tooltip {
-    position: relative;
-    cursor: help;
-    text-decoration: underline dotted #007bff;
-}
-
-.tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-    z-index: 1000;
-}
-
-.tooltip:hover::after {
-    opacity: 1;
-    visibility: visible;
-}
-
-@media (max-width: 768px) {
-    .tooltip::after {
-        white-space: normal;
-        width: 200px;
-        left: 0;
-        transform: none;
-    }
-
-    .verse-container {
-        flex-direction: column;
-    }
-
-    .tahitien, .francais {
-        width: 100%;
-    }
-}
 '''
 
 with open('styles.css', 'w', encoding='utf-8') as file:
     file.write(css_content)
 
-# Créer un fichier JavaScript pour le menu dépliant et les infobulles
+# Créer un fichier JavaScript pour le menu dépliant
 js_content = '''
 document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelectorAll('.accordion-button');
@@ -284,19 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const content = this.nextElementSibling;
             content.classList.toggle('show');
-        });
-    });
-
-    // Infobulles sur mobile (clic au lieu de survol)
-    const tooltips = document.querySelectorAll('.tooltip');
-    tooltips.forEach(tooltip => {
-        tooltip.addEventListener('click', function(e) {
-            e.preventDefault();
-            const tooltipContent = this.querySelector(':scope::after');
-            if (tooltipContent) {
-                tooltipContent.style.opacity = tooltipContent.style.opacity === '1' ? '0' : '1';
-                tooltipContent.style.visibility = tooltipContent.style.visibility === 'visible' ? 'hidden' : 'visible';
-            }
         });
     });
 });
