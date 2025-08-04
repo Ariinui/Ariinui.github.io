@@ -8,9 +8,28 @@
     <script src="script.js"></script>
 </head>
 <body>
-    <h1>Livre de Mormon</h1>
-    <h2>Table des matières</h2>
-    <div class="accordion">
+    <header>
+        <div class="navbar">
+            <div class="logo">Livre de Mormon</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Accueil</a></li>
+                    <li><a href="#library">Bibliothèque</a></li>
+                    <li><a href="#discover">Découvrir</a></li>
+                    <li><a href="#search">Recherche</a></li>
+                    <li><a href="#account">Compte</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <section class="hero">
+        <h1>Bienvenue dans le Livre de Mormon</h1>
+        <p>Explorez une bibliothèque bilingue tahitienne et française, avec des écritures inspirantes.</p>
+        <a href="#library" class="cta-button">Découvrir la Bibliothèque</a>
+    </section>
+    <section id="library" class="library-section">
+        <h2>Table des matières</h2>
+        <div class="accordion">
 
         <div class="accordion-item">
             <button class="accordion-button">1 Ne</button>
@@ -147,6 +166,10 @@
             </div>
         </div>
     
-    </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2025 Livre de Mormon. Tous droits réservés.</p>
+    </footer>
 </body>
 </html>
