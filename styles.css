@@ -10,23 +10,36 @@ body {
     font-family: 'Roboto', Arial, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f4f4f4;
+    background-color: #f9fafb;
+}
+
+/* Conteneur général */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 /* Barre de navigation */
 .navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fff;
-    padding: 15px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
 }
 
 .logo {
     font-size: 24px;
-    font-weight: bold;
-    color: #0066cc;
+    font-weight: 700;
+    color: #1d4ed8;
 }
 
 nav ul {
@@ -40,81 +53,87 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #333;
+    color: #374151;
     font-weight: 500;
+    font-size: 16px;
 }
 
 nav ul li a.active,
 nav ul li a:hover {
-    color: #0066cc;
+    color: #1d4ed8;
 }
 
 /* Section Hero */
 .hero {
     text-align: center;
-    padding: 50px 20px;
-    background-color: #e0e7ff;
+    padding: 60px 20px;
+    background-color: #eff6ff;
 }
 
 .hero h1 {
     font-size: 36px;
+    font-weight: 700;
+    color: #1f2937;
     margin-bottom: 20px;
 }
 
 .hero p {
     font-size: 18px;
+    color: #4b5563;
     margin-bottom: 30px;
 }
 
 .cta-button {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #0066cc;
-    color: #fff;
+    padding: 12px 24px;
+    background-color: #1d4ed8;
+    color: #ffffff;
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.3s;
 }
 
 .cta-button:hover {
-    background-color: #0052a3;
+    background-color: #1e40af;
 }
 
 /* Table des matières */
 .library-section {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    padding: 40px 0;
 }
 
-h1, h2 {
-    color: #333;
+.library-section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 20px;
 }
 
 .accordion-button {
-    background-color: #fff;
-    color: #333;
+    background-color: #ffffff;
+    color: #374151;
     cursor: pointer;
-    padding: 15px;
+    padding: 16px;
     width: 100%;
     text-align: left;
     border: none;
     outline: none;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
 }
 
 .accordion-button:hover {
-    background-color: #e0e7ff;
+    background-color: #f3f4f6;
 }
 
 .accordion-content {
     display: none;
-    padding: 0 15px;
-    background-color: #fff;
+    padding: 0 16px 16px;
+    background-color: #ffffff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -129,7 +148,7 @@ h1, h2 {
 
 .accordion-content a {
     text-decoration: none;
-    color: #0066cc;
+    color: #1d4ed8;
     font-size: 16px;
 }
 
@@ -139,28 +158,42 @@ h1, h2 {
 
 /* Mise en page des chapitres */
 .chapter-content {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    padding: 40px 0;
+}
+
+.chapter-content h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.chapter-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 20px;
 }
 
 .verse-container {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 5px;
+    padding: 12px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .verse-container.introduction {
-    background-color: #f9f9f9;
+    background-color: #f9fafb;
     font-style: italic;
 }
 
 .tahitien, .francais {
     width: 48%;
     font-size: 16px;
+    color: #1f2937;
 }
 
 .chapter-nav {
@@ -169,8 +202,9 @@ h1, h2 {
 
 .chapter-nav a {
     margin-right: 15px;
-    color: #0066cc;
+    color: #1d4ed8;
     text-decoration: none;
+    font-weight: 500;
 }
 
 .chapter-nav a:hover {
@@ -179,16 +213,19 @@ h1, h2 {
 
 /* Pied de page */
 footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    margin-top: 40px;
+    background-color: #ffffff;
+    padding: 20px 0;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+footer p {
+    color: #4b5563;
+    font-size: 14px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .navbar {
+    .navbar .container {
         flex-direction: column;
         text-align: center;
     }
