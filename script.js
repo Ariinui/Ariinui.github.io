@@ -8,16 +8,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Tooltips on mobile (click instead of hover)
+    // Infobulles sur mobile (clic au lieu de survol)
     const tooltips = document.querySelectorAll('.tooltip');
     tooltips.forEach(tooltip => {
         tooltip.addEventListener('click', function(e) {
             e.preventDefault();
-            const tooltipContent = this.querySelector(':scope::after');
-            if (tooltipContent) {
-                tooltipContent.style.opacity = tooltipContent.style.opacity === '1' ? '0' : '1';
-                tooltipContent.style.visibility = tooltipContent.style.visibility === 'visible' ? 'hidden' : 'visible';
-            }
+            // Toggle infobulle au clic
+            this.classList.toggle('show-tooltip');
         });
     });
 });
+
+// Ajouter un style dynamique pour gérer les infobulles au clic sur mobile
+const style = document.createElement('style');
+style.innerHTML = `
+    .tooltip.show-tooltip::after {
+        opacity: 1;
+        visibility: visible;
+    }
+`;
+document.head.appendChild(style);
