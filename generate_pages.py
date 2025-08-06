@@ -3,15 +3,15 @@ import os
 import re
 import json
 
-# Charger le dictionnaire de traductions
+# Load translations
 with open('translations.json', 'r', encoding='utf-8') as file:
     translations = json.load(file)
 
-# Lire le fichier HTML
+# Read the HTML file
 with open('livre_de_mormon.html', 'r', encoding='utf-8') as file:
     soup = BeautifulSoup(file, 'lxml')
 
-# Extraire les chapitres
+# Extract chapters
 chapters = soup.find_all('h1', id=re.compile('chapitre-\d+'))
 book_data = []
 current_book = None
@@ -54,7 +54,7 @@ if current_book and chapter_list:
 
 os.makedirs('chapters', exist_ok=True)
 
-# Générer la table des matières
+# Generate table of contents
 toc_html = '''
 <!DOCTYPE html>
 <html lang="fr">
@@ -94,7 +94,7 @@ toc_html += '''
 with open('index.html', 'w', encoding='utf-8') as file:
     file.write(toc_html)
 
-# Modèle pour les pages de chapitres
+# Chapter template
 chapter_template = '''
 <!DOCTYPE html>
 <html lang="fr">
@@ -122,7 +122,7 @@ chapter_template = '''
 </html>
 '''
 
-# Fonction pour ajouter des infobulles aux mots tahitiens
+# Function to add tooltips
 def add_tooltips(text, translations):
     for tahitian_word, french_translation in translations.items():
         escaped_word = re.escape(tahitian_word)
@@ -131,7 +131,7 @@ def add_tooltips(text, translations):
                       text)
     return text
 
-# Générer les pages de chapitres
+# Generate chapter pages
 for book_idx, book in enumerate(book_data, 1):
     for chap_idx, chapter in enumerate(book['chapters'], 1):
         verses_html = ''
@@ -166,7 +166,7 @@ for book_idx, book in enumerate(book_data, 1):
         with open(chapter_filename, 'w', encoding='utf-8') as file:
             file.write(chapter_html)
 
-# Créer un fichier CSS pour le style
+# Create CSS file
 css_content = '''
 body {
     font-family: Arial, sans-serif;
@@ -217,7 +217,7 @@ h1, h2 {
     width: 48%;
 }
 
-/* Infobulles */
+/* Tooltips */
 .tooltip {
     position: relative;
     cursor: help;
@@ -247,7 +247,7 @@ h1, h2 {
     visibility: visible;
 }
 
-/* Responsive design pour mode lecture et infobulles */
+/* Responsive design for Reader Mode and tooltips */
 @media (max-width: 768px) {
     .verse-container {
         flex-direction: column;
@@ -269,7 +269,7 @@ h1, h2 {
 with open('styles.css', 'w', encoding='utf-8') as file:
     file.write(css_content)
 
-# Créer un fichier JavaScript pour le menu dépliant et les infobulles
+# Create JavaScript file
 js_content = '''
 document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelectorAll('.accordion-button');
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Infobulles sur mobile (clic au lieu de survol)
+    // Tooltips on mobile (click instead of hover)
     const tooltips = document.querySelectorAll('.tooltip');
     tooltips.forEach(tooltip => {
         tooltip.addEventListener('click', function(e) {
