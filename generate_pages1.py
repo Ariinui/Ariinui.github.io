@@ -1,11 +1,6 @@
 from bs4 import BeautifulSoup
 import os
 import re
-import json
-
-# Charger le dictionnaire de traductions
-with open('translations.json', 'r', encoding='utf-8') as file:
-    translations = json.load(file)
 
 # Lire le fichier HTML
 with open('livre_de_mormon.html', 'r', encoding='utf-8') as file:
@@ -18,14 +13,17 @@ current_book = None
 chapter_list = []
 
 for chapter in chapters:
+    # Extraire le titre du chapitre (par exemple, "1 Ne Chapitre 1")
     chapter_title = chapter.text.strip()
-    book_name = ' '.join(chapter_title.split()[:-2])
+    # Déterminer le nom du livre (par exemple, "1 Néphi")
+    book_name = ' '.join(chapter_title.split()[:-2])  # Prend tout sauf "Chapitre X"
     if book_name != current_book:
         if current_book is not None:
             book_data.append({'book_title': current_book, 'chapters': chapter_list})
         current_book = book_name
         chapter_list = []
     
+    # Extraire les versets et l'introduction
     verses = []
     introduction = None
     next_element = chapter.find_next()
@@ -49,12 +47,14 @@ for chapter in chapters:
         'introduction': introduction
     })
 
+# Ajouter le dernier livre
 if current_book and chapter_list:
     book_data.append({'book_title': current_book, 'chapters': chapter_list})
 
+# Créer un dossier pour les chapitres
 os.makedirs('chapters', exist_ok=True)
 
-# Générer la table des matières
+# Générer la table des matières avec menu dépliant
 toc_html = '''
 <!DOCTYPE html>
 <html lang="fr">
@@ -91,6 +91,7 @@ toc_html += '''
 </html>
 '''
 
+# Sauvegarder la table des matières
 with open('index.html', 'w', encoding='utf-8') as file:
     file.write(toc_html)
 
@@ -100,59 +101,47 @@ chapter_template = '''
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{chapter_title}</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-    <article>
-        <h1>{book_title}</h1>
-        <h2>{chapter_title}</h2>
-        <section class="chapter-content">
-            {introduction_html}
-            {verses_html}
-        </section>
-        <nav>
-            {prev_link}
-            {next_link}
-            <a href="../index.html">Retour à la table des matières</a>
-        </nav>
-    </article>
+    <h1>{book_title}</h1>
+    <h2>{chapter_title}</h2>
+    {verses_html}
+    {introduction_html}
+    <nav>
+        {prev_link}
+        {next_link}
+        <a href="../index.html">Retour à la table des matières</a>
+    </nav>
 </body>
 </html>
 '''
 
-# Fonction pour ajouter des infobulles aux mots tahitiens
-def add_tooltips(text, translations):
-    for tahitian_word, french_translation in translations.items():
-        escaped_word = re.escape(tahitian_word)
-        text = re.sub(r'\b' + escaped_word + r'\b', 
-                      f'<span class="tooltip" data-tooltip="{french_translation}">{tahitian_word}</span>', 
-                      text)
-    return text
-
-# Générer les pages de chapitres
+# Générer une page pour chaque chapitre
 for book_idx, book in enumerate(book_data, 1):
     for chap_idx, chapter in enumerate(book['chapters'], 1):
+        # Générer le HTML pour les versets
         verses_html = ''
         for verse in chapter['verses']:
-            tahitian_with_tooltips = add_tooltips(verse['tahitien'], translations)
             verses_html += '<div class="verse-container">'
-            verses_html += f'<div class="tahitien">{tahitian_with_tooltips}</div>'
+            verses_html += f'<div class="tahitien">{verse["tahitien"]}</div>'
             verses_html += f'<div class="francais">{verse["francais"]}</div>'
             verses_html += '</div>'
         
+        # Générer le HTML pour l'introduction (si présente)
         introduction_html = ''
         if chapter['introduction']:
-            tahitian_intro_with_tooltips = add_tooltips(chapter['introduction']['tahitien'], translations)
             introduction_html = '<div class="verse-container introduction">'
-            introduction_html += f'<div class="tahitien">{tahitian_intro_with_tooltips}</div>'
+            introduction_html += f'<div class="tahitien">{chapter["introduction"]["tahitien"]}</div>'
             introduction_html += f'<div class="francais">{chapter["introduction"]["francais"]}</div>'
             introduction_html += '</div>'
         
+        # Générer les liens précédent/suivant
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre précédent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
         
+        # Remplir le modèle
         chapter_html = chapter_template.format(
             book_title=book['book_title'],
             chapter_title=chapter['title'],
@@ -162,6 +151,7 @@ for book_idx, book in enumerate(book_data, 1):
             next_link=next_link
         )
         
+        # Sauvegarder la page du chapitre
         chapter_filename = f'chapters/chapter_{book_idx}_{chap_idx}.html'
         with open(chapter_filename, 'w', encoding='utf-8') as file:
             file.write(chapter_html)
@@ -216,60 +206,12 @@ h1, h2 {
 .tahitien, .francais {
     width: 48%;
 }
-
-/* Infobulles */
-.tooltip {
-    position: relative;
-    cursor: help;
-    text-decoration: underline dotted #007bff;
-}
-
-.tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-    z-index: 1000;
-}
-
-.tooltip:hover::after {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Responsive design pour mode lecture et infobulles */
-@media (max-width: 768px) {
-    .verse-container {
-        flex-direction: column;
-    }
-
-    .tahitien, .francais {
-        width: 100%;
-    }
-
-    .tooltip::after {
-        white-space: normal;
-        width: 200px;
-        left: 0;
-        transform: none;
-    }
-}
 '''
 
 with open('styles.css', 'w', encoding='utf-8') as file:
     file.write(css_content)
 
-# Créer un fichier JavaScript pour le menu dépliant et les infobulles
+# Créer un fichier JavaScript pour le menu dépliant
 js_content = '''
 document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelectorAll('.accordion-button');
@@ -277,19 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const content = this.nextElementSibling;
             content.classList.toggle('show');
-        });
-    });
-
-    // Infobulles sur mobile (clic au lieu de survol)
-    const tooltips = document.querySelectorAll('.tooltip');
-    tooltips.forEach(tooltip => {
-        tooltip.addEventListener('click', function(e) {
-            e.preventDefault();
-            const tooltipContent = this.querySelector(':scope::after');
-            if (tooltipContent) {
-                tooltipContent.style.opacity = tooltipContent.style.opacity === '1' ? '0' : '1';
-                tooltipContent.style.visibility = tooltipContent.style.visibility === 'visible' ? 'hidden' : 'visible';
-            }
         });
     });
 });
