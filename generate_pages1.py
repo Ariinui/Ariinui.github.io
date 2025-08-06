@@ -206,6 +206,17 @@ h1, h2 {
 .tahitien, .francais {
     width: 48%;
 }
+
+/* Responsive design pour empiler sur mobile uniquement */
+@media (max-width: 768px) {
+    .verse-container {
+        flex-direction: column;
+    }
+
+    .tahitien, .francais {
+        width: 100%;
+    }
+}
 '''
 
 with open('styles.css', 'w', encoding='utf-8') as file:
