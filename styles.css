@@ -25,6 +25,10 @@ h1 {
     font-size: 22px;
 }
 
+.volume {
+    margin-bottom: 14px;
+}
+
 .volume-toggle,
 .accordion-button {
     display: flex;
@@ -43,7 +47,7 @@ h1 {
 
 .volume-toggle {
     padding: 14px 16px;
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 600;
 }
 
@@ -145,13 +149,97 @@ h1 {
     width: 48%;
 }
 
+.verse-container-fr {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.verse-container-fr.introduction {
+    background-color: #f9f9f9;
+    font-style: italic;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.verse-num {
+    flex-shrink: 0;
+    min-width: 1.6em;
+    color: #8a8f99;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.verse-text {
+    flex: 1;
+}
+
+.bookmark {
+    flex-shrink: 0;
+    text-decoration: none;
+    font-size: 15px;
+    opacity: 0.55;
+}
+
+.bookmark:hover,
+.bookmark:focus-visible {
+    opacity: 1;
+}
+
+.guide-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.guide-content h4 {
+    margin: 1.4em 0 0.4em;
+    font-size: 15px;
+    color: #1b4d89;
+}
+
+.guide-content p {
+    margin: 0.7em 0;
+    line-height: 1.6;
+}
+
+.guide-content p.Indent1,
+.guide-content [style*="margin-left"] {
+    margin-left: 0 !important;
+    padding-left: 1em;
+    border-left: 3px solid #e2e5ea;
+}
+
+.guide-content ol, .guide-content ul {
+    padding-left: 1.4em;
+}
+
+.guide-content a {
+    color: #1b4d89;
+    overflow-wrap: break-word;
+}
+
+.guide-content table {
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+.guide-content th, .guide-content td {
+    border: 1px solid #e2e5ea;
+    padding: 6px 8px;
+    text-align: left;
+}
+
 @media (max-width: 640px) {
     .page {
         padding: 20px 14px 60px;
     }
 
     .volume-toggle {
-        font-size: 18px;
+        font-size: 17px;
         padding: 12px 14px;
     }
 
