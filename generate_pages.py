@@ -109,8 +109,11 @@ def parse_guide_source(path):
         book_name = ' '.join(tokens[:-1])
         books_by_name.setdefault(book_name, {})[chapter_num] = {'title': title, 'section': sec}
 
-    # Pose une ancre id="vN" sur chaque <h4> de reference verset et indexe
-    # (nom_de_livre, chapitre, verset) -> ancre.
+    # Pose une ancre id="vN" sur chaque <h4> de reference verset, regroupe ce
+    # <h4> et tout ce qui le suit (jusqu'au <h4> suivant) dans un
+    # <div class="guide-entry" id="vN"> - pour pouvoir isoler une seule
+    # entree a l'affichage au lieu de montrer tout le chapitre en dessous -
+    # et indexe (nom_de_livre, chapitre, verset) -> ancre.
     verse_index_by_name = {}
     for book_name, chapters in books_by_name.items():
         for chap_num, chapter in chapters.items():
@@ -124,7 +127,17 @@ def parse_guide_source(path):
                 seen[(h4_chap, h4_verse)] = seen.get((h4_chap, h4_verse), 0) + 1
                 n = seen[(h4_chap, h4_verse)]
                 anchor_id = f'v{h4_verse}' if n == 1 else f'v{h4_verse}-{n}'
-                h4['id'] = anchor_id
+
+                wrapper = soup.new_tag('div')
+                wrapper['class'] = 'guide-entry'
+                wrapper['id'] = anchor_id
+                h4.insert_before(wrapper)
+                node = h4
+                while node is not None and not (node is not h4 and getattr(node, 'name', None) == 'h4'):
+                    nxt = node.next_sibling
+                    wrapper.append(node.extract())
+                    node = nxt
+
                 key = (book_name, h4_chap, h4_verse)
                 if key not in verse_index_by_name:
                     verse_index_by_name[key] = anchor_id
@@ -612,6 +625,31 @@ h1 {
     word-break: break-word;
 }
 
+.guide-content.isolated .guide-entry {
+    display: none;
+}
+
+.guide-content.isolated .guide-entry.target {
+    display: block;
+}
+
+.show-all-entries {
+    display: inline-block;
+    margin: 0 0 16px;
+    padding: 8px 14px;
+    background: #ffffff;
+    color: #1b4d89;
+    border: 1px solid #e2e5ea;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+}
+
+.show-all-entries:hover {
+    background: #eef1f5;
+}
+
 .guide-content h4 {
     margin: 1.4em 0 0.4em;
     font-size: 15px;
@@ -692,6 +730,29 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.volume-toggle, .accordion-button').forEach(function(button) {
         wireToggle(button, button.nextElementSibling);
     });
+
+    // Arrivee via un signet (#vN) sur une page de guide : n'affiche que
+    // l'entree ciblee, avec un bouton pour revenir a tout le chapitre.
+    var guideContent = document.querySelector('.guide-content');
+    if (guideContent && location.hash) {
+        var target = null;
+        try {
+            target = guideContent.querySelector(location.hash);
+        } catch (e) {}
+        if (target && target.classList.contains('guide-entry')) {
+            guideContent.classList.add('isolated');
+            target.classList.add('target');
+            var showAll = document.createElement('button');
+            showAll.type = 'button';
+            showAll.className = 'show-all-entries';
+            showAll.textContent = 'Voir tout le chapitre';
+            showAll.addEventListener('click', function() {
+                guideContent.classList.remove('isolated');
+                showAll.remove();
+            });
+            guideContent.parentNode.insertBefore(showAll, guideContent);
+        }
+    }
 });
 '''
 
