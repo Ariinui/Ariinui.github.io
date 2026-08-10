@@ -335,12 +335,8 @@ h1 {
     }
 
     .verse-container {
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .tahitien, .francais {
-        width: 100%;
+        gap: 8px;
+        font-size: 14px;
     }
 }
 '''
