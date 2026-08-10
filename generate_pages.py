@@ -54,38 +54,51 @@ if current_book and chapter_list:
 # Créer un dossier pour les chapitres
 os.makedirs('chapters', exist_ok=True)
 
-# Générer la table des matières avec menu dépliant
+# Générer la table des matières avec menu dépliant (volume > livre > grille de chapitres)
 toc_html = '''
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Livre de Mormon - Table des matières</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js"></script>
 </head>
 <body>
-    <h1>Livre de Mormon</h1>
-    <div class="accordion">
+    <div class="page">
+        <h1>
+            <button class="volume-toggle" type="button" aria-expanded="false">
+                <span class="chevron" aria-hidden="true"></span>
+                Livre de Mormon
+            </button>
+        </h1>
+        <div class="volume-content">
+            <div class="accordion">
 '''
 
 for book_idx, book in enumerate(book_data, 1):
     toc_html += f'''
-        <div class="accordion-item">
-            <button class="accordion-button">{book["book_title"]}</button>
-            <div class="accordion-content">
-                <ul>
+                <div class="accordion-item">
+                    <button class="accordion-button" type="button" aria-expanded="false">
+                        <span class="chevron" aria-hidden="true"></span>
+                        {book["book_title"]}
+                    </button>
+                    <div class="accordion-content">
+                        <div class="chapter-grid">
     '''
     for chap_idx, chapter in enumerate(book['chapters'], 1):
         chapter_filename = f'chapters/chapter_{book_idx}_{chap_idx}.html'
-        toc_html += f'<li><a href="{chapter_filename}">{chapter["title"]}</a></li>'
+        toc_html += f'<a class="chapter-link" href="{chapter_filename}" title="{chapter["title"]}">{chap_idx}</a>'
     toc_html += '''
-                </ul>
-            </div>
-        </div>
+                        </div>
+                    </div>
+                </div>
     '''
 
 toc_html += '''
+            </div>
+        </div>
     </div>
 </body>
 </html>
@@ -101,10 +114,12 @@ chapter_template = '''
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{chapter_title}</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
+    <div class="page">
     <h1>{book_title}</h1>
     <h2>{chapter_title}</h2>
     {verses_html}
@@ -114,6 +129,7 @@ chapter_template = '''
         {next_link}
         <a href="../index.html">Retour à la table des matières</a>
     </nav>
+    </div>
 </body>
 </html>
 '''
@@ -158,42 +174,139 @@ for book_idx, book in enumerate(book_data, 1):
 
 # Créer un fichier CSS pour le style
 css_content = '''
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f5f6f8;
+    color: #1c1e21;
 }
 
 h1, h2 {
-    color: #333;
+    color: #1c1e21;
+}
+
+.page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+}
+
+h1 {
+    margin: 0 0 16px;
+    font-size: 22px;
+}
+
+.volume-toggle,
+.accordion-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: #ffffff;
+    color: #1c1e21;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    border: 1px solid #e2e5ea;
+    border-radius: 8px;
+    outline: none;
+}
+
+.volume-toggle {
+    padding: 14px 16px;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .accordion-button {
-    background-color: #f4f4f4;
-    color: #333;
-    cursor: pointer;
-    padding: 10px;
-    width: 100%;
-    text-align: left;
-    border: none;
-    outline: none;
-    font-size: 16px;
+    padding: 12px 16px;
+    font-size: 15px;
+}
+
+.volume-toggle:hover,
+.accordion-button:hover {
+    background: #eef1f5;
+}
+
+.chevron {
+    flex-shrink: 0;
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid #5b6270;
+    border-bottom: 2px solid #5b6270;
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease;
+}
+
+.volume-toggle[aria-expanded="true"] .chevron,
+.accordion-button[aria-expanded="true"] .chevron {
+    transform: rotate(45deg);
+}
+
+.volume-content {
+    display: none;
+    margin-top: 10px;
+}
+
+.volume-content.show {
+    display: block;
+}
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .accordion-content {
     display: none;
-    padding: 10px;
+    margin-top: -4px;
+    padding: 14px 16px 16px;
+    background: #ffffff;
+    border: 1px solid #e2e5ea;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
 }
 
 .accordion-content.show {
     display: block;
 }
 
-.accordion-content ul {
-    list-style-type: none;
-    padding-left: 20px;
+.chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 8px;
+}
+
+.chapter-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: #f5f6f8;
+    border: 1px solid #e2e5ea;
+    color: #1b4d89;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.chapter-link:hover,
+.chapter-link:focus-visible {
+    background: #1b4d89;
+    color: #ffffff;
+    border-color: #1b4d89;
 }
 
 .verse-container {
     display: flex;
+    gap: 16px;
     justify-content: space-between;
     margin-bottom: 10px;
 }
@@ -206,6 +319,30 @@ h1, h2 {
 .tahitien, .francais {
     width: 48%;
 }
+
+@media (max-width: 640px) {
+    .page {
+        padding: 20px 14px 60px;
+    }
+
+    .volume-toggle {
+        font-size: 18px;
+        padding: 12px 14px;
+    }
+
+    .chapter-grid {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
+
+    .verse-container {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tahitien, .francais {
+        width: 100%;
+    }
+}
 '''
 
 with open('styles.css', 'w', encoding='utf-8') as file:
@@ -214,12 +351,19 @@ with open('styles.css', 'w', encoding='utf-8') as file:
 # Créer un fichier JavaScript pour le menu dépliant
 js_content = '''
 document.addEventListener('DOMContentLoaded', function() {
-    const buttons = document.querySelectorAll('.accordion-button');
-    buttons.forEach(button => {
+    function wireToggle(button, content) {
         button.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            content.classList.toggle('show');
+            const isOpen = content.classList.toggle('show');
+            button.setAttribute('aria-expanded', String(isOpen));
         });
+    }
+
+    document.querySelectorAll('.volume-toggle').forEach(function(button) {
+        wireToggle(button, button.closest('h1').nextElementSibling);
+    });
+
+    document.querySelectorAll('.accordion-button').forEach(function(button) {
+        wireToggle(button, button.nextElementSibling);
     });
 });
 '''
