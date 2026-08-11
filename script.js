@@ -269,33 +269,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Suivi de la position de lecture (volume francais uniquement) : sauve
-    // en localStorage le verset actuellement en haut de l'ecran, pour
-    // pouvoir proposer "Continuer la lecture" depuis l'accueil.
-    var STORAGE_KEY = 'bukaAMoromona:lastRead';
-    var versesFr = document.querySelector('.verses-fr');
-    if (versesFr) {
+    // Suivi de la position de lecture, generique pour tout volume : sauve en
+    // localStorage le verset/entree actuellement en haut de l'ecran, une
+    // position independante par volume (clef = data-volume-key). Un futur
+    // volume n'a qu'a poser data-volume-key/data-volume-title sur son
+    // conteneur de page pour heriter automatiquement de "Continuer la
+    // lecture" - aucun code specifique a ajouter ici.
+    var READING_STORAGE_KEY = 'bukaAMoromona:reading';
+    var readingTrack = document.querySelector('[data-volume-key]');
+    if (readingTrack) {
+        var volumeKey = readingTrack.getAttribute('data-volume-key');
+        var volumeTitle = readingTrack.getAttribute('data-volume-title');
         var saveTimer = null;
         function saveReadingPosition() {
-            var verses = versesFr.querySelectorAll('.verse-fr[id]');
+            var items = readingTrack.querySelectorAll('[id]');
             var current = null;
-            for (var i = 0; i < verses.length; i++) {
-                if (verses[i].getBoundingClientRect().bottom > 80) {
-                    current = verses[i];
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].getBoundingClientRect().bottom > 80) {
+                    current = items[i];
                     break;
                 }
             }
-            if (!current) return;
-            var h1 = document.querySelector('h1');
             var h2 = document.querySelector('h2');
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                bookIdx: versesFr.getAttribute('data-book-idx'),
-                chapterIdx: versesFr.getAttribute('data-chapter-idx'),
-                verseId: current.id,
-                bookTitle: h1 ? h1.textContent : '',
-                chapterTitle: h2 ? h2.textContent : '',
-                verseNum: current.id.replace('v', '')
-            }));
+            var h1 = document.querySelector('h1');
+            var all = {};
+            try { all = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+            all[volumeKey] = {
+                volumeTitle: volumeTitle,
+                href: location.pathname + (current ? '#' + current.id : ''),
+                chapterTitle: h2 ? h2.textContent.trim() : (h1 ? h1.textContent.trim() : ''),
+                itemId: current ? current.id : null
+            };
+            localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
         }
         window.addEventListener('scroll', function() {
             clearTimeout(saveTimer);
@@ -305,20 +310,22 @@ document.addEventListener('DOMContentLoaded', function() {
         saveReadingPosition();
     }
 
-    // Page d'accueil : propose "Continuer la lecture" si une position est
-    // enregistree.
+    // Page d'accueil : une ligne "Continuer la lecture" par volume ayant une
+    // position enregistree.
     var continueSlot = document.getElementById('continue-reading-slot');
     if (continueSlot) {
-        var saved = null;
-        try {
-            saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        } catch (e) {}
-        if (saved && saved.bookIdx && saved.chapterIdx && saved.verseId) {
+        var savedAll = {};
+        try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+        Object.keys(savedAll).forEach(function(key) {
+            var saved = savedAll[key];
+            if (!saved || !saved.href) return;
             var link = document.createElement('a');
             link.className = 'continue-reading';
-            link.href = 'chapters-fr/chapter_' + saved.bookIdx + '_' + saved.chapterIdx + '.html#' + saved.verseId;
-            link.textContent = 'Continuer la lecture — ' + saved.chapterTitle + ', verset ' + saved.verseNum;
+            link.href = saved.href;
+            var verseMatch = /^v(\d+)$/.exec(saved.itemId || '');
+            var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
+            link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
             continueSlot.appendChild(link);
-        }
+        });
     }
 });
