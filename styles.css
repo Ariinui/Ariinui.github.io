@@ -14,16 +14,16 @@
     --reading-font-size: 16px;
 }
 
-:root[data-text-size="small"] {
-    --reading-font-size: 14px;
-}
-
 :root[data-text-size="large"] {
     --reading-font-size: 19px;
 }
 
 :root[data-text-size="xlarge"] {
     --reading-font-size: 22px;
+}
+
+:root[data-text-size="xxlarge"] {
+    --reading-font-size: 25px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -116,64 +116,63 @@ h1 {
     background: var(--hover-bg);
 }
 
-.text-size-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+.text-size-control {
+    position: relative;
+}
+
+.text-size-popover {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     z-index: 2000;
 }
 
-.text-size-modal[hidden] {
+.text-size-popover[hidden] {
     display: none;
 }
 
-.text-size-modal-inner {
-    display: flex;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    max-width: calc(100vw - 40px);
-}
-
-.text-size-option {
-    width: 56px;
-    height: 56px;
+.text-size-step {
+    width: 44px;
+    height: 44px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: none;
     border-radius: 8px;
     color: var(--text);
     cursor: pointer;
+}
+
+.text-size-step:hover:not(:disabled) {
+    background: var(--hover-bg);
+}
+
+.text-size-step:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.ts-glyph {
     font-weight: 600;
+    line-height: 1;
 }
 
-.text-size-option-small {
-    font-size: 14px;
+.ts-small {
+    font-size: 12px;
 }
 
-.text-size-option-normal {
-    font-size: 18px;
-}
-
-.text-size-option-large {
-    font-size: 24px;
-}
-
-.text-size-option-xlarge {
-    font-size: 30px;
-}
-
-.text-size-option.active {
-    border-color: var(--accent);
-    color: var(--accent);
+.ts-large {
+    font-size: 22px;
 }
 
 .continue-reading {

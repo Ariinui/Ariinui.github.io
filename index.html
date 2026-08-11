@@ -13,13 +13,15 @@
     <div class="page">
         <div class="page-controls">
             
-            <button class="text-size-toggle" type="button" aria-label="Taille du texte">A</button>
-            <div class="text-size-modal" id="text-size-modal" hidden>
-                <div class="text-size-modal-inner">
-                    <button type="button" class="text-size-option text-size-option-small" data-size="small" aria-label="Petit texte">A</button>
-                    <button type="button" class="text-size-option text-size-option-normal" data-size="normal" aria-label="Texte normal">A</button>
-                    <button type="button" class="text-size-option text-size-option-large" data-size="large" aria-label="Grand texte">A</button>
-                    <button type="button" class="text-size-option text-size-option-xlarge" data-size="xlarge" aria-label="Tres grand texte">A</button>
+            <div class="text-size-control">
+                <button class="text-size-toggle" type="button" aria-label="Taille du texte" title="Taille du texte">A</button>
+                <div class="text-size-popover" id="text-size-popover" hidden>
+                    <button type="button" class="text-size-step" data-dir="-1" aria-label="Reduire la taille du texte" title="Reduire">
+                        <span class="ts-glyph ts-small">A</span>
+                    </button>
+                    <button type="button" class="text-size-step" data-dir="1" aria-label="Agrandir la taille du texte" title="Agrandir">
+                        <span class="ts-glyph ts-large">A</span>
+                    </button>
                 </div>
             </div>
 

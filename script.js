@@ -5,7 +5,7 @@
         document.documentElement.setAttribute('data-theme', stored);
     }
     var storedSize = localStorage.getItem('bukaAMoromona:textSize');
-    if (storedSize === 'small' || storedSize === 'large' || storedSize === 'xlarge') {
+    if (storedSize === 'large' || storedSize === 'xlarge' || storedSize === 'xxlarge') {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
 })();
@@ -31,37 +31,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var textSizeToggle = document.querySelector('.text-size-toggle');
-    var textSizeModal = document.getElementById('text-size-modal');
-    if (textSizeToggle && textSizeModal) {
-        var options = [].slice.call(textSizeModal.querySelectorAll('.text-size-option'));
-        var sizes = ['small', 'normal', 'large', 'xlarge'];
-        var markActive = function() {
+    var textSizePopover = document.getElementById('text-size-popover');
+    if (textSizeToggle && textSizePopover) {
+        var sizes = ['normal', 'large', 'xlarge', 'xxlarge'];
+        var steps = [].slice.call(textSizePopover.querySelectorAll('.text-size-step'));
+        var shrinkBtn = steps[0];
+        var growBtn = steps[1];
+
+        var currentIndex = function() {
             var attr = document.documentElement.getAttribute('data-text-size');
-            var current = sizes.indexOf(attr) !== -1 ? attr : 'normal';
-            options.forEach(function(opt) {
-                opt.classList.toggle('active', opt.getAttribute('data-size') === current);
-            });
+            var i = sizes.indexOf(attr);
+            return i === -1 ? 0 : i;
         };
-        markActive();
-        textSizeToggle.addEventListener('click', function() {
-            markActive();
-            textSizeModal.hidden = false;
+        var updateButtons = function() {
+            var i = currentIndex();
+            shrinkBtn.disabled = i === 0;
+            growBtn.disabled = i === sizes.length - 1;
+        };
+        var applySize = function(size) {
+            if (size === 'normal') {
+                localStorage.removeItem('bukaAMoromona:textSize');
+                document.documentElement.removeAttribute('data-text-size');
+            } else {
+                localStorage.setItem('bukaAMoromona:textSize', size);
+                document.documentElement.setAttribute('data-text-size', size);
+            }
+            updateButtons();
+        };
+
+        updateButtons();
+        textSizeToggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            updateButtons();
+            textSizePopover.hidden = !textSizePopover.hidden;
         });
-        textSizeModal.addEventListener('click', function(event) {
-            if (event.target === textSizeModal) textSizeModal.hidden = true;
+        document.addEventListener('click', function(event) {
+            if (!textSizePopover.hidden && !textSizePopover.contains(event.target) && event.target !== textSizeToggle) {
+                textSizePopover.hidden = true;
+            }
         });
-        options.forEach(function(opt) {
-            opt.addEventListener('click', function() {
-                var size = opt.getAttribute('data-size');
-                if (size === 'normal') {
-                    localStorage.removeItem('bukaAMoromona:textSize');
-                    document.documentElement.removeAttribute('data-text-size');
-                } else {
-                    localStorage.setItem('bukaAMoromona:textSize', size);
-                    document.documentElement.setAttribute('data-text-size', size);
-                }
-                markActive();
-                textSizeModal.hidden = true;
+        steps.forEach(function(step) {
+            step.addEventListener('click', function() {
+                var dir = parseInt(step.getAttribute('data-dir'), 10);
+                var next = currentIndex() + dir;
+                if (next >= 0 && next < sizes.length) applySize(sizes[next]);
             });
         });
     }

@@ -224,13 +224,15 @@ PAGE_TAIL = '''
 '''
 
 TEXT_SIZE_CONTROL = '''
-            <button class="text-size-toggle" type="button" aria-label="Taille du texte">A</button>
-            <div class="text-size-modal" id="text-size-modal" hidden>
-                <div class="text-size-modal-inner">
-                    <button type="button" class="text-size-option text-size-option-small" data-size="small" aria-label="Petit texte">A</button>
-                    <button type="button" class="text-size-option text-size-option-normal" data-size="normal" aria-label="Texte normal">A</button>
-                    <button type="button" class="text-size-option text-size-option-large" data-size="large" aria-label="Grand texte">A</button>
-                    <button type="button" class="text-size-option text-size-option-xlarge" data-size="xlarge" aria-label="Tres grand texte">A</button>
+            <div class="text-size-control">
+                <button class="text-size-toggle" type="button" aria-label="Taille du texte" title="Taille du texte">A</button>
+                <div class="text-size-popover" id="text-size-popover" hidden>
+                    <button type="button" class="text-size-step" data-dir="-1" aria-label="Reduire la taille du texte" title="Reduire">
+                        <span class="ts-glyph ts-small">A</span>
+                    </button>
+                    <button type="button" class="text-size-step" data-dir="1" aria-label="Agrandir la taille du texte" title="Agrandir">
+                        <span class="ts-glyph ts-large">A</span>
+                    </button>
                 </div>
             </div>
 '''
@@ -466,16 +468,16 @@ css_content = '''
     --reading-font-size: 16px;
 }
 
-:root[data-text-size="small"] {
-    --reading-font-size: 14px;
-}
-
 :root[data-text-size="large"] {
     --reading-font-size: 19px;
 }
 
 :root[data-text-size="xlarge"] {
     --reading-font-size: 22px;
+}
+
+:root[data-text-size="xxlarge"] {
+    --reading-font-size: 25px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -568,64 +570,63 @@ h1 {
     background: var(--hover-bg);
 }
 
-.text-size-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+.text-size-control {
+    position: relative;
+}
+
+.text-size-popover {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     z-index: 2000;
 }
 
-.text-size-modal[hidden] {
+.text-size-popover[hidden] {
     display: none;
 }
 
-.text-size-modal-inner {
-    display: flex;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    max-width: calc(100vw - 40px);
-}
-
-.text-size-option {
-    width: 56px;
-    height: 56px;
+.text-size-step {
+    width: 44px;
+    height: 44px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: none;
     border-radius: 8px;
     color: var(--text);
     cursor: pointer;
+}
+
+.text-size-step:hover:not(:disabled) {
+    background: var(--hover-bg);
+}
+
+.text-size-step:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.ts-glyph {
     font-weight: 600;
+    line-height: 1;
 }
 
-.text-size-option-small {
-    font-size: 14px;
+.ts-small {
+    font-size: 12px;
 }
 
-.text-size-option-normal {
-    font-size: 18px;
-}
-
-.text-size-option-large {
-    font-size: 24px;
-}
-
-.text-size-option-xlarge {
-    font-size: 30px;
-}
-
-.text-size-option.active {
-    border-color: var(--accent);
-    color: var(--accent);
+.ts-large {
+    font-size: 22px;
 }
 
 .continue-reading {
@@ -962,7 +963,7 @@ js_content = '''
         document.documentElement.setAttribute('data-theme', stored);
     }
     var storedSize = localStorage.getItem('bukaAMoromona:textSize');
-    if (storedSize === 'small' || storedSize === 'large' || storedSize === 'xlarge') {
+    if (storedSize === 'large' || storedSize === 'xlarge' || storedSize === 'xxlarge') {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
 })();
@@ -988,37 +989,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var textSizeToggle = document.querySelector('.text-size-toggle');
-    var textSizeModal = document.getElementById('text-size-modal');
-    if (textSizeToggle && textSizeModal) {
-        var options = [].slice.call(textSizeModal.querySelectorAll('.text-size-option'));
-        var sizes = ['small', 'normal', 'large', 'xlarge'];
-        var markActive = function() {
+    var textSizePopover = document.getElementById('text-size-popover');
+    if (textSizeToggle && textSizePopover) {
+        var sizes = ['normal', 'large', 'xlarge', 'xxlarge'];
+        var steps = [].slice.call(textSizePopover.querySelectorAll('.text-size-step'));
+        var shrinkBtn = steps[0];
+        var growBtn = steps[1];
+
+        var currentIndex = function() {
             var attr = document.documentElement.getAttribute('data-text-size');
-            var current = sizes.indexOf(attr) !== -1 ? attr : 'normal';
-            options.forEach(function(opt) {
-                opt.classList.toggle('active', opt.getAttribute('data-size') === current);
-            });
+            var i = sizes.indexOf(attr);
+            return i === -1 ? 0 : i;
         };
-        markActive();
-        textSizeToggle.addEventListener('click', function() {
-            markActive();
-            textSizeModal.hidden = false;
+        var updateButtons = function() {
+            var i = currentIndex();
+            shrinkBtn.disabled = i === 0;
+            growBtn.disabled = i === sizes.length - 1;
+        };
+        var applySize = function(size) {
+            if (size === 'normal') {
+                localStorage.removeItem('bukaAMoromona:textSize');
+                document.documentElement.removeAttribute('data-text-size');
+            } else {
+                localStorage.setItem('bukaAMoromona:textSize', size);
+                document.documentElement.setAttribute('data-text-size', size);
+            }
+            updateButtons();
+        };
+
+        updateButtons();
+        textSizeToggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            updateButtons();
+            textSizePopover.hidden = !textSizePopover.hidden;
         });
-        textSizeModal.addEventListener('click', function(event) {
-            if (event.target === textSizeModal) textSizeModal.hidden = true;
+        document.addEventListener('click', function(event) {
+            if (!textSizePopover.hidden && !textSizePopover.contains(event.target) && event.target !== textSizeToggle) {
+                textSizePopover.hidden = true;
+            }
         });
-        options.forEach(function(opt) {
-            opt.addEventListener('click', function() {
-                var size = opt.getAttribute('data-size');
-                if (size === 'normal') {
-                    localStorage.removeItem('bukaAMoromona:textSize');
-                    document.documentElement.removeAttribute('data-text-size');
-                } else {
-                    localStorage.setItem('bukaAMoromona:textSize', size);
-                    document.documentElement.setAttribute('data-text-size', size);
-                }
-                markActive();
-                textSizeModal.hidden = true;
+        steps.forEach(function(step) {
+            step.addEventListener('click', function() {
+                var dir = parseInt(step.getAttribute('data-dir'), 10);
+                var next = currentIndex() + dir;
+                if (next >= 0 && next < sizes.length) applySize(sizes[next]);
             });
         });
     }
