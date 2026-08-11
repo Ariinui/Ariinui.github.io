@@ -110,25 +110,48 @@ sqlite_count = len(result)
 
 # Supplements : comblent les mots absents du dump SQLite (coquille vide,
 # emprunt biblique/religieux absent d'un dictionnaire general...) via des
-# sources verifiees separement (reo.pf en direct, vocabulaire Embark). Ne
-# remplacent jamais une glose deja trouvee dans le SQLite - seulement les
-# trous.
+# sources verifiees separement (reo.pf en direct, vocabulaire Embark).
 import os
 
-for supplement_path, label in [('reo_pf_supplement.json', 'reo.pf'), ('embark_supplement.json', 'Embark')]:
-    if not os.path.exists(supplement_path):
-        continue
-    with open(supplement_path, encoding='utf-8') as f:
-        supplement = json.load(f)
+# reo.pf ne comble que les trous - ne remplace jamais une glose du SQLite.
+if os.path.exists('reo_pf_supplement.json'):
+    with open('reo_pf_supplement.json', encoding='utf-8') as f:
+        reo_pf_supplement = json.load(f)
     added = 0
-    for key, gloss in supplement.items():
+    for key, gloss in reo_pf_supplement.items():
         if key in used_keys and key not in result:
             result[key] = gloss
             added += 1
-    print(f'{added} mots ajoutes depuis le supplement {label}.')
+    print(f'{added} mots ajoutes depuis le supplement reo.pf.')
+
+# Embark est prioritaire : ses sens (vocabulaire missionnaire/religieux,
+# plus pertinent pour un texte comme le Livre de Mormon) sont places en
+# tete, mais fusionnes avec les sens deja trouves (SQLite/reo.pf) plutot
+# que de les ecraser - un mot tres frequent (particule grammaticale...) ou
+# polysemique garde tous ses sens connus, pas seulement celui d'Embark.
+if os.path.exists('embark_supplement.json'):
+    with open('embark_supplement.json', encoding='utf-8') as f:
+        embark_supplement = json.load(f)
+    added, merged = 0, 0
+    for key, gloss in embark_supplement.items():
+        if key not in used_keys:
+            continue
+        embark_parts = [p.strip() for p in gloss.split(',') if p.strip()]
+        if key in result:
+            existing_parts = [p.strip() for p in result[key].split(',') if p.strip()]
+            combined = list(embark_parts)
+            for p in existing_parts:
+                if p not in combined:
+                    combined.append(p)
+            result[key] = ', '.join(combined[:MAX_GLOSSES])
+            merged += 1
+        else:
+            result[key] = gloss
+            added += 1
+    print(f'{added} mots ajoutes et {merged} mots enrichis depuis le supplement Embark.')
 
 with open('tah_dict.json', 'w', encoding='utf-8') as f:
     json.dump(result, f, ensure_ascii=False, separators=(',', ':'))
 
-print(f'{len(result)} mots avec glose ({derived_count} via formes flechies, {sqlite_count} directement du SQLite, {len(result) - sqlite_count} via supplements), sur {len(used_keys)} formes uniques dans le texte.')
+print(f'{len(result)} mots avec glose sur {len(used_keys)} formes uniques dans le texte ({derived_count} via formes flechies).')
 print('tah_dict.json:', os.path.getsize('tah_dict.json'), 'octets')
