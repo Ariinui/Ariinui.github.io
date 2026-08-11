@@ -1,5 +1,31 @@
 
+(function() {
+    var stored = localStorage.getItem('bukaAMoromona:theme');
+    if (stored === 'light' || stored === 'dark') {
+        document.documentElement.setAttribute('data-theme', stored);
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
+    var themeToggle = document.querySelector('.theme-toggle');
+    if (themeToggle) {
+        var currentTheme = function() {
+            var stored = localStorage.getItem('bukaAMoromona:theme');
+            if (stored === 'light' || stored === 'dark') return stored;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+        var updateIcon = function() {
+            themeToggle.textContent = currentTheme() === 'dark' ? '☀️' : '🌙';
+        };
+        updateIcon();
+        themeToggle.addEventListener('click', function() {
+            var next = currentTheme() === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('bukaAMoromona:theme', next);
+            document.documentElement.setAttribute('data-theme', next);
+            updateIcon();
+        });
+    }
+
     function wireToggle(button, content) {
         button.addEventListener('click', function() {
             const isOpen = content.classList.toggle('show');

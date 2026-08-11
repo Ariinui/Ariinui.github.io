@@ -204,12 +204,14 @@ PAGE_HEAD = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <title>{title}</title>
     <link rel="stylesheet" href="{styles_href}">
     <script src="{script_href}"></script>
 </head>
 <body>
     <div class="page">
+        <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
 '''
 
 PAGE_TAIL = '''
@@ -435,6 +437,53 @@ print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
 # ---------------------------------------------------------------------------
 
 css_content = '''
+:root {
+    color-scheme: light dark;
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --border: #e2e5ea;
+    --text: #1c1e21;
+    --text-muted: #5b6270;
+    --text-faint: #8a8f99;
+    --accent: #1b4d89;
+    --accent-hover: #163d6d;
+    --hover-bg: #eef1f5;
+    --intro-bg: #f9f9f9;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #15171c;
+        --surface: #1c1f26;
+        --border: #2c313a;
+        --text: #e8e9ec;
+        --text-muted: #9aa1ac;
+        --text-faint: #7a8190;
+        --accent: #5b9bdb;
+        --accent-hover: #7fb3e8;
+        --hover-bg: #242832;
+        --intro-bg: #20242c;
+    }
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #15171c;
+    --surface: #1c1f26;
+    --border: #2c313a;
+    --text: #e8e9ec;
+    --text-muted: #9aa1ac;
+    --text-faint: #7a8190;
+    --accent: #5b9bdb;
+    --accent-hover: #7fb3e8;
+    --hover-bg: #242832;
+    --intro-bg: #20242c;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -442,18 +491,19 @@ css_content = '''
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: #f5f6f8;
-    color: #1c1e21;
+    background: var(--bg);
+    color: var(--text);
 }
 
 h1, h2 {
-    color: #1c1e21;
+    color: var(--text);
 }
 
 .page {
     max-width: 720px;
     margin: 0 auto;
     padding: 32px 20px 80px;
+    position: relative;
 }
 
 h1 {
@@ -461,11 +511,32 @@ h1 {
     font-size: 22px;
 }
 
+.theme-toggle {
+    position: absolute;
+    top: 32px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    background: var(--hover-bg);
+}
+
 .continue-reading {
     display: block;
     margin: 0 0 20px;
     padding: 14px 16px;
-    background: #1b4d89;
+    background: var(--accent);
     color: #ffffff;
     text-decoration: none;
     border-radius: 8px;
@@ -474,7 +545,7 @@ h1 {
 }
 
 .continue-reading:hover {
-    background: #163d6d;
+    background: var(--accent-hover);
 }
 
 .volume {
@@ -487,12 +558,12 @@ h1 {
     align-items: center;
     gap: 10px;
     width: 100%;
-    background: #ffffff;
-    color: #1c1e21;
+    background: var(--surface);
+    color: var(--text);
     cursor: pointer;
     text-align: left;
     font: inherit;
-    border: 1px solid #e2e5ea;
+    border: 1px solid var(--border);
     border-radius: 8px;
     outline: none;
 }
@@ -510,7 +581,7 @@ h1 {
 
 .volume-toggle:hover,
 .accordion-button:hover {
-    background: #eef1f5;
+    background: var(--hover-bg);
 }
 
 .chevron {
@@ -518,8 +589,8 @@ h1 {
     display: inline-block;
     width: 9px;
     height: 9px;
-    border-right: 2px solid #5b6270;
-    border-bottom: 2px solid #5b6270;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
     transform: rotate(-45deg);
     transition: transform 0.15s ease;
 }
@@ -548,8 +619,8 @@ h1 {
     display: none;
     margin-top: -4px;
     padding: 14px 16px 16px;
-    background: #ffffff;
-    border: 1px solid #e2e5ea;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-top: none;
     border-radius: 0 0 8px 8px;
 }
@@ -570,9 +641,9 @@ h1 {
     justify-content: center;
     aspect-ratio: 1;
     border-radius: 6px;
-    background: #f5f6f8;
-    border: 1px solid #e2e5ea;
-    color: #1b4d89;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -580,9 +651,9 @@ h1 {
 
 .chapter-link:hover,
 .chapter-link:focus-visible {
-    background: #1b4d89;
+    background: var(--accent);
     color: #ffffff;
-    border-color: #1b4d89;
+    border-color: var(--accent);
 }
 
 .verse-container {
@@ -593,7 +664,7 @@ h1 {
 }
 
 .verse-container.introduction {
-    background-color: #f9f9f9;
+    background-color: var(--intro-bg);
     font-style: italic;
 }
 
@@ -609,7 +680,7 @@ h1 {
 }
 
 .verse-container-fr.introduction {
-    background-color: #f9f9f9;
+    background-color: var(--intro-bg);
     font-style: italic;
     padding: 10px;
     border-radius: 6px;
@@ -618,7 +689,7 @@ h1 {
 .verse-num {
     flex-shrink: 0;
     min-width: 1.6em;
-    color: #8a8f99;
+    color: var(--text-faint);
     font-weight: 600;
     font-size: 13px;
 }
@@ -668,7 +739,7 @@ h1 {
 
 .entry-card-counter {
     font-size: 13px;
-    color: #5b6270;
+    color: var(--text-muted);
 }
 
 .entry-card-actions {
@@ -680,10 +751,10 @@ h1 {
 .entry-card-actions button {
     flex: 1;
     padding: 8px 12px;
-    border: 1px solid #e2e5ea;
+    border: 1px solid var(--border);
     border-radius: 6px;
-    background: #f5f6f8;
-    color: #1b4d89;
+    background: var(--bg);
+    color: var(--accent);
     font: inherit;
     font-size: 18px;
     line-height: 1;
@@ -692,7 +763,7 @@ h1 {
 
 .entry-card-nav button:hover,
 .entry-card-actions button:hover {
-    background: #eef1f5;
+    background: var(--hover-bg);
 }
 
 .entry-card-nav button:disabled {
@@ -723,7 +794,7 @@ h1 {
 .guide-content h4 {
     margin: 1.4em 0 0.4em;
     font-size: 15px;
-    color: #1b4d89;
+    color: var(--accent);
 }
 
 .guide-content p {
@@ -735,7 +806,7 @@ h1 {
 .guide-content [style*="margin-left"] {
     margin-left: 0 !important;
     padding-left: 1em;
-    border-left: 3px solid #e2e5ea;
+    border-left: 3px solid var(--border);
 }
 
 .guide-content ol, .guide-content ul {
@@ -743,7 +814,7 @@ h1 {
 }
 
 .guide-content a {
-    color: #1b4d89;
+    color: var(--accent);
     overflow-wrap: break-word;
 }
 
@@ -756,7 +827,7 @@ h1 {
 }
 
 .guide-content th, .guide-content td {
-    border: 1px solid #e2e5ea;
+    border: 1px solid var(--border);
     padding: 6px 8px;
     text-align: left;
 }
@@ -764,6 +835,11 @@ h1 {
 @media (max-width: 640px) {
     .page {
         padding: 20px 14px 60px;
+    }
+
+    .theme-toggle {
+        top: 20px;
+        right: 14px;
     }
 
     .volume-toggle {
@@ -789,7 +865,33 @@ write('styles.css', css_content)
 # ---------------------------------------------------------------------------
 
 js_content = '''
+(function() {
+    var stored = localStorage.getItem('bukaAMoromona:theme');
+    if (stored === 'light' || stored === 'dark') {
+        document.documentElement.setAttribute('data-theme', stored);
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
+    var themeToggle = document.querySelector('.theme-toggle');
+    if (themeToggle) {
+        var currentTheme = function() {
+            var stored = localStorage.getItem('bukaAMoromona:theme');
+            if (stored === 'light' || stored === 'dark') return stored;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+        var updateIcon = function() {
+            themeToggle.textContent = currentTheme() === 'dark' ? '☀️' : '\U0001F319';
+        };
+        updateIcon();
+        themeToggle.addEventListener('click', function() {
+            var next = currentTheme() === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('bukaAMoromona:theme', next);
+            document.documentElement.setAttribute('data-theme', next);
+            updateIcon();
+        });
+    }
+
     function wireToggle(button, content) {
         button.addEventListener('click', function() {
             const isOpen = content.classList.toggle('show');
