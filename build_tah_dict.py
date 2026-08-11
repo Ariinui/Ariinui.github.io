@@ -91,10 +91,11 @@ for key in used_keys:
         seen = glosses_for(ty_ids)
         if seen:
             result[key] = ', '.join(seen)
-        continue
+            continue
 
-    # pas de match direct : tente les formes flechies, garde la premiere
-    # racine reelle trouvee dans le dictionnaire
+    # pas de match direct (ou entree existante mais sans glose fr, ex.
+    # entree "coquille vide"/gloss anglais seul) : tente les formes
+    # flechies, garde la premiere racine reelle trouvee dans le dictionnaire
     for cand in strip_candidates(key):
         cand_ids = ty_ids_by_norm_all.get(cand)
         if not cand_ids:
