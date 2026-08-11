@@ -344,6 +344,30 @@ h1 {
     margin-right: 2px;
 }
 
+.tah-word {
+    cursor: pointer;
+    border-bottom: 1px dotted var(--accent);
+}
+
+.tah-word:hover,
+.tah-word.active {
+    background: var(--hover-bg);
+}
+
+.tah-popup {
+    position: fixed;
+    max-width: 280px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text);
+    z-index: 3000;
+}
+
 .bookmark {
     text-decoration: none;
     font-size: 15px;

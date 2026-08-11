@@ -269,6 +269,62 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Glossaire tahitien au tap (volume "Livre de Mormon (tahitien)") : chaque
+    // mot ayant une entree dans tah_dict.json est tague <span class="tah-word">
+    // au moment de la generation - au tap, on charge le glossaire une seule
+    // fois (fetch + cache memoire) et on affiche la glose dans une bulle
+    // positionnee sous le mot.
+    var tahWords = document.querySelectorAll('.tah-word');
+    if (tahWords.length) {
+        var tahDictPromise = null;
+        var tahPopup = null;
+        var tahActiveWord = null;
+
+        function loadTahDict() {
+            if (!tahDictPromise) {
+                tahDictPromise = fetch('../tah_dict.json').then(function(r) { return r.json(); }).catch(function() { return {}; });
+            }
+            return tahDictPromise;
+        }
+
+        function closeTahPopup() {
+            if (tahPopup) { tahPopup.remove(); tahPopup = null; }
+            if (tahActiveWord) { tahActiveWord.classList.remove('active'); tahActiveWord = null; }
+        }
+
+        function showTahPopup(el, gloss) {
+            closeTahPopup();
+            tahActiveWord = el;
+            el.classList.add('active');
+            tahPopup = document.createElement('div');
+            tahPopup.className = 'tah-popup';
+            tahPopup.textContent = gloss;
+            document.body.appendChild(tahPopup);
+            var wordRect = el.getBoundingClientRect();
+            var popupRect = tahPopup.getBoundingClientRect();
+            var left = Math.min(Math.max(8, wordRect.left), window.innerWidth - popupRect.width - 8);
+            var top = wordRect.bottom + 6;
+            if (top + popupRect.height > window.innerHeight - 8) {
+                top = wordRect.top - popupRect.height - 6;
+            }
+            tahPopup.style.left = left + 'px';
+            tahPopup.style.top = top + 'px';
+        }
+
+        tahWords.forEach(function(el) {
+            el.addEventListener('click', function(event) {
+                event.stopPropagation();
+                if (tahActiveWord === el) { closeTahPopup(); return; }
+                loadTahDict().then(function(dict) {
+                    var gloss = dict[el.getAttribute('data-w')];
+                    if (gloss) showTahPopup(el, gloss);
+                });
+            });
+        });
+        document.addEventListener('click', closeTahPopup);
+        window.addEventListener('scroll', closeTahPopup);
+    }
+
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
     // position independante par volume (clef = data-volume-key). Un futur

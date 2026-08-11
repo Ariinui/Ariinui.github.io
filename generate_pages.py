@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import json
 import os
 import re
 import shutil
@@ -69,6 +70,46 @@ def split_verse_number(francais_text):
     if m:
         return int(m.group(1)), m.group(2)
     return None, francais_text
+
+
+# ---------------------------------------------------------------------------
+# Glossaire tahitien au tap (tah_dict.json, extrait une fois pour toutes du
+# dictionnaire REO via build_tah_dict.py - pas une dependance de generation,
+# juste un fichier de donnees commite comme livre_de_mormon.html)
+# ---------------------------------------------------------------------------
+
+TAH_MACRON_MAP = str.maketrans('āēīōūĀĒĪŌŪ', 'aeiouAEIOU')
+TAH_OKINA_RE = re.compile(r"[‘’ʻ\x27]")
+TAH_WORD_RE = re.compile(r"[A-Za-zĀĒĪŌŪāēīōū][A-Za-zĀĒĪŌŪāēīōū‘’ʻ\x27]*")
+
+try:
+    with open('tah_dict.json', 'r', encoding='utf-8') as f:
+        tah_dict = json.load(f)
+except FileNotFoundError:
+    tah_dict = {}
+
+
+def tah_normalize(word):
+    word = word.translate(TAH_MACRON_MAP)
+    word = TAH_OKINA_RE.sub('', word)
+    return word.lower()
+
+
+def wrap_tah_words(text):
+    """Entoure chaque mot ayant une glose dans tah_dict d'un <span class="tah-word">
+    pour le tap-to-translate - laisse tel quel tout mot absent du glossaire
+    (nom propre, forme flechie...) ou tah_dict vide."""
+    if not tah_dict:
+        return text
+
+    def repl(m):
+        word = m.group(0)
+        key = tah_normalize(word)
+        if key in tah_dict:
+            return f'<span class="tah-word" data-w="{key}">{word}</span>'
+        return word
+
+    return TAH_WORD_RE.sub(repl, text)
 
 
 # ---------------------------------------------------------------------------
@@ -450,6 +491,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         verses_html = ''
         for verse in chapter['verses']:
             verse_num, verse_text = split_verse_number(verse['tahitien'])
+            verse_text = wrap_tah_words(verse_text)
             if verse_num is None:
                 verses_html += f'<p class="verse-fr">{verse_text}</p>'
                 continue
@@ -457,7 +499,8 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         introduction_html = ''
         if chapter['introduction']:
-            introduction_html = f'<p class="verse-fr introduction">{chapter["introduction"]["tahitien"]}</p>'
+            intro_text = wrap_tah_words(chapter["introduction"]["tahitien"])
+            introduction_html = f'<p class="verse-fr introduction">{intro_text}</p>'
 
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
@@ -880,6 +923,30 @@ h1 {
     font-weight: 600;
     font-size: 0.65em;
     margin-right: 2px;
+}
+
+.tah-word {
+    cursor: pointer;
+    border-bottom: 1px dotted var(--accent);
+}
+
+.tah-word:hover,
+.tah-word.active {
+    background: var(--hover-bg);
+}
+
+.tah-popup {
+    position: fixed;
+    max-width: 280px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text);
+    z-index: 3000;
 }
 
 .bookmark {
@@ -1317,6 +1384,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 nav.insertBefore(backLink, nav.firstChild);
             }
         }
+    }
+
+    // Glossaire tahitien au tap (volume "Livre de Mormon (tahitien)") : chaque
+    // mot ayant une entree dans tah_dict.json est tague <span class="tah-word">
+    // au moment de la generation - au tap, on charge le glossaire une seule
+    // fois (fetch + cache memoire) et on affiche la glose dans une bulle
+    // positionnee sous le mot.
+    var tahWords = document.querySelectorAll('.tah-word');
+    if (tahWords.length) {
+        var tahDictPromise = null;
+        var tahPopup = null;
+        var tahActiveWord = null;
+
+        function loadTahDict() {
+            if (!tahDictPromise) {
+                tahDictPromise = fetch('../tah_dict.json').then(function(r) { return r.json(); }).catch(function() { return {}; });
+            }
+            return tahDictPromise;
+        }
+
+        function closeTahPopup() {
+            if (tahPopup) { tahPopup.remove(); tahPopup = null; }
+            if (tahActiveWord) { tahActiveWord.classList.remove('active'); tahActiveWord = null; }
+        }
+
+        function showTahPopup(el, gloss) {
+            closeTahPopup();
+            tahActiveWord = el;
+            el.classList.add('active');
+            tahPopup = document.createElement('div');
+            tahPopup.className = 'tah-popup';
+            tahPopup.textContent = gloss;
+            document.body.appendChild(tahPopup);
+            var wordRect = el.getBoundingClientRect();
+            var popupRect = tahPopup.getBoundingClientRect();
+            var left = Math.min(Math.max(8, wordRect.left), window.innerWidth - popupRect.width - 8);
+            var top = wordRect.bottom + 6;
+            if (top + popupRect.height > window.innerHeight - 8) {
+                top = wordRect.top - popupRect.height - 6;
+            }
+            tahPopup.style.left = left + 'px';
+            tahPopup.style.top = top + 'px';
+        }
+
+        tahWords.forEach(function(el) {
+            el.addEventListener('click', function(event) {
+                event.stopPropagation();
+                if (tahActiveWord === el) { closeTahPopup(); return; }
+                loadTahDict().then(function(dict) {
+                    var gloss = dict[el.getAttribute('data-w')];
+                    if (gloss) showTahPopup(el, gloss);
+                });
+            });
+        });
+        document.addEventListener('click', closeTahPopup);
+        window.addEventListener('scroll', closeTahPopup);
     }
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
