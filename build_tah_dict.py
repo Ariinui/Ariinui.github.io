@@ -24,12 +24,29 @@ def normalize(word):
 
 
 # --- Formes flechies : prefixe causatif faa-/haa-, suffixe passif -hia,
-# suffixe nominalisant -raa - detachees puis reverifiees contre le vrai
+# suffixe nominalisant -raa, redoublement de l'avant-derniere syllabe pour
+# le pluriel/l'intensif d'un adjectif (ex. maita'i -> maitata'i, rahi ->
+# rarahi) - detachees/desassemblees puis reverifiees contre le vrai
 # dictionnaire (jamais une devinette non verifiee : un candidat n'est retenu
 # que s'il matche reellement une entree ty existante).
 SUFFIXES = ('raa', 'hia')
 PREFIXES = ('faa', 'haa')
 MIN_ROOT_LEN = 3
+
+
+def dereduplicate_candidates(word):
+    """Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.
+    "maitatai" = "maita" + "ta" redouble + "i") redonne la racine en
+    retirant une des deux copies. Genere un candidat par occurrence
+    trouvee - chacun sera reverifie contre le dictionnaire comme les
+    autres formes flechies, donc un faux positif isole ne matche
+    simplement rien et est ignore silencieusement."""
+    cands = set()
+    for i in range(len(word) - 3):
+        chunk = word[i:i + 2]
+        if chunk == word[i + 2:i + 4] and chunk.isalpha():
+            cands.add(word[:i + 2] + word[i + 4:])
+    return cands
 
 
 def strip_candidates(word):
@@ -52,6 +69,12 @@ def strip_candidates(word):
         for pre in PREFIXES:
             if b.startswith(pre) and len(b) - len(pre) >= MIN_ROOT_LEN:
                 candidates.add(b[len(pre):])
+        for dc in dereduplicate_candidates(b):
+            if len(dc) >= MIN_ROOT_LEN:
+                candidates.add(dc)
+                for pre in PREFIXES:
+                    if dc.startswith(pre) and len(dc) - len(pre) >= MIN_ROOT_LEN:
+                        candidates.add(dc[len(pre):])
     candidates.discard(word)
     return candidates
 
