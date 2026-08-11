@@ -697,7 +697,8 @@ h1 {
     background: #f5f6f8;
     color: #1b4d89;
     font: inherit;
-    font-size: 14px;
+    font-size: 18px;
+    line-height: 1;
     cursor: pointer;
 }
 
@@ -841,6 +842,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nextBtn) nextBtn.disabled = i === matches.length - 1;
             }
 
+            function goToEntry(i) {
+                showEntry(i);
+                guideContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
             function entryText(entry) {
                 var h4 = entry.querySelector('h4');
                 var title = h4 ? h4.textContent.trim() : '';
@@ -875,9 +881,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 prevBtn = document.createElement('button');
                 prevBtn.type = 'button';
-                prevBtn.textContent = '‹ Precedent';
+                prevBtn.textContent = '‹';
+                prevBtn.setAttribute('aria-label', 'Entree precedente');
                 prevBtn.addEventListener('click', function() {
-                    if (current > 0) showEntry(current - 1);
+                    if (current > 0) goToEntry(current - 1);
                 });
 
                 counterEl = document.createElement('span');
@@ -885,9 +892,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 nextBtn = document.createElement('button');
                 nextBtn.type = 'button';
-                nextBtn.textContent = 'Suivant ›';
+                nextBtn.textContent = '›';
+                nextBtn.setAttribute('aria-label', 'Entree suivante');
                 nextBtn.addEventListener('click', function() {
-                    if (current < matches.length - 1) showEntry(current + 1);
+                    if (current < matches.length - 1) goToEntry(current + 1);
                 });
 
                 navRow.appendChild(prevBtn);
@@ -901,7 +909,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var copyBtn = document.createElement('button');
             copyBtn.type = 'button';
-            copyBtn.textContent = 'Copier';
+            copyBtn.textContent = '\U0001F4CB';
+            copyBtn.setAttribute('aria-label', 'Copier');
+            copyBtn.title = 'Copier';
             copyBtn.addEventListener('click', function() {
                 navigator.clipboard.writeText(entryText(matches[current])).then(function() {
                     showToast('Copie dans le presse-papier');
@@ -912,7 +922,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var shareBtn = document.createElement('button');
             shareBtn.type = 'button';
-            shareBtn.textContent = 'Partager';
+            shareBtn.textContent = '\U0001F4E4';
+            shareBtn.setAttribute('aria-label', 'Partager');
+            shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
                 var text = entryText(matches[current]);
                 if (navigator.share) {

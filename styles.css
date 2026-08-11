@@ -261,7 +261,8 @@ h1 {
     background: #f5f6f8;
     color: #1b4d89;
     font: inherit;
-    font-size: 14px;
+    font-size: 18px;
+    line-height: 1;
     cursor: pointer;
 }
 
