@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 guideContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
-            function entryText(entry) {
+            function entryParts(entry) {
                 var h4 = entry.querySelector('h4');
                 var title = h4 ? h4.textContent.trim() : '';
                 var bodyParts = [];
@@ -136,13 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 var guideText = bodyParts.length ? title + '\n\n' + bodyParts.join('\n\n') : title;
+                return {
+                    verseRef: entry.getAttribute('data-verse-ref'),
+                    verseText: entry.getAttribute('data-verse-text'),
+                    guideText: guideText
+                };
+            }
 
-                var verseRef = entry.getAttribute('data-verse-ref');
-                var verseText = entry.getAttribute('data-verse-text');
-                if (verseRef && verseText) {
-                    return verseRef + '\n\n' + verseText + '\n\nNotes du guide\n\n' + guideText;
+            function entryText(entry) {
+                var p = entryParts(entry);
+                if (p.verseRef && p.verseText) {
+                    return p.verseRef + '\n\n' + p.verseText + '\n\nNotes du guide\n\n' + p.guideText;
                 }
-                return guideText;
+                return p.guideText;
             }
 
             function showToast(message) {
@@ -211,11 +217,23 @@ document.addEventListener('DOMContentLoaded', function() {
             shareBtn.setAttribute('aria-label', 'Partager');
             shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
-                var text = entryText(matches[current]);
-                var shareData = { text: text };
-                if (bookIdx && chapterIdx) {
-                    shareData.url = 'https://ariinui.github.io/chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId;
+                var entry = matches[current];
+                var p = entryParts(entry);
+                var shareUrl = (bookIdx && chapterIdx)
+                    ? ('https://ariinui.github.io/chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId)
+                    : null;
+                var text;
+                if (p.verseRef && p.verseText) {
+                    // Le lien est aussi integre au texte (pas seulement au champ "url" natif du
+                    // partage) : certains navigateurs/OS ne transmettent pas fiablement ce champ
+                    // separement a l'app cible - un lien dans le texte, avant "Notes du guide",
+                    // reste recuperable cote receveur meme dans ce cas.
+                    text = p.verseRef + '\n\n' + p.verseText + (shareUrl ? '\n\n' + shareUrl : '') + '\n\nNotes du guide\n\n' + p.guideText;
+                } else {
+                    text = p.guideText + (shareUrl ? '\n\n' + shareUrl : '');
                 }
+                var shareData = { text: text };
+                if (shareUrl) shareData.url = shareUrl;
                 if (navigator.share) {
                     navigator.share(shareData).catch(function() {});
                 } else {
