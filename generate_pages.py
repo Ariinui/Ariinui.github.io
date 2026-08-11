@@ -3,7 +3,13 @@ import os
 import re
 import shutil
 
-VERSE_REF_RE = re.compile(r'(\d+)\s*:\s*(\d+)')
+VERSE_REF_RE = re.compile(r'(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?')
+
+SUPERSCRIPT_DIGITS = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
+
+
+def to_superscript(n):
+    return str(n).translate(SUPERSCRIPT_DIGITS)
 
 
 # ---------------------------------------------------------------------------
@@ -124,6 +130,7 @@ def parse_guide_source(path):
                 if not m:
                     continue
                 h4_chap, h4_verse = int(m.group(1)), int(m.group(2))
+                h4_verse_end = int(m.group(3)) if m.group(3) else h4_verse
                 seen[(h4_chap, h4_verse)] = seen.get((h4_chap, h4_verse), 0) + 1
                 n = seen[(h4_chap, h4_verse)]
                 anchor_id = f'v{h4_verse}' if n == 1 else f'v{h4_verse}-{n}'
@@ -131,6 +138,12 @@ def parse_guide_source(path):
                 wrapper = soup.new_tag('div')
                 wrapper['class'] = 'guide-entry'
                 wrapper['id'] = anchor_id
+                # Plage de versets couverte par cette entree (souvent un seul
+                # verset, parfois une plage genre "2:8-13") - utilisee plus
+                # tard pour prefixer le texte du/des verset(s) francais avant
+                # le commentaire lors du Copier/Partager.
+                wrapper['data-verse-start'] = str(h4_verse)
+                wrapper['data-verse-end'] = str(h4_verse_end)
                 h4.insert_before(wrapper)
                 node = h4
                 while node is not None and not (node is not h4 and getattr(node, 'name', None) == 'h4'):
@@ -260,6 +273,17 @@ bom_book_data = parse_bom_source('livre_de_mormon.html')
 guide_intro_items, guide_books_by_name, guide_verse_index_by_name = parse_guide_source(
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html'
 )
+
+# (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
+# verset en tete - utilise pour prefixer le(s) verset(s) au Copier/Partager
+# d'une entree du guide.
+french_verse_text = {}
+for book_idx, book in enumerate(bom_book_data, 1):
+    for chap_idx, chapter in enumerate(book['chapters'], 1):
+        for verse in chapter['verses']:
+            verse_num, verse_text = split_verse_number(verse['francais'])
+            if verse_num is not None:
+                french_verse_text[(book_idx, chap_idx, verse_num)] = verse_text
 
 # Associe chaque livre bilingue (par nom, via BOOK_NAME_MAP) a ses chapitres
 # du guide, sous le meme book_idx que le Livre de Mormon (1..15). Un livre
@@ -428,6 +452,26 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
     chapter_nums = sorted(guide_chapters.keys())
     for chap_idx in chapter_nums:
         chapter = guide_chapters[chap_idx]
+
+        for entry in chapter['section'].find_all('div', class_='guide-entry'):
+            vstart = entry.get('data-verse-start')
+            vend = entry.get('data-verse-end')
+            if vstart is None:
+                continue
+            vstart, vend = int(vstart), int(vend)
+            pieces = []
+            for v in range(vstart, vend + 1):
+                verse_text = french_verse_text.get((book_idx, chap_idx, v))
+                if verse_text:
+                    pieces.append(f'{to_superscript(v)}{verse_text}')
+                else:
+                    print(f"ATTENTION: verset francais introuvable pour {bom_book['book_title']} {chap_idx}:{v} "
+                          f"(entree guide {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
+            if pieces:
+                ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
+                entry['data-verse-ref'] = f'{bom_book["book_title"]} {ref}'
+                entry['data-verse-text'] = ' '.join(pieces)
+
         content_html = guide_section_content_html(chapter['section'])
         has_prev = chapter_nums.index(chap_idx) > 0
         has_next = chapter_nums.index(chap_idx) < len(chapter_nums) - 1
@@ -1101,7 +1145,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (t) bodyParts.push(t);
                     }
                 });
-                return bodyParts.length ? title + '\\n\\n' + bodyParts.join('\\n\\n') : title;
+                var guideText = bodyParts.length ? title + '\\n\\n' + bodyParts.join('\\n\\n') : title;
+
+                var verseRef = entry.getAttribute('data-verse-ref');
+                var verseText = entry.getAttribute('data-verse-text');
+                if (verseRef && verseText) {
+                    return verseRef + '\\n\\n' + verseText + '\\n\\n' + guideText;
+                }
+                return guideText;
             }
 
             function showToast(message) {

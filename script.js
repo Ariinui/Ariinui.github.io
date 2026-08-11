@@ -135,7 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (t) bodyParts.push(t);
                     }
                 });
-                return bodyParts.length ? title + '\n\n' + bodyParts.join('\n\n') : title;
+                var guideText = bodyParts.length ? title + '\n\n' + bodyParts.join('\n\n') : title;
+
+                var verseRef = entry.getAttribute('data-verse-ref');
+                var verseText = entry.getAttribute('data-verse-text');
+                if (verseRef && verseText) {
+                    return verseRef + '\n\n' + verseText + '\n\n' + guideText;
+                }
+                return guideText;
             }
 
             function showToast(message) {
