@@ -234,34 +234,26 @@ h1 {
     width: 48%;
 }
 
-.verse-container-fr {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 10px;
+.verse-fr {
+    margin: 0 0 16px;
+    line-height: 1.65;
 }
 
-.verse-container-fr.introduction {
+.verse-fr.introduction {
     background-color: var(--intro-bg);
     font-style: italic;
     padding: 10px;
     border-radius: 6px;
 }
 
-.verse-num {
-    flex-shrink: 0;
-    min-width: 1.6em;
+.verse-fr sup {
     color: var(--text-faint);
     font-weight: 600;
-    font-size: 13px;
-}
-
-.verse-text {
-    flex: 1;
+    font-size: 0.65em;
+    margin-right: 2px;
 }
 
 .bookmark {
-    flex-shrink: 0;
     text-decoration: none;
     font-size: 15px;
     opacity: 0.55;
@@ -396,12 +388,12 @@ h1 {
 
 @media (max-width: 640px) {
     .page {
-        padding: 20px 14px 60px;
+        padding: 20px 10px 60px;
     }
 
     .theme-toggle {
         top: 20px;
-        right: 14px;
+        right: 10px;
     }
 
     .volume-toggle {

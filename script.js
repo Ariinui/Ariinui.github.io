@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (versesFr) {
         var saveTimer = null;
         function saveReadingPosition() {
-            var verses = versesFr.querySelectorAll('.verse-container-fr[id]');
+            var verses = versesFr.querySelectorAll('.verse-fr[id]');
             var current = null;
             for (var i = 0; i < verses.length; i++) {
                 if (verses[i].getBoundingClientRect().bottom > 80) {

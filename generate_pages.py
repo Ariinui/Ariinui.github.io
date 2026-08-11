@@ -362,22 +362,21 @@ for book_idx, book in enumerate(bom_book_data, 1):
         for verse in chapter['verses']:
             verse_num, verse_text = split_verse_number(verse['francais'])
             if verse_num is None:
-                verses_html += f'<div class="verse-container-fr"><span class="verse-text">{verse_text}</span></div>'
+                verses_html += f'<p class="verse-fr">{verse_text}</p>'
                 continue
             anchor = guide_verse_index.get((book_idx, chap_idx, verse_num))
-            verses_html += f'<div class="verse-container-fr" id="v{verse_num}">'
-            verses_html += f'<span class="verse-num">{verse_num}</span>'
-            verses_html += f'<span class="verse-text">{verse_text}</span>'
+            verses_html += f'<p class="verse-fr" id="v{verse_num}">'
+            verses_html += f'<sup>{verse_num}</sup>{verse_text}'
             if anchor:
                 guide_link = f'../guide/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor}'
-                verses_html += (f'<a class="bookmark" href="{guide_link}" '
+                verses_html += (f' <a class="bookmark" href="{guide_link}" '
                                  f'title="Voir le commentaire du guide d\'etude" aria-label="Voir le commentaire">'
                                  f'\U0001F516</a>')
-            verses_html += '</div>'
+            verses_html += '</p>'
 
         introduction_html = ''
         if chapter['introduction']:
-            introduction_html = f'<div class="verse-container-fr introduction"><span class="verse-text">{chapter["introduction"]["francais"]}</span></div>'
+            introduction_html = f'<p class="verse-fr introduction">{chapter["introduction"]["francais"]}</p>'
 
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
@@ -672,34 +671,26 @@ h1 {
     width: 48%;
 }
 
-.verse-container-fr {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 10px;
+.verse-fr {
+    margin: 0 0 16px;
+    line-height: 1.65;
 }
 
-.verse-container-fr.introduction {
+.verse-fr.introduction {
     background-color: var(--intro-bg);
     font-style: italic;
     padding: 10px;
     border-radius: 6px;
 }
 
-.verse-num {
-    flex-shrink: 0;
-    min-width: 1.6em;
+.verse-fr sup {
     color: var(--text-faint);
     font-weight: 600;
-    font-size: 13px;
-}
-
-.verse-text {
-    flex: 1;
+    font-size: 0.65em;
+    margin-right: 2px;
 }
 
 .bookmark {
-    flex-shrink: 0;
     text-decoration: none;
     font-size: 15px;
     opacity: 0.55;
@@ -834,12 +825,12 @@ h1 {
 
 @media (max-width: 640px) {
     .page {
-        padding: 20px 14px 60px;
+        padding: 20px 10px 60px;
     }
 
     .theme-toggle {
         top: 20px;
-        right: 14px;
+        right: 10px;
     }
 
     .volume-toggle {
@@ -1056,7 +1047,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (versesFr) {
         var saveTimer = null;
         function saveReadingPosition() {
-            var verses = versesFr.querySelectorAll('.verse-container-fr[id]');
+            var verses = versesFr.querySelectorAll('.verse-fr[id]');
             var current = null;
             for (var i = 0; i < verses.length; i++) {
                 if (verses[i].getBoundingClientRect().bottom > 80) {
