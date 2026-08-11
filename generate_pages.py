@@ -314,10 +314,11 @@ for (name, chap_num, verse_num), anchor in guide_verse_index_by_name.items():
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters', 'chapters-fr', 'guide'):
+for d in ('chapters', 'chapters-fr', 'chapters-tah', 'guide'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters', exist_ok=True)
 os.makedirs('chapters-fr', exist_ok=True)
+os.makedirs('chapters-tah', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque a 3 volumes ---------------------------------
@@ -336,6 +337,12 @@ toc_html += render_volume_block(
     'Livre de Mormon (francais)',
     bom_book_data,
     lambda bi, ci, ch: f'chapters-fr/chapter_{bi}_{ci}.html'
+)
+
+toc_html += render_volume_block(
+    'Livre de Mormon (tahitien)',
+    bom_book_data,
+    lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
 )
 
 guide_all_books = []
@@ -432,7 +439,36 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         write(f'chapters-fr/chapter_{book_idx}_{chap_idx}.html', html)
 
-# --- Volume 3 : Book of Mormon Study Guide ----------------------------------
+# --- Volume 3 : Livre de Mormon tahitien seul --------------------------------
+
+for book_idx, book in enumerate(bom_book_data, 1):
+    for chap_idx, chapter in enumerate(book['chapters'], 1):
+        verses_html = ''
+        for verse in chapter['verses']:
+            verse_num, verse_text = split_verse_number(verse['tahitien'])
+            if verse_num is None:
+                verses_html += f'<p class="verse-fr">{verse_text}</p>'
+                continue
+            verses_html += f'<p class="verse-fr" id="v{verse_num}"><sup>{verse_num}</sup>{verse_text}</p>'
+
+        introduction_html = ''
+        if chapter['introduction']:
+            introduction_html = f'<p class="verse-fr introduction">{chapter["introduction"]["tahitien"]}</p>'
+
+        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
+        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
+
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
+        html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
+        html += f'<div class="verses-tah">'
+        html += verses_html + introduction_html
+        html += '</div>'
+        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
+        html += PAGE_TAIL
+
+        write(f'chapters-tah/chapter_{book_idx}_{chap_idx}.html', html)
+
+# --- Volume 4 : Book of Mormon Study Guide ----------------------------------
 
 for n, item in enumerate(guide_intro_items, 1):
     content_html = guide_section_content_html(item['section'])
