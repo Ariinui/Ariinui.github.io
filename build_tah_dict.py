@@ -106,9 +106,29 @@ for key in used_keys:
             derived_count += 1
             break
 
+sqlite_count = len(result)
+
+# Supplements : comblent les mots absents du dump SQLite (coquille vide,
+# emprunt biblique/religieux absent d'un dictionnaire general...) via des
+# sources verifiees separement (reo.pf en direct, vocabulaire Embark). Ne
+# remplacent jamais une glose deja trouvee dans le SQLite - seulement les
+# trous.
+import os
+
+for supplement_path, label in [('reo_pf_supplement.json', 'reo.pf'), ('embark_supplement.json', 'Embark')]:
+    if not os.path.exists(supplement_path):
+        continue
+    with open(supplement_path, encoding='utf-8') as f:
+        supplement = json.load(f)
+    added = 0
+    for key, gloss in supplement.items():
+        if key in used_keys and key not in result:
+            result[key] = gloss
+            added += 1
+    print(f'{added} mots ajoutes depuis le supplement {label}.')
+
 with open('tah_dict.json', 'w', encoding='utf-8') as f:
     json.dump(result, f, ensure_ascii=False, separators=(',', ':'))
 
-print(f'{len(result)} mots avec glose ({derived_count} via formes flechies), sur {len(used_keys)} formes uniques dans le texte.')
-import os
+print(f'{len(result)} mots avec glose ({derived_count} via formes flechies, {sqlite_count} directement du SQLite, {len(result) - sqlite_count} via supplements), sur {len(used_keys)} formes uniques dans le texte.')
 print('tah_dict.json:', os.path.getsize('tah_dict.json'), 'octets')
