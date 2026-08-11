@@ -227,8 +227,10 @@ TEXT_SIZE_CONTROL = '''
             <button class="text-size-toggle" type="button" aria-label="Taille du texte">A</button>
             <div class="text-size-modal" id="text-size-modal" hidden>
                 <div class="text-size-modal-inner">
-                    <button type="button" class="text-size-option" data-size="normal" aria-label="Texte normal">a</button>
+                    <button type="button" class="text-size-option text-size-option-small" data-size="small" aria-label="Petit texte">A</button>
+                    <button type="button" class="text-size-option text-size-option-normal" data-size="normal" aria-label="Texte normal">A</button>
                     <button type="button" class="text-size-option text-size-option-large" data-size="large" aria-label="Grand texte">A</button>
+                    <button type="button" class="text-size-option text-size-option-xlarge" data-size="xlarge" aria-label="Tres grand texte">A</button>
                 </div>
             </div>
 '''
@@ -464,8 +466,16 @@ css_content = '''
     --reading-font-size: 16px;
 }
 
+:root[data-text-size="small"] {
+    --reading-font-size: 14px;
+}
+
 :root[data-text-size="large"] {
-    --reading-font-size: 20px;
+    --reading-font-size: 19px;
+}
+
+:root[data-text-size="xlarge"] {
+    --reading-font-size: 22px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -525,6 +535,7 @@ h1, h2 {
 
 h1 {
     margin: 0 0 16px;
+    padding-right: 100px;
     font-size: 22px;
 }
 
@@ -573,16 +584,18 @@ h1 {
 
 .text-size-modal-inner {
     display: flex;
-    gap: 16px;
+    gap: 10px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 24px;
+    padding: 16px;
+    max-width: calc(100vw - 40px);
 }
 
 .text-size-option {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -592,11 +605,22 @@ h1 {
     color: var(--text);
     cursor: pointer;
     font-weight: 600;
+}
+
+.text-size-option-small {
+    font-size: 14px;
+}
+
+.text-size-option-normal {
     font-size: 18px;
 }
 
 .text-size-option-large {
-    font-size: 32px;
+    font-size: 24px;
+}
+
+.text-size-option-xlarge {
+    font-size: 30px;
 }
 
 .text-size-option.active {
@@ -938,7 +962,7 @@ js_content = '''
         document.documentElement.setAttribute('data-theme', stored);
     }
     var storedSize = localStorage.getItem('bukaAMoromona:textSize');
-    if (storedSize === 'large') {
+    if (storedSize === 'small' || storedSize === 'large' || storedSize === 'xlarge') {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
 })();
@@ -967,8 +991,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var textSizeModal = document.getElementById('text-size-modal');
     if (textSizeToggle && textSizeModal) {
         var options = [].slice.call(textSizeModal.querySelectorAll('.text-size-option'));
+        var sizes = ['small', 'normal', 'large', 'xlarge'];
         var markActive = function() {
-            var current = document.documentElement.getAttribute('data-text-size') === 'large' ? 'large' : 'normal';
+            var attr = document.documentElement.getAttribute('data-text-size');
+            var current = sizes.indexOf(attr) !== -1 ? attr : 'normal';
             options.forEach(function(opt) {
                 opt.classList.toggle('active', opt.getAttribute('data-size') === current);
             });
@@ -984,12 +1010,12 @@ document.addEventListener('DOMContentLoaded', function() {
         options.forEach(function(opt) {
             opt.addEventListener('click', function() {
                 var size = opt.getAttribute('data-size');
-                if (size === 'large') {
-                    localStorage.setItem('bukaAMoromona:textSize', 'large');
-                    document.documentElement.setAttribute('data-text-size', 'large');
-                } else {
+                if (size === 'normal') {
                     localStorage.removeItem('bukaAMoromona:textSize');
                     document.documentElement.removeAttribute('data-text-size');
+                } else {
+                    localStorage.setItem('bukaAMoromona:textSize', size);
+                    document.documentElement.setAttribute('data-text-size', size);
                 }
                 markActive();
                 textSizeModal.hidden = true;

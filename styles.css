@@ -14,8 +14,16 @@
     --reading-font-size: 16px;
 }
 
+:root[data-text-size="small"] {
+    --reading-font-size: 14px;
+}
+
 :root[data-text-size="large"] {
-    --reading-font-size: 20px;
+    --reading-font-size: 19px;
+}
+
+:root[data-text-size="xlarge"] {
+    --reading-font-size: 22px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -75,6 +83,7 @@ h1, h2 {
 
 h1 {
     margin: 0 0 16px;
+    padding-right: 100px;
     font-size: 22px;
 }
 
@@ -123,16 +132,18 @@ h1 {
 
 .text-size-modal-inner {
     display: flex;
-    gap: 16px;
+    gap: 10px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 24px;
+    padding: 16px;
+    max-width: calc(100vw - 40px);
 }
 
 .text-size-option {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,11 +153,22 @@ h1 {
     color: var(--text);
     cursor: pointer;
     font-weight: 600;
+}
+
+.text-size-option-small {
+    font-size: 14px;
+}
+
+.text-size-option-normal {
     font-size: 18px;
 }
 
 .text-size-option-large {
-    font-size: 32px;
+    font-size: 24px;
+}
+
+.text-size-option-xlarge {
+    font-size: 30px;
 }
 
 .text-size-option.active {

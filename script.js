@@ -5,7 +5,7 @@
         document.documentElement.setAttribute('data-theme', stored);
     }
     var storedSize = localStorage.getItem('bukaAMoromona:textSize');
-    if (storedSize === 'large') {
+    if (storedSize === 'small' || storedSize === 'large' || storedSize === 'xlarge') {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
 })();
@@ -34,8 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var textSizeModal = document.getElementById('text-size-modal');
     if (textSizeToggle && textSizeModal) {
         var options = [].slice.call(textSizeModal.querySelectorAll('.text-size-option'));
+        var sizes = ['small', 'normal', 'large', 'xlarge'];
         var markActive = function() {
-            var current = document.documentElement.getAttribute('data-text-size') === 'large' ? 'large' : 'normal';
+            var attr = document.documentElement.getAttribute('data-text-size');
+            var current = sizes.indexOf(attr) !== -1 ? attr : 'normal';
             options.forEach(function(opt) {
                 opt.classList.toggle('active', opt.getAttribute('data-size') === current);
             });
@@ -51,12 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
         options.forEach(function(opt) {
             opt.addEventListener('click', function() {
                 var size = opt.getAttribute('data-size');
-                if (size === 'large') {
-                    localStorage.setItem('bukaAMoromona:textSize', 'large');
-                    document.documentElement.setAttribute('data-text-size', 'large');
-                } else {
+                if (size === 'normal') {
                     localStorage.removeItem('bukaAMoromona:textSize');
                     document.documentElement.removeAttribute('data-text-size');
+                } else {
+                    localStorage.setItem('bukaAMoromona:textSize', size);
+                    document.documentElement.setAttribute('data-text-size', size);
                 }
                 markActive();
                 textSizeModal.hidden = true;
