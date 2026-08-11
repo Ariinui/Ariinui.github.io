@@ -299,6 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tahPopup = document.createElement('div');
             tahPopup.className = 'tah-popup';
             tahPopup.textContent = gloss;
+            tahPopup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
             document.body.appendChild(tahPopup);
             var wordRect = el.getBoundingClientRect();
             var popupRect = tahPopup.getBoundingClientRect();
