@@ -644,13 +644,6 @@ h1 {
     word-break: break-word;
 }
 
-.guide-content.isolated {
-    background: #ffffff;
-    border: 1px solid #e2e5ea;
-    border-radius: 8px 8px 0 0;
-    padding: 4px 16px 16px;
-}
-
 .guide-content.isolated .guide-entry {
     display: none;
 }
@@ -663,12 +656,7 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: #ffffff;
-    border: 1px solid #e2e5ea;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    padding: 12px 16px 16px;
-    margin: 0 0 24px;
+    margin: 16px 0 24px;
 }
 
 .entry-card-nav {
