@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
         wireToggle(button, button.nextElementSibling);
     });
 
-    // Arrivee via un signet (#vN) sur une page de guide : n'affiche que
-    // la ou les entrees du meme verset (un verset peut avoir plusieurs
-    // entrees de commentaire : vN, vN-2, vN-3... - toutes doivent rester
-    // visibles, seuls les AUTRES versets sont caches). Un lien "Retour au
-    // verset" est ajoute dans la nav du bas (une fois la lecture terminee)
-    // pour revenir exactement au verset francais d'origine.
+    // Arrivee via un signet (#vN) sur une page de guide : isole la ou les
+    // entrees du meme verset (un verset peut avoir plusieurs entrees de
+    // commentaire : vN, vN-2, vN-3...). Une seule entree est visible a la
+    // fois, avec Precedent/Suivant pour naviguer entre elles, et
+    // Copier/Partager sur l'entree affichee. Un lien "Retour au verset"
+    // est ajoute dans la nav du bas pour revenir au verset francais.
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
         var targetId = location.hash.slice(1);
@@ -26,7 +26,111 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         if (matches.length) {
             guideContent.classList.add('isolated');
-            matches.forEach(function(el) { el.classList.add('target'); });
+            var current = 0;
+            var counterEl = null;
+            var prevBtn = null;
+            var nextBtn = null;
+
+            function showEntry(i) {
+                matches.forEach(function(el) { el.classList.remove('target'); });
+                matches[i].classList.add('target');
+                current = i;
+                if (counterEl) counterEl.textContent = (i + 1) + ' / ' + matches.length;
+                if (prevBtn) prevBtn.disabled = i === 0;
+                if (nextBtn) nextBtn.disabled = i === matches.length - 1;
+            }
+
+            function entryText(entry) {
+                var h4 = entry.querySelector('h4');
+                var title = h4 ? h4.textContent.trim() : '';
+                var bodyParts = [];
+                [].slice.call(entry.children).forEach(function(child) {
+                    if (child !== h4) {
+                        var t = child.textContent.trim();
+                        if (t) bodyParts.push(t);
+                    }
+                });
+                return bodyParts.length ? title + '\n\n' + bodyParts.join('\n\n') : title;
+            }
+
+            function showToast(message) {
+                var toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                requestAnimationFrame(function() { toast.classList.add('show'); });
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                    setTimeout(function() { toast.remove(); }, 300);
+                }, 2000);
+            }
+
+            var controls = document.createElement('div');
+            controls.className = 'entry-card-controls';
+
+            if (matches.length > 1) {
+                var navRow = document.createElement('div');
+                navRow.className = 'entry-card-nav';
+
+                prevBtn = document.createElement('button');
+                prevBtn.type = 'button';
+                prevBtn.textContent = '‹ Precedent';
+                prevBtn.addEventListener('click', function() {
+                    if (current > 0) showEntry(current - 1);
+                });
+
+                counterEl = document.createElement('span');
+                counterEl.className = 'entry-card-counter';
+
+                nextBtn = document.createElement('button');
+                nextBtn.type = 'button';
+                nextBtn.textContent = 'Suivant ›';
+                nextBtn.addEventListener('click', function() {
+                    if (current < matches.length - 1) showEntry(current + 1);
+                });
+
+                navRow.appendChild(prevBtn);
+                navRow.appendChild(counterEl);
+                navRow.appendChild(nextBtn);
+                controls.appendChild(navRow);
+            }
+
+            var actionsRow = document.createElement('div');
+            actionsRow.className = 'entry-card-actions';
+
+            var copyBtn = document.createElement('button');
+            copyBtn.type = 'button';
+            copyBtn.textContent = 'Copier';
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(entryText(matches[current])).then(function() {
+                    showToast('Copie dans le presse-papier');
+                }, function() {
+                    showToast('Impossible de copier');
+                });
+            });
+
+            var shareBtn = document.createElement('button');
+            shareBtn.type = 'button';
+            shareBtn.textContent = 'Partager';
+            shareBtn.addEventListener('click', function() {
+                var text = entryText(matches[current]);
+                if (navigator.share) {
+                    navigator.share({ text: text }).catch(function() {});
+                } else {
+                    navigator.clipboard.writeText(text).then(function() {
+                        showToast('Copie dans le presse-papier');
+                    }, function() {
+                        showToast('Impossible de copier');
+                    });
+                }
+            });
+
+            actionsRow.appendChild(copyBtn);
+            actionsRow.appendChild(shareBtn);
+            controls.appendChild(actionsRow);
+
+            guideContent.parentNode.insertBefore(controls, guideContent.nextSibling);
+            showEntry(0);
 
             var bookIdx = guideContent.getAttribute('data-book-idx');
             var chapterIdx = guideContent.getAttribute('data-chapter-idx');
