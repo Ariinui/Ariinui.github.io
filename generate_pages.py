@@ -211,13 +211,26 @@ PAGE_HEAD = '''
 </head>
 <body>
     <div class="page">
-        <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+        <div class="page-controls">
+            {extra_controls}
+            <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+        </div>
 '''
 
 PAGE_TAIL = '''
     </div>
 </body>
 </html>
+'''
+
+TEXT_SIZE_CONTROL = '''
+            <button class="text-size-toggle" type="button" aria-label="Taille du texte">A</button>
+            <div class="text-size-modal" id="text-size-modal" hidden>
+                <div class="text-size-modal-inner">
+                    <button type="button" class="text-size-option" data-size="normal" aria-label="Texte normal">a</button>
+                    <button type="button" class="text-size-option text-size-option-large" data-size="large" aria-label="Grand texte">A</button>
+                </div>
+            </div>
 '''
 
 CHAPTER_NAV = '''
@@ -281,7 +294,7 @@ os.makedirs('guide/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque a 3 volumes ---------------------------------
 
-toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr')
+toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
 toc_html += '        <h1>Bibliotheque</h1>\n'
 toc_html += '        <div id="continue-reading-slot"></div>\n'
 
@@ -346,7 +359,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr')
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls='')
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += verses_html + introduction_html
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
@@ -381,7 +394,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr')
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls='')
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}">'
         html += verses_html + introduction_html
@@ -398,7 +411,7 @@ for n, item in enumerate(guide_intro_items, 1):
     prev_link = f'<a href="intro_{n-1}.html">Page precedente</a> | ' if n > 1 else ''
     next_link = f'<a href="intro_{n+1}.html">Page suivante</a> | ' if n < len(guide_intro_items) else ''
 
-    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en')
+    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls='')
     html += f'    <h1>Introductory Pages</h1>\n    <h2>{item["title"]}</h2>\n'
     html += f'<div class="guide-content">{content_html}</div>'
     html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -417,7 +430,7 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en')
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls='')
         html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}">{content_html}</div>'
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -448,6 +461,11 @@ css_content = '''
     --accent-hover: #163d6d;
     --hover-bg: #eef1f5;
     --intro-bg: #f9f9f9;
+    --reading-font-size: 16px;
+}
+
+:root[data-text-size="large"] {
+    --reading-font-size: 20px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -510,10 +528,16 @@ h1 {
     font-size: 22px;
 }
 
-.theme-toggle {
+.page-controls {
     position: absolute;
     top: 32px;
     right: 20px;
+    display: flex;
+    gap: 8px;
+}
+
+.theme-toggle,
+.text-size-toggle {
     width: 36px;
     height: 36px;
     display: flex;
@@ -524,11 +548,60 @@ h1 {
     border-radius: 8px;
     color: var(--text);
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.text-size-toggle:hover {
     background: var(--hover-bg);
+}
+
+.text-size-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.text-size-modal[hidden] {
+    display: none;
+}
+
+.text-size-modal-inner {
+    display: flex;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.text-size-option {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.text-size-option-large {
+    font-size: 32px;
+}
+
+.text-size-option.active {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .continue-reading {
@@ -669,11 +742,13 @@ h1 {
 
 .tahitien, .francais {
     width: 48%;
+    font-size: var(--reading-font-size);
 }
 
 .verse-fr {
     margin: 0 0 16px;
     line-height: 1.65;
+    font-size: var(--reading-font-size);
 }
 
 .verse-fr.introduction {
@@ -791,6 +866,7 @@ h1 {
 .guide-content p {
     margin: 0.7em 0;
     line-height: 1.6;
+    font-size: var(--reading-font-size);
 }
 
 .guide-content p.Indent1,
@@ -828,7 +904,7 @@ h1 {
         padding: 20px 10px 60px;
     }
 
-    .theme-toggle {
+    .page-controls {
         top: 20px;
         right: 10px;
     }
@@ -861,6 +937,10 @@ js_content = '''
     if (stored === 'light' || stored === 'dark') {
         document.documentElement.setAttribute('data-theme', stored);
     }
+    var storedSize = localStorage.getItem('bukaAMoromona:textSize');
+    if (storedSize === 'large') {
+        document.documentElement.setAttribute('data-text-size', storedSize);
+    }
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -880,6 +960,40 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
             updateIcon();
+        });
+    }
+
+    var textSizeToggle = document.querySelector('.text-size-toggle');
+    var textSizeModal = document.getElementById('text-size-modal');
+    if (textSizeToggle && textSizeModal) {
+        var options = [].slice.call(textSizeModal.querySelectorAll('.text-size-option'));
+        var markActive = function() {
+            var current = document.documentElement.getAttribute('data-text-size') === 'large' ? 'large' : 'normal';
+            options.forEach(function(opt) {
+                opt.classList.toggle('active', opt.getAttribute('data-size') === current);
+            });
+        };
+        markActive();
+        textSizeToggle.addEventListener('click', function() {
+            markActive();
+            textSizeModal.hidden = false;
+        });
+        textSizeModal.addEventListener('click', function(event) {
+            if (event.target === textSizeModal) textSizeModal.hidden = true;
+        });
+        options.forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var size = opt.getAttribute('data-size');
+                if (size === 'large') {
+                    localStorage.setItem('bukaAMoromona:textSize', 'large');
+                    document.documentElement.setAttribute('data-text-size', 'large');
+                } else {
+                    localStorage.removeItem('bukaAMoromona:textSize');
+                    document.documentElement.removeAttribute('data-text-size');
+                }
+                markActive();
+                textSizeModal.hidden = true;
+            });
         });
     }
 

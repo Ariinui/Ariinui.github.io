@@ -4,6 +4,10 @@
     if (stored === 'light' || stored === 'dark') {
         document.documentElement.setAttribute('data-theme', stored);
     }
+    var storedSize = localStorage.getItem('bukaAMoromona:textSize');
+    if (storedSize === 'large') {
+        document.documentElement.setAttribute('data-text-size', storedSize);
+    }
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -23,6 +27,40 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
             updateIcon();
+        });
+    }
+
+    var textSizeToggle = document.querySelector('.text-size-toggle');
+    var textSizeModal = document.getElementById('text-size-modal');
+    if (textSizeToggle && textSizeModal) {
+        var options = [].slice.call(textSizeModal.querySelectorAll('.text-size-option'));
+        var markActive = function() {
+            var current = document.documentElement.getAttribute('data-text-size') === 'large' ? 'large' : 'normal';
+            options.forEach(function(opt) {
+                opt.classList.toggle('active', opt.getAttribute('data-size') === current);
+            });
+        };
+        markActive();
+        textSizeToggle.addEventListener('click', function() {
+            markActive();
+            textSizeModal.hidden = false;
+        });
+        textSizeModal.addEventListener('click', function(event) {
+            if (event.target === textSizeModal) textSizeModal.hidden = true;
+        });
+        options.forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var size = opt.getAttribute('data-size');
+                if (size === 'large') {
+                    localStorage.setItem('bukaAMoromona:textSize', 'large');
+                    document.documentElement.setAttribute('data-text-size', 'large');
+                } else {
+                    localStorage.removeItem('bukaAMoromona:textSize');
+                    document.documentElement.removeAttribute('data-text-size');
+                }
+                markActive();
+                textSizeModal.hidden = true;
+            });
         });
     }
 

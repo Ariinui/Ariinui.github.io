@@ -11,6 +11,11 @@
     --accent-hover: #163d6d;
     --hover-bg: #eef1f5;
     --intro-bg: #f9f9f9;
+    --reading-font-size: 16px;
+}
+
+:root[data-text-size="large"] {
+    --reading-font-size: 20px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -73,10 +78,16 @@ h1 {
     font-size: 22px;
 }
 
-.theme-toggle {
+.page-controls {
     position: absolute;
     top: 32px;
     right: 20px;
+    display: flex;
+    gap: 8px;
+}
+
+.theme-toggle,
+.text-size-toggle {
     width: 36px;
     height: 36px;
     display: flex;
@@ -87,11 +98,60 @@ h1 {
     border-radius: 8px;
     color: var(--text);
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.text-size-toggle:hover {
     background: var(--hover-bg);
+}
+
+.text-size-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.text-size-modal[hidden] {
+    display: none;
+}
+
+.text-size-modal-inner {
+    display: flex;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.text-size-option {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.text-size-option-large {
+    font-size: 32px;
+}
+
+.text-size-option.active {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .continue-reading {
@@ -232,11 +292,13 @@ h1 {
 
 .tahitien, .francais {
     width: 48%;
+    font-size: var(--reading-font-size);
 }
 
 .verse-fr {
     margin: 0 0 16px;
     line-height: 1.65;
+    font-size: var(--reading-font-size);
 }
 
 .verse-fr.introduction {
@@ -354,6 +416,7 @@ h1 {
 .guide-content p {
     margin: 0.7em 0;
     line-height: 1.6;
+    font-size: var(--reading-font-size);
 }
 
 .guide-content p.Indent1,
@@ -391,7 +454,7 @@ h1 {
         padding: 20px 10px 60px;
     }
 
-    .theme-toggle {
+    .page-controls {
         top: 20px;
         right: 10px;
     }

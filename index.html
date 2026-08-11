@@ -11,7 +11,18 @@
 </head>
 <body>
     <div class="page">
-        <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+        <div class="page-controls">
+            
+            <button class="text-size-toggle" type="button" aria-label="Taille du texte">A</button>
+            <div class="text-size-modal" id="text-size-modal" hidden>
+                <div class="text-size-modal-inner">
+                    <button type="button" class="text-size-option" data-size="normal" aria-label="Texte normal">a</button>
+                    <button type="button" class="text-size-option text-size-option-large" data-size="large" aria-label="Grand texte">A</button>
+                </div>
+            </div>
+
+            <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+        </div>
         <h1>Bibliotheque</h1>
         <div id="continue-reading-slot"></div>
 
