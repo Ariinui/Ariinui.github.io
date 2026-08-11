@@ -25,6 +25,22 @@ h1 {
     font-size: 22px;
 }
 
+.continue-reading {
+    display: block;
+    margin: 0 0 20px;
+    padding: 14px 16px;
+    background: #1b4d89;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.continue-reading:hover {
+    background: #163d6d;
+}
+
 .volume {
     margin-bottom: 14px;
 }

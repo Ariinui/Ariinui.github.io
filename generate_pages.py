@@ -281,6 +281,7 @@ os.makedirs('guide/chapters', exist_ok=True)
 
 toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js')
 toc_html += '        <h1>Bibliotheque</h1>\n'
+toc_html += '        <div id="continue-reading-slot"></div>\n'
 
 toc_html += render_volume_block(
     'Livre de Mormon (tahitien / francais)',
@@ -381,7 +382,9 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js')
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
+        html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}">'
         html += verses_html + introduction_html
+        html += '</div>'
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
         html += PAGE_TAIL
 
@@ -456,6 +459,22 @@ h1, h2 {
 h1 {
     margin: 0 0 16px;
     font-size: 22px;
+}
+
+.continue-reading {
+    display: block;
+    margin: 0 0 20px;
+    padding: 14px 16px;
+    background: #1b4d89;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.continue-reading:hover {
+    background: #163d6d;
 }
 
 .volume {
@@ -741,6 +760,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
             }
+        }
+    }
+
+    // Suivi de la position de lecture (volume francais uniquement) : sauve
+    // en localStorage le verset actuellement en haut de l'ecran, pour
+    // pouvoir proposer "Continuer la lecture" depuis l'accueil.
+    var STORAGE_KEY = 'bukaAMoromona:lastRead';
+    var versesFr = document.querySelector('.verses-fr');
+    if (versesFr) {
+        var saveTimer = null;
+        function saveReadingPosition() {
+            var verses = versesFr.querySelectorAll('.verse-container-fr[id]');
+            var current = null;
+            for (var i = 0; i < verses.length; i++) {
+                if (verses[i].getBoundingClientRect().bottom > 80) {
+                    current = verses[i];
+                    break;
+                }
+            }
+            if (!current) return;
+            var h1 = document.querySelector('h1');
+            var h2 = document.querySelector('h2');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                bookIdx: versesFr.getAttribute('data-book-idx'),
+                chapterIdx: versesFr.getAttribute('data-chapter-idx'),
+                verseId: current.id,
+                bookTitle: h1 ? h1.textContent : '',
+                chapterTitle: h2 ? h2.textContent : '',
+                verseNum: current.id.replace('v', '')
+            }));
+        }
+        window.addEventListener('scroll', function() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveReadingPosition, 400);
+        });
+        window.addEventListener('pagehide', saveReadingPosition);
+        saveReadingPosition();
+    }
+
+    // Page d'accueil : propose "Continuer la lecture" si une position est
+    // enregistree.
+    var continueSlot = document.getElementById('continue-reading-slot');
+    if (continueSlot) {
+        var saved = null;
+        try {
+            saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        } catch (e) {}
+        if (saved && saved.bookIdx && saved.chapterIdx && saved.verseId) {
+            var link = document.createElement('a');
+            link.className = 'continue-reading';
+            link.href = 'chapters-fr/chapter_' + saved.bookIdx + '_' + saved.chapterIdx + '.html#' + saved.verseId;
+            link.textContent = 'Continuer la lecture — ' + saved.chapterTitle + ', verset ' + saved.verseNum;
+            continueSlot.appendChild(link);
         }
     }
 });
