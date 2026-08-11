@@ -1150,7 +1150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 var verseRef = entry.getAttribute('data-verse-ref');
                 var verseText = entry.getAttribute('data-verse-text');
                 if (verseRef && verseText) {
-                    return verseRef + '\\n\\n' + verseText + '\\n\\n' + guideText;
+                    return verseRef + '\\n\\n' + verseText + '\\n\\nNotes du guide\\n\\n' + guideText;
                 }
                 return guideText;
             }
@@ -1222,8 +1222,12 @@ document.addEventListener('DOMContentLoaded', function() {
             shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
                 var text = entryText(matches[current]);
+                var shareData = { text: text };
+                if (bookIdx && chapterIdx) {
+                    shareData.url = 'https://ariinui.github.io/chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId;
+                }
                 if (navigator.share) {
-                    navigator.share({ text: text }).catch(function() {});
+                    navigator.share(shareData).catch(function() {});
                 } else {
                     navigator.clipboard.writeText(text).then(function() {
                         showToast('Copie dans le presse-papier');
