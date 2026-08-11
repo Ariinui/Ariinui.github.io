@@ -298,7 +298,7 @@ os.makedirs('guide/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque a 3 volumes ---------------------------------
 
-toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
+toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls='')
 toc_html += '        <h1>Bibliotheque</h1>\n'
 toc_html += '        <div id="continue-reading-slot"></div>\n'
 
@@ -363,7 +363,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls='')
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += verses_html + introduction_html
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
@@ -398,7 +398,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls='')
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}">'
         html += verses_html + introduction_html
@@ -415,7 +415,7 @@ for n, item in enumerate(guide_intro_items, 1):
     prev_link = f'<a href="intro_{n-1}.html">Page precedente</a> | ' if n > 1 else ''
     next_link = f'<a href="intro_{n+1}.html">Page suivante</a> | ' if n < len(guide_intro_items) else ''
 
-    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls='')
+    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
     html += f'    <h1>Introductory Pages</h1>\n    <h2>{item["title"]}</h2>\n'
     html += f'<div class="guide-content">{content_html}</div>'
     html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -434,7 +434,7 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls='')
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
         html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}">{content_html}</div>'
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
