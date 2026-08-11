@@ -232,8 +232,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     text = p.guideText + (shareUrl ? '\n\n' + shareUrl : '');
                 }
+                // Uniquement le lien integre au texte (pas aussi le champ "url" natif du
+                // partage) : sur certains navigateurs/OS, le champ "url" separe se fait
+                // dupliquer en fin de "text" par le pont de partage du systeme - un second
+                // exemplaire du lien qui atterrissait dans les Notes, apres le marqueur
+                // "Notes du guide" (constate en conditions reelles).
                 var shareData = { text: text };
-                if (shareUrl) shareData.url = shareUrl;
                 if (navigator.share) {
                     navigator.share(shareData).catch(function() {});
                 } else {
