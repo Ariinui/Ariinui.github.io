@@ -14,6 +14,14 @@
     --reading-font-size: 16px;
 }
 
+:root[data-text-size="xsmall"] {
+    --reading-font-size: 12px;
+}
+
+:root[data-text-size="small"] {
+    --reading-font-size: 14px;
+}
+
 :root[data-text-size="large"] {
     --reading-font-size: 19px;
 }

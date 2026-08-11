@@ -5,7 +5,8 @@
         document.documentElement.setAttribute('data-theme', stored);
     }
     var storedSize = localStorage.getItem('bukaAMoromona:textSize');
-    if (storedSize === 'large' || storedSize === 'xlarge' || storedSize === 'xxlarge') {
+    var validSizes = ['xsmall', 'small', 'large', 'xlarge', 'xxlarge'];
+    if (validSizes.indexOf(storedSize) !== -1) {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
 })();
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var textSizeToggle = document.querySelector('.text-size-toggle');
     var textSizePopover = document.getElementById('text-size-popover');
     if (textSizeToggle && textSizePopover) {
-        var sizes = ['normal', 'large', 'xlarge', 'xxlarge'];
+        var sizes = ['xsmall', 'small', 'normal', 'large', 'xlarge', 'xxlarge'];
         var steps = [].slice.call(textSizePopover.querySelectorAll('.text-size-step'));
         var shrinkBtn = steps[0];
         var growBtn = steps[1];
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var currentIndex = function() {
             var attr = document.documentElement.getAttribute('data-text-size');
             var i = sizes.indexOf(attr);
-            return i === -1 ? 0 : i;
+            return i === -1 ? sizes.indexOf('normal') : i;
         };
         var updateButtons = function() {
             var i = currentIndex();
