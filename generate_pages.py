@@ -298,19 +298,32 @@ def apply_en_translate(tag):
 
 
 def parse_conference_issue(path):
-    """Un <section id=...> sans div.body-block est un separateur de session
-    (ex. "Saturday Morning Session"), pas un discours - il ne devient pas sa
-    propre page mais son titre est garde comme metadonnee des discours qui
-    suivent, dans l'ordre de la source."""
+    """Un <section id=...> de premier niveau sans div.body-block est un
+    separateur de session (ex. "Saturday Morning Session") - pas un
+    discours, juste une metadonnee gardee pour les discours suivants.
+
+    Certains discours a tiroirs (ex. 1977 : "The Foundations of
+    Righteousness" continue en sous-<section> imbriquees DANS son propre
+    div.body-block - 2.1 "Home Evening", 2.2 "Patriarchal Blessings"...,
+    chacune son <h2> mais sans son propre div.body-block) - detectees et
+    aplaties (h2 remplace par un marqueur <h3 class="conf-subhead">) avant
+    de figer le contenu du discours parent en un seul decode_contents(),
+    plutot que traitees comme des discours separes. Uniquement
+    soup.find_all('section', id=True) DIRECTEMENT sur soup (jamais sur un
+    body-block deja trouve) donnerait ces sous-sections en double - elles
+    ne sont jamais iterees comme entrees de premier niveau."""
     with open(path, 'r', encoding='utf-8') as file:
         soup = BeautifulSoup(file, 'html.parser')
 
     titlepage_h1 = soup.find('h1', class_='title')
     issue_title = titlepage_h1.get_text(strip=True) if titlepage_h1 else os.path.basename(os.path.dirname(path))
 
+    all_sections = soup.find_all('section', id=True)
+    top_sections = [s for s in all_sections if s.find_parent('section', id=True) is None]
+
     talks = []
     current_session = None
-    for sec in soup.find_all('section', id=True):
+    for sec in top_sections:
         h1 = sec.find('h1')
         if not h1:
             continue
@@ -321,6 +334,18 @@ def parse_conference_issue(path):
             continue
         m = CONFERENCE_TALK_TITLE_RE.match(title_raw)
         talk_title, speaker = (m.group(1).strip(), m.group(2).strip()) if m else (title_raw, None)
+
+        for sub in body_block.find_all('section', id=True):
+            sub_heading = sub.find(['h1', 'h2'])
+            sub_title = sub_heading.get_text(' ', strip=True) if sub_heading else None
+            if sub_heading:
+                sub_heading.decompose()
+            if sub_title:
+                marker = soup.new_tag('h3')
+                marker['class'] = 'conf-subhead'
+                marker.string = sub_title
+                sub.insert_before(marker)
+
         for img in body_block.find_all('img'):
             img.decompose()
         apply_en_translate(body_block)
@@ -1243,7 +1268,8 @@ h1 {
     opacity: 1;
 }
 
-.guide-content h4 {
+.guide-content h4,
+.guide-content h3.conf-subhead {
     margin: 1.4em 0 0.4em;
     font-size: 15px;
     color: var(--accent);

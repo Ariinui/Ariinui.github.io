@@ -485,7 +485,8 @@ h1 {
     opacity: 1;
 }
 
-.guide-content h4 {
+.guide-content h4,
+.guide-content h3.conf-subhead {
     margin: 1.4em 0 0.4em;
     font-size: 15px;
     color: var(--accent);
