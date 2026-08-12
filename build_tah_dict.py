@@ -173,6 +173,192 @@ if os.path.exists('embark_supplement.json'):
             added += 1
     print(f'{added} mots ajoutes et {merged} mots enrichis depuis le supplement Embark.')
 
+# Contexte francais : le dictionnaire REO melange parfois plusieurs mots
+# tahitiens sans rapport qui partagent la meme forme normalisee (des vrais
+# homographes non lies), ex. papa'i affichait "reciter un conte, baton,
+# frappeur, cloison..." melange a son vrai sens "ecrire" (confirme a la
+# main sur ses 381 occurrences dans le LdM). Le texte francais aligne
+# verset par verset sert de preuve reelle (pas une supposition) pour
+# trier les sens deja presents : ceux attestes dans au moins un verset
+# aligne passent en tete, le reste (mauvais homographes probables) reste
+# a la suite - rien n'est jamais supprime, juste reordonne.
+# Quand AUCUN sens existant n'est atteste (le bon sens n'est meme pas
+# dans la liste, comme papa'i au depart), un mot francais est propose
+# depuis le contexte lui-meme (frequence dans les versets contenant le
+# mot tahitien, comparee a sa frequence de base dans tout le livre) et
+# ajoute en tete, marque "(depuis le contexte)" pour rester distinguable
+# d'une glose verifiee par dictionnaire - c'est une deduction, pas un
+# hit verifie comme le reste.
+import unicodedata
+from collections import Counter
+
+FR_STOPWORDS = {
+    'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'et', 'ou', 'a', 'en',
+    'que', 'qui', 'quoi', 'se', 'pour', 'dans', 'sur', 'ce', 'cette', 'ces',
+    'au', 'aux', 'est', 'etre', 'avoir', 'il', 'elle', 'ils', 'elles', 'je',
+    'tu', 'nous', 'vous', 'on', 'ne', 'pas', 'plus', 'moins', 'son', 'sa',
+    'ses', 'leur', 'leurs', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'notre',
+    'votre', 'mais', 'donc', 'or', 'ni', 'car', 'comme', 'si', 'tout',
+    'tous', 'toute', 'toutes', 'fut', 'etait', 'ete', 'avait', 'ont', 'sont',
+    'oui', 'non', 'moi', 'toi', 'lui', 'eux', 'y', 'meme', 'bien', 'aussi',
+    'sa', 'ca', 'la',
+    # formules narratives omnipresentes dans le LdM, sans rapport avec le
+    # mot tahitien voisin (ex. "il arriva que" ~ tournure de chaque
+    # chapitre) - fausses correspondances frequentes sinon.
+    'arriva', 'maintenant', 'lorsque', 'voici', 'avec', 'chose', 'choses',
+    'alors', 'ainsi', 'ici', 'la-bas', 'toutefois', 'cependant', 'selon',
+    # Dieu/Seigneur : mots religieux omnipresents (majorite des versets),
+    # deja couverts par le dictionnaire pour leurs vrais mots tahitiens -
+    # en excedent, coincident trop souvent avec un mot voisin sans en etre
+    # la traduction (observe empiriquement sur plusieurs faux positifs).
+    'dieu', 'seigneur',
+    # faire/etre a tous les temps : verbes-supports omnipresents (locutions
+    # comme "il arriva que", tournures passives...), pas des traductions.
+    'fait', 'faire', 'font', 'ferait', 'feront', 'faisait', 'faisaient',
+    'firent', 'fis', 'fasse', 'faites', 'faisant',
+}
+
+
+def strip_accents(s):
+    s = s.replace('œ', 'oe').replace('Œ', 'OE').replace('æ', 'ae').replace('Æ', 'AE')
+    return ''.join(c for c in unicodedata.normalize('NFKD', s) if not unicodedata.combining(c))
+
+
+def fr_words(text):
+    return re.findall(r"[A-Za-zÀ-ÿŒœÆæ]+", text)
+
+
+def content_stem(word):
+    w = strip_accents(word.lower())
+    w = re.sub(r'[^a-z]', '', w)
+    if not w or w in FR_STOPWORDS or len(w) < 4:
+        return None
+    return w[:4]
+
+
+def part_stem(part):
+    for w in fr_words(part):
+        st = content_stem(w)
+        if st:
+            return st
+    return None
+
+
+# Pre-passe : detecte les noms propres (mots capitalises ailleurs qu'en
+# debut de verset, ex. Nephi, Lamana, Sion...) pour ne jamais les proposer
+# comme "traduction" d'un mot tahitien courant plus bas - un personnage ou
+# lieu tres mentionne peut co-occurrer tres souvent avec un verbe/adjectif
+# frequent sans en etre du tout la traduction (observe empiriquement :
+# "faaara" (reveiller) ressortait "nephi", "ati" ressortait "lamanites").
+# Bloque le MOT EXACT (pas sa racine) : "Ecritures" (majuscule legitime,
+# reference aux ecritures saintes) partage la racine "ecri" avec le verbe
+# "ecrire"/"ecrit" - bloquer toute la racine aurait aussi exclu ce dernier,
+# qui lui est un vrai sens frequent (papa'i).
+proper_noun_words = set()
+for tah_div in soup.find_all('div', class_='tahitien'):
+    container = tah_div.parent
+    fr_div = container.find('div', class_='francais') if container else None
+    if not fr_div:
+        continue
+    words = fr_words(fr_div.get_text(' '))
+    for i, w in enumerate(words):
+        if i > 0 and w[0].isupper():
+            proper_noun_words.add(w.lower())
+
+# mot tahitien normalise -> liste des textes francais des versets ou il
+# apparait. Compte aussi la frequence de base de chaque RACINE francaise
+# (verbes conjugues regroupes - "ecrit"/"ecrire"/"ecrivit" partagent tous
+# la racine "ecri") sur l'ensemble du livre, et garde la forme de surface
+# la plus frequente de chaque racine pour l'affichage.
+word_to_french = {}
+global_stem_counts = Counter()
+stem_surface_counts = {}
+total_verses = 0
+for tah_div in soup.find_all('div', class_='tahitien'):
+    container = tah_div.parent
+    fr_div = container.find('div', class_='francais') if container else None
+    if not fr_div:
+        continue
+    fr_text = fr_div.get_text(' ')
+    total_verses += 1
+    stems_in_fr = set()
+    for w in fr_words(fr_text):
+        if w.lower() in proper_noun_words:
+            continue
+        st = content_stem(w)
+        if not st:
+            continue
+        stems_in_fr.add(st)
+        stem_surface_counts.setdefault(st, Counter())[w.lower()] += 1
+    global_stem_counts.update(stems_in_fr)
+    words_in_tah = {normalize(t) for t in WORD_RE.findall(tah_div.get_text(' '))}
+    for w in words_in_tah:
+        word_to_french.setdefault(w, []).append(fr_text)
+
+DERIVED_RE = re.compile(r'^(.*?)( \(dérivé de.*)$', re.DOTALL)
+
+reordered_count, contextualized_count = 0, 0
+for key in list(result.keys()):
+    gloss = result[key]
+    m = DERIVED_RE.match(gloss)
+    main, suffix = (m.group(1), m.group(2)) if m else (gloss, '')
+    parts = [p.strip() for p in main.split(',') if p.strip()]
+    if len(parts) <= 1:
+        continue
+    verses = word_to_french.get(key, [])
+    if not verses:
+        continue
+    n = len(verses)
+    local_stem_counts = Counter()
+    for fr_text in verses:
+        stems_here = {content_stem(w) for w in fr_words(fr_text) if w.lower() not in proper_noun_words}
+        stems_here.discard(None)
+        local_stem_counts.update(stems_here)
+
+    # atteste = la racine apparait dans au moins 15% des versets contenant
+    # le mot (et au moins 2 en absolu) - un seuil proportionnel, pas juste
+    # un compte brut : sur un mot tres frequent (des centaines de versets),
+    # 2 occurrences suffisent presque toujours par pur hasard (ex.
+    # "reciter un conte" ~ "recit" apparait dans 8% des versets de papa'i
+    # sans etre sa traduction), donc ca ne doit pas suffire a bloquer
+    # ci-dessous la proposition du vrai sens dominant.
+    min_hits = max(2, round(n * 0.15))
+    attested, rest = [], []
+    for p in parts:
+        st = part_stem(p)
+        if st and local_stem_counts.get(st, 0) >= min_hits:
+            attested.append(p)
+        else:
+            rest.append(p)
+
+    if parts != attested + rest:
+        parts = attested + rest
+        result[key] = ', '.join(parts) + suffix
+        reordered_count += 1
+
+    # Si aucun sens existant n'est atteste, un mot est propose depuis le
+    # contexte lui-meme - seuil volontairement strict (majorite des
+    # versets, nettement au-dessus de la frequence de base dans tout le
+    # livre) car on invente ici une info qui n'est dans aucun dictionnaire,
+    # contrairement au reordonnancement ci-dessus qui ne fait que trier
+    # des sens deja verifies.
+    if attested or n < 5:
+        continue
+    best_stem, best_score = None, 0
+    for st, local_c in local_stem_counts.items():
+        if local_c < max(5, round(n * 0.5)):
+            continue
+        expected = global_stem_counts[st] / total_verses * n
+        score = local_c - expected
+        if score > best_score:
+            best_stem, best_score = st, score
+    if best_stem:
+        best_word = stem_surface_counts[best_stem].most_common(1)[0][0]
+        result[key] = f'{best_word} (depuis le contexte), ' + ', '.join(parts) + suffix
+        contextualized_count += 1
+
+print(f'{reordered_count} mots reordonnes selon le contexte francais, {contextualized_count} mots enrichis avec un mot deduit du contexte.')
+
 with open('tah_dict.json', 'w', encoding='utf-8') as f:
     json.dump(result, f, ensure_ascii=False, separators=(',', ':'))
 
