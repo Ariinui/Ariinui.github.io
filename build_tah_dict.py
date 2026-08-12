@@ -173,6 +173,30 @@ if os.path.exists('embark_supplement.json'):
             added += 1
     print(f'{added} mots ajoutes et {merged} mots enrichis depuis le supplement Embark.')
 
+# 2e passe de formes flechies : une racine peut etre une coquille vide
+# dans le dump SQLite (comme "tāpuni", derive de "tāpunira'a" - Mosiah
+# 20:5) mais avoir une vraie traduction recuperee via reo.pf/Embark. La
+# premiere passe (plus haut) ne testait les racines candidates que contre
+# le SQLite ; celle-ci les teste aussi contre les 2 supplements, pour les
+# mots encore sans glose apres tout ce qui precede.
+combined_root_glosses = {}
+if os.path.exists('reo_pf_supplement.json'):
+    combined_root_glosses.update(reo_pf_supplement)
+if os.path.exists('embark_supplement.json'):
+    for k, v in embark_supplement.items():
+        combined_root_glosses.setdefault(k, v)
+
+second_pass_count = 0
+for key in list(used_keys):
+    if key in result:
+        continue
+    for cand in strip_candidates(key):
+        if cand in combined_root_glosses:
+            result[key] = combined_root_glosses[cand] + f' (dérivé de « {cand} »)'
+            second_pass_count += 1
+            break
+print(f'{second_pass_count} mots recuperes en 2e passe (racine trouvee via reo.pf/Embark, pas le SQLite).')
+
 # Contexte francais : le dictionnaire REO melange parfois plusieurs mots
 # tahitiens sans rapport qui partagent la meme forme normalisee (des vrais
 # homographes non lies), ex. papa'i affichait "reciter un conte, baton,

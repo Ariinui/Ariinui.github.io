@@ -10,6 +10,7 @@ site, not a bulk API, so it is deliberately paced like a human clicking
 through searches one at a time.
 """
 import json
+import os
 import re
 import time
 import requests
@@ -22,11 +23,59 @@ MAX_GLOSSES = 6
 MACRON_MAP = str.maketrans('āēīōūĀĒĪŌŪ', 'aeiouAEIOU')
 OKINA_RE = re.compile(r"[‘’ʻ\x27]")
 
+# Memes mecanismes de formes flechies que build_tah_dict.py (duplique ici
+# pour rester un script autonome) : une racine peut etre une coquille vide
+# dans le SQLite mais avoir une vraie traduction en direct sur reo.pf -
+# donc on interroge aussi les racines candidates des mots sans glose, pas
+# seulement leur forme exacte.
+SUFFIXES = ('raa', 'hia')
+PREFIXES = ('faa', 'haa')
+MIN_ROOT_LEN = 3
+
 
 def normalize(word):
     word = word.translate(MACRON_MAP)
     word = OKINA_RE.sub('', word)
     return word.lower()
+
+
+def dereduplicate_candidates(word):
+    cands = set()
+    for i in range(len(word) - 3):
+        chunk = word[i:i + 2]
+        if chunk == word[i + 2:i + 4] and chunk.isalpha():
+            cands.add(word[:i + 2] + word[i + 4:])
+    return cands
+
+
+def strip_candidates(word):
+    bases = {word}
+    frontier = [word]
+    for _ in range(2):
+        next_frontier = []
+        for b in frontier:
+            for suf in SUFFIXES:
+                if b.endswith(suf) and len(b) - len(suf) >= MIN_ROOT_LEN:
+                    nb = b[:-len(suf)]
+                    if nb not in bases:
+                        bases.add(nb)
+                        next_frontier.append(nb)
+        frontier = next_frontier
+
+    candidates = set()
+    for b in bases:
+        candidates.add(b)
+        for pre in PREFIXES:
+            if b.startswith(pre) and len(b) - len(pre) >= MIN_ROOT_LEN:
+                candidates.add(b[len(pre):])
+        for dc in dereduplicate_candidates(b):
+            if len(dc) >= MIN_ROOT_LEN:
+                candidates.add(dc)
+                for pre in PREFIXES:
+                    if dc.startswith(pre) and len(dc) - len(pre) >= MIN_ROOT_LEN:
+                        candidates.add(dc[len(pre):])
+    candidates.discard(word)
+    return candidates
 
 
 def get_token(session):
@@ -87,18 +136,35 @@ def main():
     used_keys = {normalize(t) for t in WORD_RE.findall(full_text)}
     unglossed = sorted(k for k in used_keys if k not in tah_dict)
 
-    print(f'{len(unglossed)} mots a revernifier sur reo.pf')
+    # Racines candidates des mots sans glose (suffixe/prefixe/redoublement),
+    # ajoutees a la liste a interroger meme si elles n'apparaissent pas
+    # elles-memes telles quelles dans le texte - ex. "tapuni" (racine de
+    # "tapunira'a", Mosiah 20:5) n'est jamais un mot du texte a lui seul.
+    to_query = set(unglossed)
+    for w in unglossed:
+        to_query.update(strip_candidates(w))
+    to_query = sorted(to_query)
+
+    print(f'{len(unglossed)} mots sans glose, {len(to_query)} formes a verifier sur reo.pf (racines candidates incluses)')
 
     session = requests.Session()
     session.headers.update({'User-Agent': 'Mozilla/5.0 (research script, ariinui.github.io Buka a Moromona project)'})
     token = get_token(session)
 
+    # Fusionne avec les resultats deja accumules lors d'un run precedent -
+    # ne jamais repartir de zero, sinon un mot trouve la derniere fois mais
+    # plus dans la liste "a verifier" cette fois (parce que deja resolu et
+    # donc absent du residu unglossed actuel) disparaitrait du fichier.
     result = {}
-    for i, word in enumerate(unglossed, 1):
+    if os.path.exists('reo_pf_supplement.json'):
+        with open('reo_pf_supplement.json', encoding='utf-8') as f:
+            result = json.load(f)
+
+    for i, word in enumerate(to_query, 1):
         try:
             hrefs = search_exact(session, token, word)
         except Exception as e:
-            print(f'[{i}/{len(unglossed)}] {word}: erreur recherche ({e}), on retente avec un nouveau jeton')
+            print(f'[{i}/{len(to_query)}] {word}: erreur recherche ({e}), on retente avec un nouveau jeton')
             time.sleep(DELAY)
             token = get_token(session)
             hrefs = search_exact(session, token, word)
@@ -112,7 +178,7 @@ def main():
 
         if glosses:
             result[word] = ', '.join(glosses[:MAX_GLOSSES])
-            print(f'[{i}/{len(unglossed)}] {word} -> {result[word]}')
+            print(f'[{i}/{len(to_query)}] {word} -> {result[word]}')
 
         if i % 50 == 0:
             with open('reo_pf_supplement.json', 'w', encoding='utf-8') as f:
@@ -121,7 +187,7 @@ def main():
 
     with open('reo_pf_supplement.json', 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=1, sort_keys=True)
-    print(f'Termine: {len(result)} mots recuperes sur {len(unglossed)} verifies.')
+    print(f'Termine: {len(result)} mots recuperes sur {len(to_query)} verifies.')
 
 
 if __name__ == '__main__':
