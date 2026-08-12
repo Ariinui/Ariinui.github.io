@@ -1846,3 +1846,22 @@ document.addEventListener('DOMContentLoaded', function() {
 '''
 
 write('script.js', js_content)
+
+# Cache-busting : sans ca, le navigateur (et le CDN de GitHub Pages) peut
+# continuer a servir un ancien script.js en cache apres un deploy, donnant
+# l'impression qu'un fix ne "marche pas" alors qu'il est bien en ligne.
+# Version = hash du contenu, ajoutee en ?v= sur toutes les pages generees.
+import hashlib
+script_version = hashlib.md5(js_content.encode('utf-8')).hexdigest()[:8]
+for root, dirs, files in os.walk('.'):
+    dirs[:] = [d for d in dirs if d != '.git']
+    for fname in files:
+        if not fname.endswith('.html'):
+            continue
+        fpath = os.path.join(root, fname)
+        with open(fpath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        new_content = content.replace('script.js"', f'script.js?v={script_version}"')
+        if new_content != content:
+            with open(fpath, 'w', encoding='utf-8') as f:
+                f.write(new_content)
