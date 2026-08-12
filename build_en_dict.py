@@ -1,26 +1,37 @@
 """Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate
-des volumes anglais, ex. General Conference) a partir de deux sources :
+des volumes anglais, ex. General Conference) a partir de trois sources,
+fusionnees par ordre de priorite (la premiere qui a une glose pour un mot
+donne est gardee en tete, les suivantes rallongent la liste) :
 
-1. MUSE (Facebook Research), Downloads/muse-en-fr.txt - dictionnaire de
-   113k paires anglais-francais, telecharge une fois depuis
-   https://dl.fbaipublicfiles.com/arrival/dictionaries/en-fr.txt
-   Licence CC BY-NC 4.0 (attribution + usage non commercial - compatible,
-   ce site est gratuit et sans monetisation).
-2. FUNCTION_WORDS ci-dessous : complement ecrit a la main pour les ~150 mots
+1. FUNCTION_WORDS ci-dessous : complement ecrit a la main pour les ~150 mots
    grammaticaux les plus frequents (pronoms, prepositions, auxiliaires,
    formes archaiques thee/thou/thy/ye/unto tres frequentes dans ce texte
-   religieux) - MUSE les rate systematiquement (methode d'induction par
-   embeddings, mauvaise sur les mots les plus polysemiques/contextuels :
-   "be"/"is"/"of"/"to" etc. sont absents de MUSE alors que "was" y est).
+   religieux) - les dictionnaires automatiques ci-dessous les ratent souvent
+   (methodes statistiques/embeddings, mauvaises sur les mots les plus
+   polysemiques/contextuels : "be"/"is"/"of"/"to" absents de MUSE seul).
+2. Downloads/english-french-dictionary-free-4-1-4/assets/dict_en_fr.db -
+   base SQLite (table FTS `dict_en_fr_v2`, colonnes en/fr) extraite d'une
+   app Android dediee ("English-French Dictionary Free"), meme principe que
+   le SQLite REO pour le tahitien. Bonne qualite (seulement 4,4% de paires
+   en==fr, contre 65% pour MUSE) - source prioritaire sur MUSE des qu'un mot
+   y est present.
+3. MUSE (Facebook Research), Downloads/muse-en-fr.txt - dictionnaire de
+   113k paires anglais-francais, telecharge depuis
+   https://dl.fbaipublicfiles.com/arrival/dictionaries/en-fr.txt
+   Licence CC BY-NC 4.0 (attribution + usage non commercial - compatible,
+   ce site est gratuit et sans monetisation). ~65% de ses paires brutes sont
+   des identites (en==fr, bruit d'induction par embeddings, ex. "faith
+   faith") - filtrees avant usage. Sert surtout a combler ce que le SQLite
+   ne couvre pas.
 
-Deux sources deja testees et rejetees avant celle-ci (voir memoire projet) :
+Deux sources testees et rejetees avant celles-ci (voir memoire projet) :
 - FreeDict eng-fra (8500 mots-cles) : 34,6% de couverture, "be"/"is" absents.
 - Wiktionary (kaikki.org, dump complet ~3 Go) : seulement 24% de couverture -
   les tables de traduction anglais->francais de Wiktionary sont elles-memes
   tres incompletes (remplies au cas par cas par des benevoles).
-MUSE seul : 77,8% de couverture (mots uniques) / 70,3% (occurrences) sur le
-vocabulaire du discours d'avril 1971 - net progres, complete ici avec
-FUNCTION_WORDS pour combler le trou sur les mots grammaticaux.
+Fusion SQLite + MUSE + FUNCTION_WORDS : 78,3% de couverture (mots uniques)
+sur le vocabulaire cumule des 2 numeros de Conference importes, contre 66,5%
+avec MUSE + FUNCTION_WORDS seuls.
 
 Usage : python build_en_dict.py
 """
@@ -30,8 +41,12 @@ import html
 import json
 import os
 import re
+import sqlite3
 
 MUSE_DICT_PATH = os.path.expanduser('~/Downloads/muse-en-fr.txt')
+SQLITE_DICT_PATH = os.path.expanduser(
+    '~/Downloads/english-french-dictionary-free-4-1-4/assets/dict_en_fr.db'
+)
 OUTPUT_PATH = 'en_dict.json'
 MAX_GLOSSES = 6
 
@@ -129,16 +144,44 @@ def load_muse_dict():
     return muse
 
 
+def load_sqlite_dict():
+    if not os.path.isfile(SQLITE_DICT_PATH):
+        raise SystemExit(
+            f"Dictionnaire SQLite introuvable : {SQLITE_DICT_PATH}\n"
+            "Extrait de l'app Android 'English-French Dictionary Free'."
+        )
+    conn = sqlite3.connect(SQLITE_DICT_PATH)
+    cur = conn.cursor()
+    cur.execute('SELECT en, fr FROM dict_en_fr_v2')
+    sqlite_dict = {}
+    for en, fr in cur.fetchall():
+        en = en.lower()
+        if fr.lower() == en:
+            # ~4,4% de paires identiques ici (bien moins que MUSE) -
+            # meme filtre par coherence, une traduction ne devrait jamais
+            # etre le mot anglais lui-meme.
+            continue
+        glosses = sqlite_dict.setdefault(en, [])
+        if fr not in glosses and len(glosses) < MAX_GLOSSES:
+            glosses.append(fr)
+    conn.close()
+    return sqlite_dict
+
+
 def build_dict(vocab):
+    sqlite_dict = load_sqlite_dict()
+    print(f'SQLite (app dictionnaire) : {len(sqlite_dict)} mots-cles anglais charges.')
     muse = load_muse_dict()
     print(f'MUSE : {len(muse)} mots-cles anglais charges.')
 
     result = {}
     for word in vocab:
         glosses = []
-        # Complement manuel prioritaire pour les mots grammaticaux (MUSE
-        # les rate souvent), puis MUSE complete/rallonge la liste.
-        for source in (FUNCTION_WORDS.get(word, []), muse.get(word, [])):
+        # Complement manuel prioritaire pour les mots grammaticaux (les deux
+        # dictionnaires automatiques les ratent souvent), puis le SQLite
+        # (meilleure qualite, moins de bruit), puis MUSE en dernier recours
+        # pour ce que le SQLite ne couvre pas.
+        for source in (FUNCTION_WORDS.get(word, []), sqlite_dict.get(word, []), muse.get(word, [])):
             for g in source:
                 if g not in glosses and len(glosses) < MAX_GLOSSES:
                     glosses.append(g)
