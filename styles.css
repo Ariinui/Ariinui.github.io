@@ -384,6 +384,20 @@ h1 {
     word-break: break-word;
 }
 
+.conf-session {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.conf-speaker {
+    margin: 0 0 16px;
+    font-size: 15px;
+    color: var(--text-muted);
+}
+
 .guide-content.isolated .guide-entry {
     display: none;
 }

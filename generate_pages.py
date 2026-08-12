@@ -243,6 +243,70 @@ def guide_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
+# Volume 5 source : General Conference talks (conference-sources/<dossier>/index.html,
+# un dossier par numero - export Calibre depuis churchofjesuschrist.org). Pas
+# d'images (jamais copiees, <img> retirees a l'extraction).
+# ---------------------------------------------------------------------------
+
+CONFERENCE_TALK_TITLE_RE = re.compile(r'^(.*)\s\(([^()]+)\)$')
+
+
+def parse_conference_issue(path):
+    """Un <section id=...> sans div.body-block est un separateur de session
+    (ex. "Saturday Morning Session"), pas un discours - il ne devient pas sa
+    propre page mais son titre est garde comme metadonnee des discours qui
+    suivent, dans l'ordre de la source."""
+    with open(path, 'r', encoding='utf-8') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+
+    titlepage_h1 = soup.find('h1', class_='title')
+    issue_title = titlepage_h1.get_text(strip=True) if titlepage_h1 else os.path.basename(os.path.dirname(path))
+
+    talks = []
+    current_session = None
+    for sec in soup.find_all('section', id=True):
+        h1 = sec.find('h1')
+        if not h1:
+            continue
+        title_raw = h1.get_text(' ', strip=True)
+        body_block = sec.find('div', class_='body-block')
+        if body_block is None:
+            current_session = title_raw
+            continue
+        m = CONFERENCE_TALK_TITLE_RE.match(title_raw)
+        talk_title, speaker = (m.group(1).strip(), m.group(2).strip()) if m else (title_raw, None)
+        for img in body_block.find_all('img'):
+            img.decompose()
+        talks.append({
+            'title': talk_title,
+            'speaker': speaker,
+            'session': current_session,
+            'content_html': body_block.decode_contents(),
+        })
+    return issue_title, talks
+
+
+def load_conference_issues(sources_dir='conference-sources'):
+    """Forme attendue par render_volume_block : un 'livre' par numero de
+    conference, ses discours comme 'chapitres'. Un futur numero n'a qu'a
+    etre depose dans un nouveau sous-dossier - aucun code a modifier."""
+    issues = []
+    if not os.path.isdir(sources_dir):
+        return issues
+    for folder in sorted(os.listdir(sources_dir)):
+        issue_path = os.path.join(sources_dir, folder, 'index.html')
+        if not os.path.isfile(issue_path):
+            continue
+        issue_title, talks = parse_conference_issue(issue_path)
+        issues.append({
+            'book_title': issue_title,
+            'folder': folder,
+            'chapters': [dict(t, chapter_num=n) for n, t in enumerate(talks, 1)],
+        })
+    return issues
+
+
+# ---------------------------------------------------------------------------
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
@@ -346,6 +410,7 @@ bom_book_data = parse_bom_source('livre_de_mormon.html')
 guide_intro_items, guide_books_by_name, guide_verse_index_by_name = parse_guide_source(
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html'
 )
+conference_issues = load_conference_issues()
 
 # (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
 # verset en tete - utilise pour prefixer le(s) verset(s) au Copier/Partager
@@ -387,12 +452,13 @@ for (name, chap_num, verse_num), anchor in guide_verse_index_by_name.items():
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters', 'chapters-fr', 'chapters-tah', 'guide'):
+for d in ('chapters', 'chapters-fr', 'chapters-tah', 'guide', 'conference'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters', exist_ok=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
+os.makedirs('conference', exist_ok=True)
 
 # --- index.html : bibliotheque a 3 volumes ---------------------------------
 
@@ -442,6 +508,12 @@ def guide_href(bi, ci, ch):
     return f'guide/chapters/chapter_{real_book["book_idx"]}_{ci}.html'
 
 toc_html += render_volume_block('Book of Mormon Study Guide', guide_all_books, guide_href)
+
+def conference_href(bi, ci, ch):
+    return f'conference/{conference_issues[bi - 1]["folder"]}/talk_{ci}.html'
+
+if conference_issues:
+    toc_html += render_volume_block('General Conference', conference_issues, conference_href)
 
 toc_html += PAGE_TAIL
 write('index.html', toc_html)
@@ -600,6 +672,32 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
         html += PAGE_TAIL
 
         write(f'guide/chapters/chapter_{book_idx}_{chap_idx}.html', html)
+
+# --- Volume 5 : General Conference -------------------------------------------
+
+for issue in conference_issues:
+    folder = issue['folder']
+    talks = issue['chapters']
+    for idx, talk in enumerate(talks, 1):
+        prev_link = f'<a href="talk_{idx-1}.html">Discours precedent</a> | ' if idx > 1 else ''
+        next_link = f'<a href="talk_{idx+1}.html">Discours suivant</a> | ' if idx < len(talks) else ''
+
+        html = PAGE_HEAD.format(title=talk['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
+        html += f'    <h1>{issue["book_title"]}</h1>\n'
+        if talk['session']:
+            html += f'    <p class="conf-session">{talk["session"]}</p>\n'
+        html += f'    <h2>{talk["title"]}</h2>\n'
+        if talk['speaker']:
+            html += f'    <p class="conf-speaker">{talk["speaker"]}</p>\n'
+        html += (f'<div class="guide-content" data-volume-key="conference-{folder}" '
+                  f'data-volume-title="{issue["book_title"]}">{talk["content_html"]}</div>')
+        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
+        html += PAGE_TAIL
+
+        write(f'conference/{folder}/talk_{idx}.html', html)
+
+conference_talk_count = sum(len(issue['chapters']) for issue in conference_issues)
+print(f'{len(conference_issues)} numeros de conference, {conference_talk_count} discours.')
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
@@ -995,6 +1093,20 @@ h1 {
 .guide-content {
     overflow-wrap: break-word;
     word-break: break-word;
+}
+
+.conf-session {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.conf-speaker {
+    margin: 0 0 16px;
+    font-size: 15px;
+    color: var(--text-muted);
 }
 
 .guide-content.isolated .guide-entry {
