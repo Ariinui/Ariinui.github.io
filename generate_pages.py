@@ -239,6 +239,7 @@ def guide_section_content_html(section_tag):
     back_to_top = section_tag.find('a', class_='back-to-top')
     if back_to_top:
         back_to_top.decompose()
+    apply_en_translate(section_tag)
     return section_tag.decode_contents()
 
 

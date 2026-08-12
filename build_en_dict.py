@@ -104,17 +104,24 @@ FUNCTION_WORDS = {
 }
 
 
+BOOK_SOURCES = [
+    'conference-sources/*/index.html',
+    'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html',
+]
+
+
 def extract_book_vocab():
     """Vocabulaire reel de tous les livres anglais deja importes - pas les
-    dizaines de milliers de mots des dictionnaires entiers. Aujourd'hui :
-    conference-sources/. Un futur dossier source s'ajoutera ici."""
+    dizaines de milliers de mots des dictionnaires entiers. Un futur livre
+    anglais n'a qu'a ajouter son chemin source a BOOK_SOURCES."""
     vocab = set()
-    for path in glob.glob('conference-sources/*/index.html'):
-        with open(path, encoding='utf-8') as f:
-            raw = f.read()
-        text = html.unescape(re.sub(r'<[^>]+>', ' ', raw))
-        for m in WORD_RE.finditer(text):
-            vocab.add(m.group(0).strip("'").lower())
+    for pattern in BOOK_SOURCES:
+        for path in glob.glob(pattern):
+            with open(path, encoding='utf-8') as f:
+                raw = f.read()
+            text = html.unescape(re.sub(r'<[^>]+>', ' ', raw))
+            for m in WORD_RE.finditer(text):
+                vocab.add(m.group(0).strip("'").lower())
     return vocab
 
 
