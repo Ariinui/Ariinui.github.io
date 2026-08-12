@@ -379,8 +379,12 @@ for key in list(result.keys()):
     # versets, nettement au-dessus de la frequence de base dans tout le
     # livre) car on invente ici une info qui n'est dans aucun dictionnaire,
     # contrairement au reordonnancement ci-dessus qui ne fait que trier
-    # des sens deja verifies.
-    if attested or n < 5:
+    # des sens deja verifies. Ne jamais deduire par-dessus un mot deja
+    # trouve via reo.pf/Embark (ex. haapaari -> "vieillir" via Embark,
+    # correct mais pas assez souvent atteste litteralement dans le
+    # francais aligne pour passer le seuil ci-dessus) - une source
+    # verifiee prime toujours sur une simple deduction de frequence.
+    if attested or n < 5 or key in reo_pf_supplement or key in embark_supplement:
         continue
     best_stem, best_score = None, 0
     for st, local_c in local_stem_counts.items():
