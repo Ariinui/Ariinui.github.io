@@ -11,8 +11,12 @@ NOT a build dependency of generate_pages.py - only embark_supplement.json
 is committed. build_tah_dict.py merges it in on top of the SQLite result,
 filling gaps only, never overwriting an existing SQLite-sourced gloss.
 
-Only single-word vocab entries are used (multi-word phrases are skipped) so
-a gloss always maps to exactly the tapped word, not a whole phrase.
+Only single-word vocab entries are used (multi-word phrases are skipped),
+after stripping a leading "ia " infinitive marker (Embark cites verbs as
+"ia haamata" = "to begin", same convention as "to" in an English
+dictionary - without stripping it, 453 of 2536 vocab entries (including
+haamata itself) were silently discarded for looking like a 2-word
+phrase) so a gloss always maps to exactly the tapped word, not a phrase.
 """
 import json
 import re
@@ -22,6 +26,7 @@ MAX_GLOSSES = 6
 
 MACRON_MAP = str.maketrans('āēīōūĀĒĪŌŪ', 'aeiouAEIOU')
 OKINA_RE = re.compile(r"[\u2018\u2019\u02bb\x27]")
+IA_PREFIX_RE = re.compile(r'^ia\s+', re.IGNORECASE)
 
 
 def normalize(word):
@@ -38,9 +43,10 @@ for item in data['vocab']:
     ty, fr = item.get('ty'), item.get('fr')
     if not ty or not fr:
         continue
-    if re.search(r'\s', ty.strip()):
-        continue  # only single-word entries
-    key = normalize(ty.strip())
+    ty = IA_PREFIX_RE.sub('', ty.strip())
+    if re.search(r'\s', ty):
+        continue  # only single-word entries (after stripping "ia ")
+    key = normalize(ty)
     if not key:
         continue
     glosses = result.setdefault(key, [])
