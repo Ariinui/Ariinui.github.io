@@ -107,6 +107,7 @@ FUNCTION_WORDS = {
 BOOK_SOURCES = [
     'conference-sources/*/index.html',
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html',
+    'book-of-mormon-en/index.html',
 ]
 
 

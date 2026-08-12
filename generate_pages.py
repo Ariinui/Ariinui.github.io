@@ -73,6 +73,80 @@ def split_verse_number(francais_text):
 
 
 # ---------------------------------------------------------------------------
+# Volume 6 source : Livre de Mormon anglais (book-of-mormon-en/index.html,
+# export Calibre). Structure differente de livre_de_mormon.html (source deja
+# structuree en 'verse-container') : ici chaque verset est un <p class="verse">
+# contenant un <span class="verse-number"> puis le texte, avec des
+# <a class="scripture-ref"> intercales pour les notes de bas de page - leur
+# texte colle la lettre de la note directement au mot qui suit (ex.
+# <a><sup class="marker">a</sup>born</a> -> get_text() = "aborn"), donc on ne
+# peut pas decomposer l'ancre entiere sans perdre le mot : seul le
+# <sup class="marker"> interne est retire, le reste (le vrai mot) est garde
+# en place via unwrap(). Chapitres = <div class="calibre2"> contenant des
+# p.verse ; le titre du livre (h1, present seulement au 1er chapitre de
+# chaque livre) est reporte sur les chapitres suivants via un etat courant.
+# Aucune image (pas de <img> dans les chapitres de toute facon, verifie).
+# ---------------------------------------------------------------------------
+
+def clean_bom_en_verse_text(p_verse):
+    vn = p_verse.find('span', class_='verse-number')
+    if vn:
+        vn.decompose()
+    for ref in p_verse.find_all('a', class_='scripture-ref'):
+        sup = ref.find('sup', class_='marker')
+        if sup:
+            sup.decompose()
+        ref.unwrap()
+    return p_verse.get_text(' ', strip=True)
+
+
+def parse_bom_en_source(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        soup = BeautifulSoup(file, 'lxml')
+
+    # Meme ordre canonique que BOOK_NAME_MAP (verifie : les 15 livres de la
+    # source anglaise apparaissent dans cet ordre exact) - sert a donner a
+    # chaque chapitre un titre court style "1 Nephi 1" plutot que le nom
+    # complet de la source ("The First Book of Nephi").
+    short_names = list(BOOK_NAME_MAP.values())
+
+    books = []
+    current_book_full = None
+
+    for container in soup.find_all('div', class_='calibre2'):
+        header = container.find('header', recursive=False)
+        h1 = header.find('h1', recursive=False) if header else None
+        if h1:
+            current_book_full = h1.get_text(' ', strip=True)
+
+        verses_p = container.find_all('p', class_='verse')
+        if not verses_p:
+            continue
+
+        if not books or books[-1]['book_title_full'] != current_book_full:
+            book_idx = len(books)
+            short_name = short_names[book_idx] if book_idx < len(short_names) else current_book_full
+            books.append({'book_title_full': current_book_full, 'book_title': short_name, 'chapters': []})
+
+        chap_num = len(books[-1]['chapters']) + 1
+        short_name = books[-1]['book_title']
+
+        verses = []
+        for vp in verses_p:
+            vn = vp.find('span', class_='verse-number')
+            num_txt = vn.get_text(strip=True) if vn else ''
+            try:
+                num = int(num_txt)
+            except ValueError:
+                num = None
+            verses.append((num, clean_bom_en_verse_text(vp)))
+
+        books[-1]['chapters'].append({'title': f'{short_name} {chap_num}', 'verses': verses})
+
+    return books
+
+
+# ---------------------------------------------------------------------------
 # Glossaire tahitien au tap (tah_dict.json, extrait une fois pour toutes du
 # dictionnaire REO via build_tah_dict.py - pas une dependance de generation,
 # juste un fichier de donnees commite comme livre_de_mormon.html)
@@ -480,6 +554,7 @@ def write(path, content):
 # ---------------------------------------------------------------------------
 
 bom_book_data = parse_bom_source('livre_de_mormon.html')
+bom_en_book_data = parse_bom_en_source('book-of-mormon-en/index.html')
 guide_intro_items, guide_books_by_name, guide_verse_index_by_name = parse_guide_source(
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html'
 )
@@ -525,11 +600,12 @@ for (name, chap_num, verse_num), anchor in guide_verse_index_by_name.items():
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters', 'chapters-fr', 'chapters-tah', 'guide', 'conference'):
+for d in ('chapters', 'chapters-fr', 'chapters-tah', 'chapters-en', 'guide', 'conference'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters', exist_ok=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
+os.makedirs('chapters-en', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
 os.makedirs('conference', exist_ok=True)
 
@@ -555,6 +631,12 @@ toc_html += render_volume_block(
     'Livre de Mormon (tahitien)',
     bom_book_data,
     lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
+)
+
+toc_html += render_volume_block(
+    'Livre de Mormon (anglais)',
+    bom_en_book_data,
+    lambda bi, ci, ch: f'chapters-en/chapter_{bi}_{ci}.html'
 )
 
 guide_all_books = []
@@ -691,6 +773,30 @@ for book_idx, book in enumerate(bom_book_data, 1):
         html += PAGE_TAIL
 
         write(f'chapters-tah/chapter_{book_idx}_{chap_idx}.html', html)
+
+# --- Volume 6 : Livre de Mormon anglais seul, tap-to-translate vers en_dict --
+
+for book_idx, book in enumerate(bom_en_book_data, 1):
+    for chap_idx, chapter in enumerate(book['chapters'], 1):
+        verses_html = ''
+        for verse_num, verse_text in chapter['verses']:
+            verse_text = wrap_en_words(verse_text)
+            id_attr = f' id="v{verse_num}"' if verse_num is not None else ''
+            sup = f'<sup>{verse_num}</sup>' if verse_num is not None else ''
+            verses_html += f'<p class="verse-fr"{id_attr}>{sup}{verse_text}</p>'
+
+        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
+        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
+
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
+        html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
+        html += f'<div class="verses-fr" data-volume-key="english" data-volume-title="Livre de Mormon (anglais)">'
+        html += verses_html
+        html += '</div>'
+        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
+        html += PAGE_TAIL
+
+        write(f'chapters-en/chapter_{book_idx}_{chap_idx}.html', html)
 
 # --- Volume 4 : Book of Mormon Study Guide ----------------------------------
 
