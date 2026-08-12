@@ -95,12 +95,17 @@ def tah_normalize(word):
     return word.lower()
 
 
+MAX_PHRASE_WORDS = 5
+
+
 def wrap_tah_words(text):
-    """Entoure chaque mot (ou paire de mots adjacents formant un verbe compose
-    connu, ex. "haere mai" = venir, une seule bulle pour les 2) ayant une
-    glose dans tah_dict d'un <span class="tah-word"> pour le tap-to-translate
-    - laisse tel quel tout mot absent du glossaire (nom propre, forme
-    flechie...) ou tah_dict vide."""
+    """Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe
+    compose connu, ex. "haere mai" = venir, une seule bulle pour le groupe
+    entier) ayant une glose dans tah_dict d'un <span class="tah-word"> pour
+    le tap-to-translate - laisse tel quel tout mot absent du glossaire (nom
+    propre, forme flechie...) ou tah_dict vide. Essaie toujours le plus long
+    groupe d'abord (match exact requis contre tah_dict a chaque longueur -
+    c'est ce qui evite les faux positifs, pas une liste de POS autorises)."""
     if not tah_dict:
         return text
 
@@ -112,18 +117,24 @@ def wrap_tah_words(text):
     last_end = 0
     i = 0
     while i < len(matches):
+        matched_phrase = False
+        max_len = min(MAX_PHRASE_WORDS, len(matches) - i)
+        for span in range(max_len, 1, -1):
+            group = matches[i:i + span]
+            if any(text[group[j].end():group[j + 1].start()] != ' ' for j in range(len(group) - 1)):
+                continue
+            phrase_key = ' '.join(tah_normalize(g.group(0)) for g in group)
+            if phrase_key in tah_dict:
+                out.append(text[last_end:group[0].start()])
+                out.append(f'<span class="tah-word" data-w="{phrase_key}">{text[group[0].start():group[-1].end()]}</span>')
+                last_end = group[-1].end()
+                i += span
+                matched_phrase = True
+                break
+        if matched_phrase:
+            continue
         m = matches[i]
         key = tah_normalize(m.group(0))
-        if i + 1 < len(matches):
-            m2 = matches[i + 1]
-            if text[m.end():m2.start()] == ' ':
-                phrase_key = f'{key} {tah_normalize(m2.group(0))}'
-                if phrase_key in tah_dict:
-                    out.append(text[last_end:m.start()])
-                    out.append(f'<span class="tah-word" data-w="{phrase_key}">{text[m.start():m2.end()]}</span>')
-                    last_end = m2.end()
-                    i += 2
-                    continue
         if key in tah_dict:
             out.append(text[last_end:m.start()])
             out.append(f'<span class="tah-word" data-w="{key}">{m.group(0)}</span>')

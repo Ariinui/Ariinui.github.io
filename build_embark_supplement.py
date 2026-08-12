@@ -18,14 +18,22 @@ dictionary - without stripping it, 453 of 2536 vocab entries (including
 haamata itself) were silently discarded for looking like a 2-word
 phrase) so a gloss always maps to exactly the tapped word, not a phrase.
 
-Also writes embark_phrases.json: 2-word VERB entries (after stripping
-"ia "), e.g. "haere mai" -> "venir" - Tahitian directional particles
-change a verb's meaning outright ("haere mai" = come, "haere atu" = go
-away, not just "haere" = walk + a modifier), so tagging each word alone
-would show two individually-correct but jointly-misleading glosses.
-generate_pages.py wraps a matching adjacent pair as a single tappable
-unit instead of each word separately when a text run of that book
-actually contains them next to each other.
+Also writes embark_phrases.json: 2-to-5-word VERB entries (after
+stripping "ia "), e.g. "haere mai" -> "venir" - Tahitian directional
+particles change a verb's meaning outright ("haere mai" = come, "haere
+atu" = go away, not just "haere" = walk + a modifier), so tagging each
+word alone would show individually-correct but jointly-misleading
+glosses. VERB-only is a load-bearing filter, not a shortcut: a first
+pass without it (any POS, matched verbatim in the actual book text)
+still pulled in things like "mau taata" (2316 occurrences -> "gens",
+just plural-marker + "person") and "te atua" (1449 -> "Dieu", just
+"the" + "God") - grammatically ordinary noun phrases that happen to
+have one clean Embark gloss for the pair, but locking them as a single
+tap target would make "taata"/"atua" - two of the text's single most
+important individual words - untappable on their own almost every
+time they appear. VERB phrases don't have that problem: a directional/
+locative particle glued to a verb is a genuine non-compositional idiom,
+not just an article sitting in front of a noun.
 """
 import json
 import re
@@ -71,6 +79,8 @@ with open('embark_supplement.json', 'w', encoding='utf-8') as f:
 
 print(f'{len(result)} mots extraits de Embark (vocabulaire mono-mot uniquement).')
 
+MAX_PHRASE_WORDS = 5
+
 phrases = {}
 for item in data['vocab']:
     ty, fr = item.get('ty'), item.get('fr')
@@ -78,12 +88,12 @@ for item in data['vocab']:
         continue
     ty = IA_PREFIX_RE.sub('', ty.strip())
     words = ty.split()
-    if len(words) != 2:
+    if not (2 <= len(words) <= MAX_PHRASE_WORDS):
         continue
-    key1, key2 = normalize(words[0]), normalize(words[1])
-    if not key1 or not key2:
+    norm_words = [normalize(w) for w in words]
+    if not all(norm_words):
         continue
-    phrase_key = f'{key1} {key2}'
+    phrase_key = ' '.join(norm_words)
     glosses = phrases.setdefault(phrase_key, [])
     for part in fr.split(','):
         part = part.strip()
@@ -95,4 +105,4 @@ phrases = {k: ', '.join(v) for k, v in phrases.items()}
 with open('embark_phrases.json', 'w', encoding='utf-8') as f:
     json.dump(phrases, f, ensure_ascii=False, indent=1, sort_keys=True)
 
-print(f'{len(phrases)} groupes de 2 mots (verbes composes) extraits de Embark.')
+print(f'{len(phrases)} groupes de 2 a {MAX_PHRASE_WORDS} mots extraits de Embark.')
