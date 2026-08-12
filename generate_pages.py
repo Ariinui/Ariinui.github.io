@@ -96,20 +96,41 @@ def tah_normalize(word):
 
 
 def wrap_tah_words(text):
-    """Entoure chaque mot ayant une glose dans tah_dict d'un <span class="tah-word">
-    pour le tap-to-translate - laisse tel quel tout mot absent du glossaire
-    (nom propre, forme flechie...) ou tah_dict vide."""
+    """Entoure chaque mot (ou paire de mots adjacents formant un verbe compose
+    connu, ex. "haere mai" = venir, une seule bulle pour les 2) ayant une
+    glose dans tah_dict d'un <span class="tah-word"> pour le tap-to-translate
+    - laisse tel quel tout mot absent du glossaire (nom propre, forme
+    flechie...) ou tah_dict vide."""
     if not tah_dict:
         return text
 
-    def repl(m):
-        word = m.group(0)
-        key = tah_normalize(word)
-        if key in tah_dict:
-            return f'<span class="tah-word" data-w="{key}">{word}</span>'
-        return word
+    matches = list(TAH_WORD_RE.finditer(text))
+    if not matches:
+        return text
 
-    return TAH_WORD_RE.sub(repl, text)
+    out = []
+    last_end = 0
+    i = 0
+    while i < len(matches):
+        m = matches[i]
+        key = tah_normalize(m.group(0))
+        if i + 1 < len(matches):
+            m2 = matches[i + 1]
+            if text[m.end():m2.start()] == ' ':
+                phrase_key = f'{key} {tah_normalize(m2.group(0))}'
+                if phrase_key in tah_dict:
+                    out.append(text[last_end:m.start()])
+                    out.append(f'<span class="tah-word" data-w="{phrase_key}">{text[m.start():m2.end()]}</span>')
+                    last_end = m2.end()
+                    i += 2
+                    continue
+        if key in tah_dict:
+            out.append(text[last_end:m.start()])
+            out.append(f'<span class="tah-word" data-w="{key}">{m.group(0)}</span>')
+            last_end = m.end()
+        i += 1
+    out.append(text[last_end:])
+    return ''.join(out)
 
 
 # ---------------------------------------------------------------------------

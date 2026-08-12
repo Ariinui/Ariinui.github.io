@@ -173,6 +173,20 @@ if os.path.exists('embark_supplement.json'):
             added += 1
     print(f'{added} mots ajoutes et {merged} mots enrichis depuis le supplement Embark.')
 
+# Groupes de 2 mots (verbes composes avec particule directionnelle, ex.
+# "haere mai" = venir / "haere atu" = partir - un sens propre, pas juste
+# "haere" + un modificateur) extraits d'Embark. Cles avec un espace, donc
+# jamais en conflit avec une entree mot-a-mot deja presente - inclus tel
+# quel, sans filtrage par used_keys (qui ne connait que des mots isoles) :
+# generate_pages.py ne s'en sert que s'il trouve reellement les 2 mots
+# adjacents dans le texte, une entree non utilisee ne fait rien de mal.
+if os.path.exists('embark_phrases.json'):
+    with open('embark_phrases.json', encoding='utf-8') as f:
+        embark_phrases = json.load(f)
+    for key, gloss in embark_phrases.items():
+        result.setdefault(key, gloss)
+    print(f'{len(embark_phrases)} groupes de 2 mots ajoutes depuis Embark.')
+
 # 2e passe de formes flechies : une racine peut etre une coquille vide
 # dans le dump SQLite (comme "tāpuni", derive de "tāpunira'a" - Mosiah
 # 20:5) mais avoir une vraie traduction recuperee via reo.pf/Embark. La
