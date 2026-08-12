@@ -419,6 +419,9 @@ h1 {
 .entry-card-nav button,
 .entry-card-actions button {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 8px 12px;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -433,6 +436,11 @@ h1 {
 .entry-card-nav button:hover,
 .entry-card-actions button:hover {
     background: var(--hover-bg);
+}
+
+.entry-card-actions button.copied {
+    color: #4ade80;
+    border-color: #4ade80;
 }
 
 .entry-card-nav button:disabled {

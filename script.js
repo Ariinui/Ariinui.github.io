@@ -198,14 +198,24 @@ document.addEventListener('DOMContentLoaded', function() {
             var actionsRow = document.createElement('div');
             actionsRow.className = 'entry-card-actions';
 
+            var ICON_COPY = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
+            var ICON_CHECK = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';
+            var ICON_SHARE = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>';
+
             var copyBtn = document.createElement('button');
             copyBtn.type = 'button';
-            copyBtn.textContent = '📋';
+            copyBtn.innerHTML = ICON_COPY;
             copyBtn.setAttribute('aria-label', 'Copier');
             copyBtn.title = 'Copier';
             copyBtn.addEventListener('click', function() {
                 navigator.clipboard.writeText(entryText(matches[current])).then(function() {
                     showToast('Copie dans le presse-papier');
+                    copyBtn.innerHTML = ICON_CHECK;
+                    copyBtn.classList.add('copied');
+                    setTimeout(function() {
+                        copyBtn.innerHTML = ICON_COPY;
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
                 }, function() {
                     showToast('Impossible de copier');
                 });
@@ -213,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var shareBtn = document.createElement('button');
             shareBtn.type = 'button';
-            shareBtn.textContent = '📤';
+            shareBtn.innerHTML = ICON_SHARE;
             shareBtn.setAttribute('aria-label', 'Partager');
             shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
