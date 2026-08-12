@@ -143,17 +143,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
             }
 
-            function todayDDMMYY() {
+            function todayLong() {
                 var d = new Date();
-                var dd = String(d.getDate()).padStart(2, '0');
-                var mm = String(d.getMonth() + 1).padStart(2, '0');
-                var yy = String(d.getFullYear()).slice(-2);
-                return dd + '/' + mm + '/' + yy;
+                var text = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                return text.charAt(0).toUpperCase() + text.slice(1);
             }
 
             function entryText(entry) {
                 var p = entryParts(entry);
-                var datePrefix = todayDDMMYY() + '\n\n';
+                var datePrefix = todayLong() + '\n\n';
                 if (p.verseRef && p.verseText) {
                     return datePrefix + p.verseRef + '\n\n' + p.verseText + '\n\nNotes du guide\n\n' + p.guideText;
                 }
