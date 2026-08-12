@@ -344,13 +344,16 @@ h1 {
     margin-right: 2px;
 }
 
-.tah-word {
+.tah-word,
+.en-word {
     cursor: pointer;
     border-bottom: 1px dotted var(--accent);
 }
 
 .tah-word:hover,
-.tah-word.active {
+.tah-word.active,
+.en-word:hover,
+.en-word.active {
     background: var(--hover-bg);
 }
 

@@ -279,62 +279,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Glossaire tahitien au tap (volume "Livre de Mormon (tahitien)") : chaque
-    // mot ayant une entree dans tah_dict.json est tague <span class="tah-word">
-    // au moment de la generation - au tap, on charge le glossaire une seule
-    // fois (fetch + cache memoire) et on affiche la glose dans une bulle
-    // positionnee sous le mot.
-    var tahWords = document.querySelectorAll('.tah-word');
-    if (tahWords.length) {
-        var tahDictPromise = null;
-        var tahPopup = null;
-        var tahActiveWord = null;
+    // Glossaire au tap (tahitien pour le volume "Livre de Mormon (tahitien)",
+    // anglais pour "General Conference") : chaque mot ayant une entree dans
+    // le glossaire est tague <span class="tah-word"|"en-word"> au moment de
+    // la generation - au tap, on charge le glossaire une seule fois (fetch +
+    // cache memoire) et on affiche la glose dans une bulle sous le mot.
+    // Meme mecanique pour les deux glossaires, juste selecteur/URL differents.
+    function setupTapToTranslate(selector, dictUrl) {
+        var words = document.querySelectorAll(selector);
+        if (!words.length) return;
+        var dictPromise = null;
+        var popup = null;
+        var activeWord = null;
 
-        function loadTahDict() {
-            if (!tahDictPromise) {
-                tahDictPromise = fetch('../tah_dict.json').then(function(r) { return r.json(); }).catch(function() { return {}; });
+        function loadDict() {
+            if (!dictPromise) {
+                dictPromise = fetch(dictUrl).then(function(r) { return r.json(); }).catch(function() { return {}; });
             }
-            return tahDictPromise;
+            return dictPromise;
         }
 
-        function closeTahPopup() {
-            if (tahPopup) { tahPopup.remove(); tahPopup = null; }
-            if (tahActiveWord) { tahActiveWord.classList.remove('active'); tahActiveWord = null; }
+        function closePopup() {
+            if (popup) { popup.remove(); popup = null; }
+            if (activeWord) { activeWord.classList.remove('active'); activeWord = null; }
         }
 
-        function showTahPopup(el, gloss) {
-            closeTahPopup();
-            tahActiveWord = el;
+        function showPopup(el, gloss) {
+            closePopup();
+            activeWord = el;
             el.classList.add('active');
-            tahPopup = document.createElement('div');
-            tahPopup.className = 'tah-popup';
-            tahPopup.textContent = gloss;
-            tahPopup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
-            document.body.appendChild(tahPopup);
+            popup = document.createElement('div');
+            popup.className = 'tah-popup';
+            popup.textContent = gloss;
+            popup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
+            document.body.appendChild(popup);
             var wordRect = el.getBoundingClientRect();
-            var popupRect = tahPopup.getBoundingClientRect();
+            var popupRect = popup.getBoundingClientRect();
             var left = Math.min(Math.max(8, wordRect.left), window.innerWidth - popupRect.width - 8);
             var top = wordRect.bottom + 6;
             if (top + popupRect.height > window.innerHeight - 8) {
                 top = wordRect.top - popupRect.height - 6;
             }
-            tahPopup.style.left = left + 'px';
-            tahPopup.style.top = top + 'px';
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
         }
 
-        tahWords.forEach(function(el) {
+        words.forEach(function(el) {
             el.addEventListener('click', function(event) {
                 event.stopPropagation();
-                if (tahActiveWord === el) { closeTahPopup(); return; }
-                loadTahDict().then(function(dict) {
+                if (activeWord === el) { closePopup(); return; }
+                loadDict().then(function(dict) {
                     var gloss = dict[el.getAttribute('data-w')];
-                    if (gloss) showTahPopup(el, gloss);
+                    if (gloss) showPopup(el, gloss);
                 });
             });
         });
-        document.addEventListener('click', closeTahPopup);
-        window.addEventListener('scroll', closeTahPopup);
+        document.addEventListener('click', closePopup);
+        window.addEventListener('scroll', closePopup);
     }
+
+    setupTapToTranslate('.tah-word', '../tah_dict.json');
+    setupTapToTranslate('.en-word', '../../en_dict.json');
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une

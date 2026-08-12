@@ -250,6 +250,52 @@ def guide_section_content_html(section_tag):
 
 CONFERENCE_TALK_TITLE_RE = re.compile(r'^(.*)\s\(([^()]+)\)$')
 
+EN_WORD_RE = re.compile(r"[A-Za-z']+")
+
+try:
+    with open('en_dict.json', 'r', encoding='utf-8') as f:
+        en_dict = json.load(f)
+except FileNotFoundError:
+    en_dict = {}
+
+
+def wrap_en_words(text):
+    """Equivalent anglais de wrap_tah_words() - pas de detection de groupes
+    de mots ici (pas necessaire pour l'anglais, contrairement aux verbes
+    composes tahitiens), juste un lookup mot a mot dans en_dict."""
+    if not en_dict:
+        return text
+    matches = list(EN_WORD_RE.finditer(text))
+    if not matches:
+        return text
+    out = []
+    last_end = 0
+    for m in matches:
+        key = m.group(0).strip("'").lower()
+        if key in en_dict:
+            out.append(text[last_end:m.start()])
+            out.append(f'<span class="en-word" data-w="{key}">{m.group(0)}</span>')
+            last_end = m.end()
+    out.append(text[last_end:])
+    return ''.join(out)
+
+
+def apply_en_translate(tag):
+    """Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne
+    touchant que les noeuds de texte du HTML deja parse - jamais les balises
+    ni les attributs, pour ne pas casser les liens <a href> ou les italiques
+    <em> deja presents dans le corps du discours source."""
+    if not en_dict:
+        return
+    for node in list(tag.find_all(string=True)):
+        if node.parent.name in ('script', 'style'):
+            continue
+        wrapped = wrap_en_words(str(node))
+        if wrapped == str(node):
+            continue
+        frag = BeautifulSoup(wrapped, 'html.parser')
+        node.replace_with(frag)
+
 
 def parse_conference_issue(path):
     """Un <section id=...> sans div.body-block est un separateur de session
@@ -277,6 +323,7 @@ def parse_conference_issue(path):
         talk_title, speaker = (m.group(1).strip(), m.group(2).strip()) if m else (title_raw, None)
         for img in body_block.find_all('img'):
             img.decompose()
+        apply_en_translate(body_block)
         talks.append({
             'title': talk_title,
             'speaker': speaker,
@@ -1055,13 +1102,16 @@ h1 {
     margin-right: 2px;
 }
 
-.tah-word {
+.tah-word,
+.en-word {
     cursor: pointer;
     border-bottom: 1px dotted var(--accent);
 }
 
 .tah-word:hover,
-.tah-word.active {
+.tah-word.active,
+.en-word:hover,
+.en-word.active {
     background: var(--hover-bg);
 }
 
@@ -1548,62 +1598,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Glossaire tahitien au tap (volume "Livre de Mormon (tahitien)") : chaque
-    // mot ayant une entree dans tah_dict.json est tague <span class="tah-word">
-    // au moment de la generation - au tap, on charge le glossaire une seule
-    // fois (fetch + cache memoire) et on affiche la glose dans une bulle
-    // positionnee sous le mot.
-    var tahWords = document.querySelectorAll('.tah-word');
-    if (tahWords.length) {
-        var tahDictPromise = null;
-        var tahPopup = null;
-        var tahActiveWord = null;
+    // Glossaire au tap (tahitien pour le volume "Livre de Mormon (tahitien)",
+    // anglais pour "General Conference") : chaque mot ayant une entree dans
+    // le glossaire est tague <span class="tah-word"|"en-word"> au moment de
+    // la generation - au tap, on charge le glossaire une seule fois (fetch +
+    // cache memoire) et on affiche la glose dans une bulle sous le mot.
+    // Meme mecanique pour les deux glossaires, juste selecteur/URL differents.
+    function setupTapToTranslate(selector, dictUrl) {
+        var words = document.querySelectorAll(selector);
+        if (!words.length) return;
+        var dictPromise = null;
+        var popup = null;
+        var activeWord = null;
 
-        function loadTahDict() {
-            if (!tahDictPromise) {
-                tahDictPromise = fetch('../tah_dict.json').then(function(r) { return r.json(); }).catch(function() { return {}; });
+        function loadDict() {
+            if (!dictPromise) {
+                dictPromise = fetch(dictUrl).then(function(r) { return r.json(); }).catch(function() { return {}; });
             }
-            return tahDictPromise;
+            return dictPromise;
         }
 
-        function closeTahPopup() {
-            if (tahPopup) { tahPopup.remove(); tahPopup = null; }
-            if (tahActiveWord) { tahActiveWord.classList.remove('active'); tahActiveWord = null; }
+        function closePopup() {
+            if (popup) { popup.remove(); popup = null; }
+            if (activeWord) { activeWord.classList.remove('active'); activeWord = null; }
         }
 
-        function showTahPopup(el, gloss) {
-            closeTahPopup();
-            tahActiveWord = el;
+        function showPopup(el, gloss) {
+            closePopup();
+            activeWord = el;
             el.classList.add('active');
-            tahPopup = document.createElement('div');
-            tahPopup.className = 'tah-popup';
-            tahPopup.textContent = gloss;
-            tahPopup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
-            document.body.appendChild(tahPopup);
+            popup = document.createElement('div');
+            popup.className = 'tah-popup';
+            popup.textContent = gloss;
+            popup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
+            document.body.appendChild(popup);
             var wordRect = el.getBoundingClientRect();
-            var popupRect = tahPopup.getBoundingClientRect();
+            var popupRect = popup.getBoundingClientRect();
             var left = Math.min(Math.max(8, wordRect.left), window.innerWidth - popupRect.width - 8);
             var top = wordRect.bottom + 6;
             if (top + popupRect.height > window.innerHeight - 8) {
                 top = wordRect.top - popupRect.height - 6;
             }
-            tahPopup.style.left = left + 'px';
-            tahPopup.style.top = top + 'px';
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
         }
 
-        tahWords.forEach(function(el) {
+        words.forEach(function(el) {
             el.addEventListener('click', function(event) {
                 event.stopPropagation();
-                if (tahActiveWord === el) { closeTahPopup(); return; }
-                loadTahDict().then(function(dict) {
+                if (activeWord === el) { closePopup(); return; }
+                loadDict().then(function(dict) {
                     var gloss = dict[el.getAttribute('data-w')];
-                    if (gloss) showTahPopup(el, gloss);
+                    if (gloss) showPopup(el, gloss);
                 });
             });
         });
-        document.addEventListener('click', closeTahPopup);
-        window.addEventListener('scroll', closeTahPopup);
+        document.addEventListener('click', closePopup);
+        window.addEventListener('scroll', closePopup);
     }
+
+    setupTapToTranslate('.tah-word', '../tah_dict.json');
+    setupTapToTranslate('.en-word', '../../en_dict.json');
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
