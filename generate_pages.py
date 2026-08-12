@@ -1595,12 +1595,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
             }
 
+            function todayDDMMYY() {
+                var d = new Date();
+                var dd = String(d.getDate()).padStart(2, '0');
+                var mm = String(d.getMonth() + 1).padStart(2, '0');
+                var yy = String(d.getFullYear()).slice(-2);
+                return dd + '/' + mm + '/' + yy;
+            }
+
             function entryText(entry) {
                 var p = entryParts(entry);
+                var datePrefix = todayDDMMYY() + '\\n\\n';
                 if (p.verseRef && p.verseText) {
-                    return p.verseRef + '\\n\\n' + p.verseText + '\\n\\nNotes du guide\\n\\n' + p.guideText;
+                    return datePrefix + p.verseRef + '\\n\\n' + p.verseText + '\\n\\nNotes du guide\\n\\n' + p.guideText;
                 }
-                return p.guideText;
+                return datePrefix + p.guideText;
             }
 
             function showToast(message) {
@@ -1679,26 +1688,7 @@ document.addEventListener('DOMContentLoaded', function() {
             shareBtn.setAttribute('aria-label', 'Partager');
             shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
-                var entry = matches[current];
-                var p = entryParts(entry);
-                var shareUrl = (bookIdx && chapterIdx)
-                    ? ('https://ariinui.github.io/chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId)
-                    : null;
-                var text;
-                if (p.verseRef && p.verseText) {
-                    // Le lien est aussi integre au texte (pas seulement au champ "url" natif du
-                    // partage) : certains navigateurs/OS ne transmettent pas fiablement ce champ
-                    // separement a l'app cible - un lien dans le texte, avant "Notes du guide",
-                    // reste recuperable cote receveur meme dans ce cas.
-                    text = p.verseRef + '\\n\\n' + p.verseText + (shareUrl ? '\\n\\n' + shareUrl : '') + '\\n\\nNotes du guide\\n\\n' + p.guideText;
-                } else {
-                    text = p.guideText + (shareUrl ? '\\n\\n' + shareUrl : '');
-                }
-                // Uniquement le lien integre au texte (pas aussi le champ "url" natif du
-                // partage) : sur certains navigateurs/OS, le champ "url" separe se fait
-                // dupliquer en fin de "text" par le pont de partage du systeme - un second
-                // exemplaire du lien qui atterrissait dans les Notes, apres le marqueur
-                // "Notes du guide" (constate en conditions reelles).
+                var text = entryText(matches[current]);
                 var shareData = { text: text };
                 if (navigator.share) {
                     navigator.share(shareData).catch(function() {});
