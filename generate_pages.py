@@ -647,8 +647,8 @@ def bookmark_filter_row(type_key, label):
 
 
 BOOKMARK_FILTER_ROWS = (
-    bookmark_filter_row('guide', "Guide d'etude (Gospel Doctrine)")
-    + bookmark_filter_row('guide2', "Guide d'etude (Start to Finish)")
+    bookmark_filter_row('guide', "Gospel Doctrine")
+    + bookmark_filter_row('guide2', "Start to Finish")
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -1541,11 +1541,11 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
     top: calc(100% + 8px);
     display: flex;
     flex-direction: column;
-    width: min(240px, calc(100vw - 40px));
+    width: min(190px, calc(100vw - 32px));
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 6px;
+    padding: 4px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     z-index: 2000;
 }
@@ -1557,17 +1557,18 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 .bookmark-filter-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
-    padding: 9px 10px;
+    padding: 6px 8px;
     background: none;
     border: none;
-    border-radius: 8px;
+    border-radius: 7px;
     color: var(--text);
-    font-size: 14px;
+    font-size: 13px;
     font-family: inherit;
     text-align: left;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .bookmark-filter-row:hover {
@@ -1579,14 +1580,21 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
     flex-shrink: 0;
 }
 
+.bookmark-filter-icon svg {
+    width: 13px;
+    height: 13px;
+}
+
 .bookmark-filter-label {
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .bookmark-filter-switch {
     position: relative;
-    width: 34px;
-    height: 20px;
+    width: 26px;
+    height: 15px;
     flex-shrink: 0;
     border-radius: 999px;
     background: var(--border);
@@ -1598,8 +1606,8 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 16px;
-    height: 16px;
+    width: 11px;
+    height: 11px;
     border-radius: 50%;
     background: #fff;
     transition: transform 0.15s ease;
@@ -1614,7 +1622,7 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 }
 
 .bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch::after {
-    transform: translateX(14px);
+    transform: translateX(11px);
 }
 
 .guide-content {
