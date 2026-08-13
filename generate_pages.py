@@ -538,8 +538,8 @@ CHAPTER_NAV = '''
     <nav>
         {prev_link}
         {next_link}
-        <a href="{index_href}">Retour a la table des matieres</a>
     </nav>
+    <a href="{index_href}" class="back-to-toc-float" aria-label="Retour a la table des matieres" title="Retour a la table des matieres"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg></a>
 '''
 
 
@@ -1087,6 +1087,34 @@ h1 {
 
 .continue-reading:hover {
     background: var(--accent-hover);
+}
+
+.back-to-toc-float {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    z-index: 1500;
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.back-to-toc-float.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .volume {
@@ -1785,6 +1813,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupTapToTranslate('.tah-word', '../tah_dict.json');
     setupTapToTranslate('.en-word', '../../en_dict.json');
+
+    // Bouton flottant "retour a la table des matieres" : apparait quand on
+    // scroll vers le haut, se cache immediatement quand on scroll vers le
+    // bas (pas de debounce ici, contrairement a la sauvegarde de position
+    // plus bas, pour que le masquage soit instantane).
+    var backToToc = document.querySelector('.back-to-toc-float');
+    if (backToToc) {
+        var lastScrollY = window.scrollY;
+        var tocTicking = false;
+        window.addEventListener('scroll', function() {
+            if (tocTicking) return;
+            tocTicking = true;
+            window.requestAnimationFrame(function() {
+                var currentScrollY = window.scrollY;
+                if (currentScrollY < lastScrollY) {
+                    backToToc.classList.add('visible');
+                } else if (currentScrollY > lastScrollY) {
+                    backToToc.classList.remove('visible');
+                }
+                lastScrollY = currentScrollY;
+                tocTicking = false;
+            });
+        });
+    }
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une

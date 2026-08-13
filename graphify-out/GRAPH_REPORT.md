@@ -1,11 +1,11 @@
-# Graph Report - .  (2026-08-12)
+# Graph Report - .  (2026-08-13)
 
 ## Corpus Check
-- 6 files · ~12,370 words
+- 6 files · ~13,380 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 67 nodes · 84 edges · 7 communities detected
+- 68 nodes · 86 edges · 7 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -23,12 +23,12 @@
 2. `apply_en_translate()` - 5 edges
 3. `search_exact()` - 4 edges
 4. `parse_conference_issue()` - 4 edges
-5. `build_dict()` - 3 edges
-6. `dereduplicate_candidates()` - 3 edges
-7. `strip_accents()` - 3 edges
-8. `content_stem()` - 3 edges
-9. `part_stem()` - 3 edges
-10. `normalize()` - 3 edges
+5. `entryText()` - 4 edges
+6. `build_dict()` - 3 edges
+7. `dereduplicate_candidates()` - 3 edges
+8. `strip_accents()` - 3 edges
+9. `content_stem()` - 3 edges
+10. `part_stem()` - 3 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -44,16 +44,16 @@ Cohesion: 0.27
 Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
 
 ### Community 2 - "Community 2"
+Cohesion: 0.25
+Nodes (6): entryParts(), entryText(), goToEntry(), showEntry(), todayLong(), underline()
+
+### Community 3 - "Community 3"
 Cohesion: 0.36
 Nodes (9): dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, Returns list of (href, normalized_lexeme) for exact normalized matches     in th, search_exact() (+1 more)
 
-### Community 3 - "Community 3"
+### Community 4 - "Community 4"
 Cohesion: 0.2
 Nodes (10): apply_en_translate(), guide_section_content_html(), load_conference_issues(), parse_conference_issue(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'., Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot, Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha, Un <section id=...> de premier niveau sans div.body-block est un     separateur (+2 more)
-
-### Community 4 - "Community 4"
-Cohesion: 0.27
-Nodes (5): entryParts(), entryText(), goToEntry(), showEntry(), todayLong()
 
 ### Community 5 - "Community 5"
 Cohesion: 0.38
@@ -70,9 +70,9 @@ Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> Fre
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `apply_en_translate()` connect `Community 3` to `Community 0`?**
+- **Why does `apply_en_translate()` connect `Community 4` to `Community 0`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `parse_conference_issue()` connect `Community 3` to `Community 0`?**
+- **Why does `parse_conference_issue()` connect `Community 4` to `Community 0`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines` to the rest of the system?**
   _15 weakly-connected nodes found - possible documentation gaps or missing edges._
