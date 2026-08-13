@@ -149,11 +149,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return text.charAt(0).toUpperCase() + text.slice(1);
             }
 
-            function entryText(entry) {
+            function underline(str) {
+                return str.split('').map(function(c) { return c + '\u0332'; }).join('');
+            }
+
+            function entryText(entry, underlineNotesLabel) {
                 var p = entryParts(entry);
                 var datePrefix = todayLong() + '\n\n';
+                var notesLabel = underlineNotesLabel ? underline('Notes du guide') : 'Notes du guide';
                 if (p.verseRef && p.verseText) {
-                    return datePrefix + p.verseRef + '\n\n' + p.verseText + '\n\nNotes du guide\n\n' + p.guideText;
+                    return datePrefix + p.verseRef + '\n\n' + p.verseText + '\n\n' + notesLabel + '\n\n' + p.guideText;
                 }
                 return datePrefix + p.guideText;
             }
@@ -215,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
             copyBtn.setAttribute('aria-label', 'Copier');
             copyBtn.title = 'Copier';
             copyBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(entryText(matches[current])).then(function() {
+                navigator.clipboard.writeText(entryText(matches[current], true)).then(function() {
                     showToast('Copie dans le presse-papier');
                     copyBtn.innerHTML = ICON_CHECK;
                     copyBtn.classList.add('copied');
