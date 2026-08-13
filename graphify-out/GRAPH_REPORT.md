@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-08-13)
 
 ## Corpus Check
-- 6 files · ~15,453 words
+- 6 files · ~15,643 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 83 nodes · 93 edges · 16 communities detected
+- 89 nodes · 93 edges · 22 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -26,6 +26,12 @@
 - [[_COMMUNITY_Community 13|Community 13]]
 - [[_COMMUNITY_Community 14|Community 14]]
 - [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `main()` - 6 edges
@@ -50,7 +56,7 @@ Nodes (9): clean_bom_en_verse_text(), parse_bom_en_source(), Entoure chaque mot 
 
 ### Community 1 - "Community 1"
 Cohesion: 0.17
-Nodes (12): apply_en_translate(), guide2_section_content_html(), guide_section_content_html(), load_conference_issues(), parse_conference_issue(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'., HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej, Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha (+4 more)
+Nodes (12): apply_en_translate(), guide2_section_content_html(), guide_section_content_html(), load_conference_issues(), parse_conference_issue(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'., HTML interne d'une section guide2 : uniquement les paires     question/reponse, Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot (+4 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.27
@@ -74,70 +80,106 @@ Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> Fre
 
 ### Community 7 - "Community 7"
 Cohesion: 1.0
-Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+Nodes (1): HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej
 
 ### Community 8 - "Community 8"
 Cohesion: 1.0
-Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 9 - "Community 9"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 10 - "Community 10"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
 
 ### Community 11 - "Community 11"
 Cohesion: 1.0
-Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
 
 ### Community 12 - "Community 12"
 Cohesion: 1.0
-Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 13 - "Community 13"
 Cohesion: 1.0
-Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
 
 ### Community 14 - "Community 14"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
 
 ### Community 15 - "Community 15"
+Cohesion: 1.0
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+
+### Community 16 - "Community 16"
+Cohesion: 1.0
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+
+### Community 17 - "Community 17"
+Cohesion: 1.0
+Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+
+### Community 18 - "Community 18"
+Cohesion: 1.0
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+
+### Community 19 - "Community 19"
+Cohesion: 1.0
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+
+### Community 20 - "Community 20"
+Cohesion: 1.0
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+
+### Community 21 - "Community 21"
 Cohesion: 1.0
 Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ## Knowledge Gaps
-- **25 isolated node(s):** `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "` (+20 more)
+- **31 isolated node(s):** `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "` (+26 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 7`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+- **Thin community `Community 7`** (1 nodes): `HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 8`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+- **Thin community `Community 8`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 9`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 9`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 10`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+- **Thin community `Community 11`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 12`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+- **Thin community `Community 12`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 13`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+- **Thin community `Community 13`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 14`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 15`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 15`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 16`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 17`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 18`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 19`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 20`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 21`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `apply_en_translate()` connect `Community 1` to `Community 0`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **Why does `parse_conference_issue()` connect `Community 1` to `Community 0`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines` to the rest of the system?**
-  _25 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _31 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.11 - nodes in this community are weakly interconnected._

@@ -350,21 +350,32 @@ def parse_guide2_source(path):
         book_name = ' '.join(tokens[:-1])
         books_by_name.setdefault(book_name, {})[chapter_num] = {'title': title, 'section': sec}
 
-    # Meme principe que parse_guide_source() : chaque <p class="commentary-subhead">
-    # (ex. "1 Nephi 1:1-3. Nephi Begins His Record") demarre une entree qui
-    # engloutit tout ce qui suit jusqu'au prochain commentary-subhead, dans un
-    # <div class="guide-entry" id="vN"> isolable a l'affichage.
+    # Meme principe que parse_guide_source() (un <div class="guide-entry"
+    # id="vN"> isolable par question), mais keye sur CHAQUE QUESTION
+    # individuelle (span.commentary-head) plutot que sur le
+    # commentary-subhead qui couvre toute une plage de versets - chaque
+    # question porte sa propre citation "(chap:verset)" (ex. "What does
+    # goodly mean? (1:1)"), donc plusieurs questions peuvent cibler le meme
+    # verset -> meme pager "1/N" que le guide Gospel Doctrine quand on
+    # arrive dessus par le signet. Une question stylee (ex. mot en italique)
+    # peut se retrouver coupee en plusieurs <span class="commentary-head">
+    # consecutifs - la citation atterrit alors dans le DERNIER span, celui
+    # qui matche VERSE_REF_RE ; les spans precedents (sans match) sont
+    # simplement ignores puisque le paragraphe <p class="commentary"> parent
+    # est de toute facon englouti par le span qui matche (aucune perte).
     verse_index_by_name = {}
     for book_name, chapters in books_by_name.items():
         for chap_num, chapter in chapters.items():
             seen = {}
-            for sh in chapter['section'].find_all('p', class_='commentary-subhead'):
-                text = GUIDE2_DASH_RE.sub('-', sh.get_text(' ', strip=True))
+            for head_span in chapter['section'].find_all('span', class_='commentary-head'):
+                commentary_p = head_span.find_parent('p', class_='commentary')
+                if commentary_p is None:
+                    continue
+                text = GUIDE2_DASH_RE.sub('-', head_span.get_text(' ', strip=True))
                 m = VERSE_REF_RE.search(text)
                 if not m:
                     continue
                 v_start = int(m.group(2))
-                v_end = int(m.group(3)) if m.group(3) else v_start
                 seen[v_start] = seen.get(v_start, 0) + 1
                 n = seen[v_start]
                 anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
@@ -373,12 +384,14 @@ def parse_guide2_source(path):
                 wrapper['class'] = 'guide-entry'
                 wrapper['id'] = anchor_id
                 wrapper['data-verse-start'] = str(v_start)
-                wrapper['data-verse-end'] = str(v_end)
-                sh.insert_before(wrapper)
-                node = sh
+                wrapper['data-verse-end'] = str(v_start)
+                commentary_p.insert_before(wrapper)
+                node = commentary_p
                 while node is not None and not (
-                    node is not sh and getattr(node, 'name', None) == 'p'
-                    and node.get('class') and 'commentary-subhead' in node.get('class')
+                    node is not commentary_p and getattr(node, 'name', None) == 'p'
+                    and node.get('class') and (
+                        'commentary' in node.get('class') or 'commentary-subhead' in node.get('class')
+                    )
                 ):
                     nxt = node.next_sibling
                     wrapper.append(node.extract())
@@ -393,31 +406,29 @@ def parse_guide2_source(path):
 
 def guide2_section_content_html(section_tag):
     """HTML interne d'une section guide2 : uniquement les paires
-    question/reponse (span.commentary-head + le reste du paragraphe qui
-    suit), meme principe editorial que le guide Gospel Doctrine - jamais de
-    texte de verset duplique (deja affiche cote Livre de Mormon), jamais de
-    resume de chapitre, jamais de citation etendue (Extended_Content_1) ni
-    de paragraphe non rattache a une question. Le numero de chapitre est
-    aussi retire, deja rendu par notre propre <h1>/<h2> de page."""
+    question/reponse (une par <div class="guide-entry">, deja decoupees par
+    parse_guide2_source), meme principe editorial que le guide Gospel
+    Doctrine - jamais de texte de verset duplique (deja affiche cote Livre
+    de Mormon), jamais de resume de chapitre ni de sous-titre de plage de
+    versets, jamais de citation etendue (Extended_Content_1). Le numero de
+    chapitre est aussi retire, deja rendu par notre propre <h1>/<h2> de
+    page."""
     chap_p = section_tag.find('p', class_='Chapter-Number')
     if chap_p:
         chap_p.decompose()
-    for tag in section_tag.find_all(['p', 'div'], class_=['verse', 'studySummary', 'Extended_Content_1', 'frame-3']):
+    for tag in section_tag.find_all(
+        ['p', 'div'],
+        class_=['verse', 'studySummary', 'Extended_Content_1', 'frame-3', 'commentary-subhead']
+    ):
         tag.decompose()
-    for entry in section_tag.find_all('div', class_='guide-entry'):
-        seen_question = False
-        for child in list(entry.contents):
-            if getattr(child, 'name', None) is None:
-                continue
-            classes = child.get('class') or []
-            if child.name == 'p' and 'commentary-subhead' in classes:
-                continue
-            if child.name == 'p' and 'commentary' in classes and child.find('span', class_='commentary-head'):
-                seen_question = True
-                continue
-            if child.name == 'p' and 'commentary-second-para' in classes and seen_question:
-                continue
-            child.decompose()
+    # Paragraphes de question/reponse restes orphelins (hors de tout
+    # guide-entry) : le texte d'introduction avant la toute premiere
+    # question d'un chapitre, ou une question dont la citation verset n'a
+    # jamais matche (aucun span.commentary-head du paragraphe).
+    for cls in ('commentary', 'commentary-second-para'):
+        for stray in section_tag.find_all('p', class_=cls):
+            if stray.find_parent('div', class_='guide-entry') is None:
+                stray.decompose()
     apply_en_translate(section_tag)
     return section_tag.decode_contents()
 
