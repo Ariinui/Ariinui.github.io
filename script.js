@@ -23,15 +23,31 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    [].slice.call(document.querySelectorAll('.bookmark-toggle')).forEach(function(btn) {
-        var key = btn.getAttribute('data-bookmark-key');
+    var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
+    var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
+    if (bookmarkFilterToggle && bookmarkFilterPopover) {
+        bookmarkFilterToggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            bookmarkFilterPopover.hidden = !bookmarkFilterPopover.hidden;
+            bookmarkFilterToggle.setAttribute('aria-expanded', bookmarkFilterPopover.hidden ? 'false' : 'true');
+        });
+        document.addEventListener('click', function(event) {
+            if (!bookmarkFilterPopover.hidden && !bookmarkFilterPopover.contains(event.target) && event.target !== bookmarkFilterToggle) {
+                bookmarkFilterPopover.hidden = true;
+                bookmarkFilterToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    [].slice.call(document.querySelectorAll('.bookmark-filter-row')).forEach(function(row) {
+        var key = row.getAttribute('data-bookmark-key');
         var storageKey = 'bukaAMoromona:hideBookmark:' + key;
         var attr = 'data-hide-bookmark-' + key;
         var sync = function() {
-            btn.setAttribute('aria-pressed', localStorage.getItem(storageKey) === '1' ? 'false' : 'true');
+            row.setAttribute('aria-checked', localStorage.getItem(storageKey) === '1' ? 'false' : 'true');
         };
         sync();
-        btn.addEventListener('click', function() {
+        row.addEventListener('click', function() {
             if (localStorage.getItem(storageKey) === '1') {
                 localStorage.removeItem(storageKey);
                 document.documentElement.removeAttribute(attr);

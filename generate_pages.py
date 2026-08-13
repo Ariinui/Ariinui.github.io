@@ -619,9 +619,13 @@ TEXT_SIZE_CONTROL = '''
 '''
 
 # Icone de signet partagee par les liens de signet (colores par type via
-# CSS, cf. .bookmark-guide/.bookmark-guide2) et leurs boutons
+# CSS, cf. .bookmark-guide/.bookmark-guide2) et leur controle
 # activer/desactiver - un futur type de signet (nouveau volume) reutilise
-# ces memes fonctions, juste une nouvelle couleur CSS + un nouvel appel.
+# ces memes fonctions, juste une nouvelle couleur CSS et une ligne ajoutee a
+# BOOKMARK_FILTER_ROWS ci-dessous. Regroupes derriere UN SEUL bouton
+# d'entete avec un popover (meme mecanisme que .text-size-control) plutot
+# qu'un bouton par couleur affiche en permanence - evite tout chevauchement
+# avec le titre au fil des futurs ajouts, l'entete ne grossit jamais.
 ICON_BOOKMARK = ('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" '
                   'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
                   'stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z">'
@@ -633,16 +637,28 @@ def bookmark_link(href, type_key, label):
             f'title="{label}" aria-label="{label}">{ICON_BOOKMARK}</a>')
 
 
-def bookmark_toggle_control(type_key, label):
-    return (f'<button class="bookmark-toggle bookmark-toggle-{type_key}" type="button" '
-            f'data-bookmark-key="{type_key}" aria-pressed="true" '
-            f'aria-label="Afficher/masquer : {label}" title="Afficher/masquer : {label}">{ICON_BOOKMARK}</button>')
+def bookmark_filter_row(type_key, label):
+    return (f'<button type="button" class="bookmark-filter-row" data-bookmark-key="{type_key}" '
+            f'role="menuitemcheckbox" aria-checked="true">'
+            f'<span class="bookmark-filter-icon bookmark-{type_key}">{ICON_BOOKMARK}</span>'
+            f'<span class="bookmark-filter-label">{label}</span>'
+            f'<span class="bookmark-filter-switch" aria-hidden="true"></span>'
+            f'</button>')
 
 
-BOOKMARK_CONTROLS = (
-    bookmark_toggle_control('guide', "signets du guide d'etude (Gospel Doctrine)")
-    + bookmark_toggle_control('guide2', "signets du guide d'etude (Start to Finish)")
+BOOKMARK_FILTER_ROWS = (
+    bookmark_filter_row('guide', "Guide d'etude (Gospel Doctrine)")
+    + bookmark_filter_row('guide2', "Guide d'etude (Start to Finish)")
 )
+
+BOOKMARK_FILTER_CONTROL = f'''
+            <div class="bookmark-filter-control">
+                <button class="bookmark-filter-toggle" type="button" aria-label="Signets" title="Signets" aria-haspopup="true" aria-expanded="false">{ICON_BOOKMARK}</button>
+                <div class="bookmark-filter-popover" id="bookmark-filter-popover" role="menu" hidden>
+                    {BOOKMARK_FILTER_ROWS}
+                </div>
+            </div>
+'''
 
 CHAPTER_NAV = '''
     <nav>
@@ -894,7 +910,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_CONTROLS)
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
         html += verses_html + introduction_html
@@ -1479,15 +1495,19 @@ h1 {
 }
 
 /* Chaque type de signet a sa propre couleur - un futur volume n'a qu'a
-   ajouter une regle .bookmark-<cle>/.bookmark-toggle-<cle> ici, le reste
-   (toggle, persistance, isolation) est deja generique. */
+   ajouter une regle .bookmark-<cle> ici + une ligne dans BOOKMARK_FILTER_ROWS
+   (cote Python), le reste (popover, persistance, isolation) est deja
+   generique. */
 .bookmark-guide { color: #d4a017; }
 .bookmark-guide2 { color: #22c55e; }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 
-.bookmark-toggle {
+/* Un seul bouton d'entete pour tous les signets, avec un popover listant un
+   toggle par type - ne grossit jamais dans l'entete quel que soit le nombre
+   de types de signets ajoutes au fil du temps. */
+.bookmark-filter-toggle {
     width: 36px;
     height: 36px;
     display: flex;
@@ -1496,18 +1516,98 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
+    color: var(--text);
     cursor: pointer;
 }
 
-.bookmark-toggle:hover {
+.bookmark-filter-toggle:hover {
     background: var(--hover-bg);
 }
 
-.bookmark-toggle-guide { color: #d4a017; }
-.bookmark-toggle-guide2 { color: #22c55e; }
+.bookmark-filter-control {
+    position: relative;
+}
 
-.bookmark-toggle[aria-pressed="false"] {
-    opacity: 0.35;
+.bookmark-filter-popover {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+}
+
+.bookmark-filter-popover[hidden] {
+    display: none;
+}
+
+.bookmark-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.bookmark-filter-row:hover {
+    background: var(--hover-bg);
+}
+
+.bookmark-filter-icon {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.bookmark-filter-label {
+    flex: 1;
+}
+
+.bookmark-filter-switch {
+    position: relative;
+    width: 34px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--border);
+    transition: background 0.15s ease;
+}
+
+.bookmark-filter-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+}
+
+.bookmark-filter-row[aria-checked="false"] .bookmark-filter-switch {
+    background: var(--border);
+}
+
+.bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch {
+    background: #22c55e;
+}
+
+.bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch::after {
+    transform: translateX(14px);
 }
 
 .guide-content {
@@ -1713,15 +1813,31 @@ js_content = '''
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    [].slice.call(document.querySelectorAll('.bookmark-toggle')).forEach(function(btn) {
-        var key = btn.getAttribute('data-bookmark-key');
+    var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
+    var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
+    if (bookmarkFilterToggle && bookmarkFilterPopover) {
+        bookmarkFilterToggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            bookmarkFilterPopover.hidden = !bookmarkFilterPopover.hidden;
+            bookmarkFilterToggle.setAttribute('aria-expanded', bookmarkFilterPopover.hidden ? 'false' : 'true');
+        });
+        document.addEventListener('click', function(event) {
+            if (!bookmarkFilterPopover.hidden && !bookmarkFilterPopover.contains(event.target) && event.target !== bookmarkFilterToggle) {
+                bookmarkFilterPopover.hidden = true;
+                bookmarkFilterToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    [].slice.call(document.querySelectorAll('.bookmark-filter-row')).forEach(function(row) {
+        var key = row.getAttribute('data-bookmark-key');
         var storageKey = 'bukaAMoromona:hideBookmark:' + key;
         var attr = 'data-hide-bookmark-' + key;
         var sync = function() {
-            btn.setAttribute('aria-pressed', localStorage.getItem(storageKey) === '1' ? 'false' : 'true');
+            row.setAttribute('aria-checked', localStorage.getItem(storageKey) === '1' ? 'false' : 'true');
         };
         sync();
-        btn.addEventListener('click', function() {
+        row.addEventListener('click', function() {
             if (localStorage.getItem(storageKey) === '1') {
                 localStorage.removeItem(storageKey);
                 document.documentElement.removeAttribute(attr);
