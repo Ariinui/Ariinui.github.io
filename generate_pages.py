@@ -318,6 +318,90 @@ def guide_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
+# Volume 6 source : 2e Study Guide, "Start to Finish" (meme auteur Valletta,
+# edition differente/plus complete que le volume 3 ci-dessus - structure HTML
+# radicalement differente : export InDesign, <section id="chapitre-N">
+# generique en ordre de lecture (rien a voir avec les vrais numeros de
+# chapitre BdM), un seul <p class="Chapter-Number"> par section donnant
+# "1 Nephi 1" etc., et le decoupage en entrees se fait via
+# <p class="commentary-subhead"> ("1 Nephi 1:1-3. Nephi Begins His Record")
+# plutot que via des <h4> comme le volume 3. Source deja nettoyee des <img>
+# avant d'etre commitee (fichier source brut = 18 Mo d'images en base64,
+# exigence utilisateur "sans les images").
+# ---------------------------------------------------------------------------
+
+GUIDE2_DASH_RE = re.compile('[‐-―]')
+
+
+def parse_guide2_source(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+
+    books_by_name = {}  # nom complet (meme convention que BOOK_NAME_MAP) -> {chapter_num: {'title','section'}}
+    for sec in soup.find_all('section', id=True):
+        chap_p = sec.find('p', class_='Chapter-Number')
+        if not chap_p:
+            continue  # page de garde/TOC/copyright, pas un chapitre de commentaire
+        title = chap_p.get_text(' ', strip=True)
+        tokens = title.split()
+        if not tokens or not tokens[-1].isdigit():
+            continue
+        chapter_num = int(tokens[-1])
+        book_name = ' '.join(tokens[:-1])
+        books_by_name.setdefault(book_name, {})[chapter_num] = {'title': title, 'section': sec}
+
+    # Meme principe que parse_guide_source() : chaque <p class="commentary-subhead">
+    # (ex. "1 Nephi 1:1-3. Nephi Begins His Record") demarre une entree qui
+    # engloutit tout ce qui suit jusqu'au prochain commentary-subhead, dans un
+    # <div class="guide-entry" id="vN"> isolable a l'affichage.
+    verse_index_by_name = {}
+    for book_name, chapters in books_by_name.items():
+        for chap_num, chapter in chapters.items():
+            seen = {}
+            for sh in chapter['section'].find_all('p', class_='commentary-subhead'):
+                text = GUIDE2_DASH_RE.sub('-', sh.get_text(' ', strip=True))
+                m = VERSE_REF_RE.search(text)
+                if not m:
+                    continue
+                v_start = int(m.group(2))
+                v_end = int(m.group(3)) if m.group(3) else v_start
+                seen[v_start] = seen.get(v_start, 0) + 1
+                n = seen[v_start]
+                anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
+
+                wrapper = soup.new_tag('div')
+                wrapper['class'] = 'guide-entry'
+                wrapper['id'] = anchor_id
+                wrapper['data-verse-start'] = str(v_start)
+                wrapper['data-verse-end'] = str(v_end)
+                sh.insert_before(wrapper)
+                node = sh
+                while node is not None and not (
+                    node is not sh and getattr(node, 'name', None) == 'p'
+                    and node.get('class') and 'commentary-subhead' in node.get('class')
+                ):
+                    nxt = node.next_sibling
+                    wrapper.append(node.extract())
+                    node = nxt
+
+                key = (book_name, chap_num, v_start)
+                if key not in verse_index_by_name:
+                    verse_index_by_name[key] = anchor_id
+
+    return books_by_name, verse_index_by_name
+
+
+def guide2_section_content_html(section_tag):
+    """HTML interne d'une section guide2, sans son <p class="Chapter-Number">
+    (deja rendu par notre propre <h1>/<h2> de page)."""
+    chap_p = section_tag.find('p', class_='Chapter-Number')
+    if chap_p:
+        chap_p.decompose()
+    apply_en_translate(section_tag)
+    return section_tag.decode_contents()
+
+
+# ---------------------------------------------------------------------------
 # Volume 5 source : General Conference talks (conference-sources/<dossier>/index.html,
 # un dossier par numero - export Calibre depuis churchofjesuschrist.org). Pas
 # d'images (jamais copiees, <img> retirees a l'extraction).
@@ -534,12 +618,38 @@ TEXT_SIZE_CONTROL = '''
             </div>
 '''
 
+# Icone de signet partagee par les liens de signet (colores par type via
+# CSS, cf. .bookmark-guide/.bookmark-guide2) et leurs boutons
+# activer/desactiver - un futur type de signet (nouveau volume) reutilise
+# ces memes fonctions, juste une nouvelle couleur CSS + un nouvel appel.
+ICON_BOOKMARK = ('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" '
+                  'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+                  'stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z">'
+                  '</path></svg>')
+
+
+def bookmark_link(href, type_key, label):
+    return (f' <a class="bookmark bookmark-{type_key}" href="{href}" '
+            f'title="{label}" aria-label="{label}">{ICON_BOOKMARK}</a>')
+
+
+def bookmark_toggle_control(type_key, label):
+    return (f'<button class="bookmark-toggle bookmark-toggle-{type_key}" type="button" '
+            f'data-bookmark-key="{type_key}" aria-pressed="true" '
+            f'aria-label="Afficher/masquer : {label}" title="Afficher/masquer : {label}">{ICON_BOOKMARK}</button>')
+
+
+BOOKMARK_CONTROLS = (
+    bookmark_toggle_control('guide', "signets du guide d'etude (Gospel Doctrine)")
+    + bookmark_toggle_control('guide2', "signets du guide d'etude (Start to Finish)")
+)
+
 CHAPTER_NAV = '''
     <nav>
         {prev_link}
         {next_link}
     </nav>
-    <a href="{index_href}" class="back-to-toc-float" aria-label="Retour a la table des matieres" title="Retour a la table des matieres"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg></a>
+    <a href="{index_href}" class="back-to-toc-float" title="Retour a la table des matieres">Retour a la table des matieres</a>
 '''
 
 
@@ -557,6 +667,9 @@ bom_book_data = parse_bom_source('livre_de_mormon.html')
 bom_en_book_data = parse_bom_en_source('book-of-mormon-en/index.html')
 guide_intro_items, guide_books_by_name, guide_verse_index_by_name = parse_guide_source(
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html'
+)
+guide2_books_by_name, guide2_verse_index_by_name = parse_guide2_source(
+    'book-of-mormon-study-guide-2/index.html'
 )
 conference_issues = load_conference_issues()
 
@@ -597,16 +710,37 @@ for (name, chap_num, verse_num), anchor in guide_verse_index_by_name.items():
     if book_idx is not None:
         guide_verse_index[(book_idx, chap_num, verse_num)] = anchor
 
+# guide2 : meme mapping de noms (guide_name_to_bom_idx) que le guide 3, les
+# deux sources Valletta nomment leurs livres pareil ("1 Nephi", "Words of
+# Mormon", ...) - verifie sur les 15 livres avant d'ecrire ce code.
+guide2_chapters_by_bom_idx = {}
+for book_idx, bom_book in enumerate(bom_book_data, 1):
+    guide_name = BOOK_NAME_MAP.get(bom_book['book_title'])
+    guide2_chapters = guide2_books_by_name.get(guide_name, {})
+    guide2_chapters_by_bom_idx[book_idx] = guide2_chapters
+    if not guide2_chapters:
+        print(f"INFO: pas de contenu guide2 pour {bom_book['book_title']!r} ({guide_name!r}).")
+    elif set(guide2_chapters.keys()) != set(range(1, len(bom_book['chapters']) + 1)):
+        print(f"ATTENTION guide2: {bom_book['book_title']!r} a {len(bom_book['chapters'])} chapitres LoM "
+              f"mais guide2 a les chapitres {sorted(guide2_chapters.keys())}.")
+
+guide2_verse_index = {}  # (book_idx, chapter_num, verse_num) -> anchor_id
+for (name, chap_num, verse_num), anchor in guide2_verse_index_by_name.items():
+    book_idx = guide_name_to_bom_idx.get(name)
+    if book_idx is not None:
+        guide2_verse_index[(book_idx, chap_num, verse_num)] = anchor
+
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters', 'chapters-fr', 'chapters-tah', 'chapters-en', 'guide', 'conference'):
+for d in ('chapters', 'chapters-fr', 'chapters-tah', 'chapters-en', 'guide', 'guide2', 'conference'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters', exist_ok=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
 os.makedirs('chapters-en', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
+os.makedirs('guide2/chapters', exist_ok=True)
 os.makedirs('conference', exist_ok=True)
 
 # --- index.html : bibliotheque a 3 volumes ---------------------------------
@@ -662,7 +796,24 @@ def guide_href(bi, ci, ch):
     real_book = guide_all_books[bi - 1]
     return f'guide/chapters/chapter_{real_book["book_idx"]}_{ci}.html'
 
-toc_html += render_volume_block('Book of Mormon Study Guide', guide_all_books, guide_href)
+toc_html += render_volume_block('Book of Mormon Study Guide (Gospel Doctrine)', guide_all_books, guide_href)
+
+guide2_all_books = []
+for book_idx, bom_book in enumerate(bom_book_data, 1):
+    guide2_chapters = guide2_chapters_by_bom_idx[book_idx]
+    if not guide2_chapters:
+        continue
+    guide2_all_books.append({
+        'book_title': bom_book['book_title'],
+        'book_idx': book_idx,
+        'chapters': [dict(guide2_chapters[n], chapter_num=n) for n in sorted(guide2_chapters.keys())]
+    })
+
+def guide2_href(bi, ci, ch):
+    real_book = guide2_all_books[bi - 1]
+    return f'guide2/chapters/chapter_{real_book["book_idx"]}_{ci}.html'
+
+toc_html += render_volume_block('Book of Mormon Study Guide (Start to Finish)', guide2_all_books, guide2_href)
 
 def conference_href(bi, ci, ch):
     return f'conference/{conference_issues[bi - 1]["folder"]}/talk_{ci}.html'
@@ -716,14 +867,16 @@ for book_idx, book in enumerate(bom_book_data, 1):
             if verse_num is None:
                 verses_html += f'<p class="verse-fr">{verse_text}</p>'
                 continue
-            anchor = guide_verse_index.get((book_idx, chap_idx, verse_num))
             verses_html += f'<p class="verse-fr" id="v{verse_num}">'
             verses_html += f'<sup>{verse_num}</sup>{verse_text}'
+            anchor = guide_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor:
                 guide_link = f'../guide/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor}'
-                verses_html += (f' <a class="bookmark" href="{guide_link}" '
-                                 f'title="Voir le commentaire du guide d\'etude" aria-label="Voir le commentaire">'
-                                 f'\U0001F516</a>')
+                verses_html += bookmark_link(guide_link, 'guide', "Voir le commentaire du guide d'etude (Gospel Doctrine)")
+            anchor2 = guide2_verse_index.get((book_idx, chap_idx, verse_num))
+            if anchor2:
+                guide2_link = f'../guide2/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor2}'
+                verses_html += bookmark_link(guide2_link, 'guide2', "Voir le commentaire du guide d'etude (Start to Finish)")
             verses_html += '</p>'
 
         introduction_html = ''
@@ -733,7 +886,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_CONTROLS)
         html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
         html += verses_html + introduction_html
@@ -852,6 +1005,47 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
 
         write(f'guide/chapters/chapter_{book_idx}_{chap_idx}.html', html)
 
+# --- Volume 6 : Book of Mormon Study Guide (Start to Finish) ----------------
+
+for book_idx, bom_book in enumerate(bom_book_data, 1):
+    guide2_chapters = guide2_chapters_by_bom_idx[book_idx]
+    chapter_nums = sorted(guide2_chapters.keys())
+    for chap_idx in chapter_nums:
+        chapter = guide2_chapters[chap_idx]
+
+        for entry in chapter['section'].find_all('div', class_='guide-entry'):
+            vstart = entry.get('data-verse-start')
+            vend = entry.get('data-verse-end')
+            if vstart is None:
+                continue
+            vstart, vend = int(vstart), int(vend)
+            pieces = []
+            for v in range(vstart, vend + 1):
+                verse_text = french_verse_text.get((book_idx, chap_idx, v))
+                if verse_text:
+                    pieces.append(f'{to_superscript(v)}{verse_text}')
+                else:
+                    print(f"ATTENTION: verset francais introuvable pour {bom_book['book_title']} {chap_idx}:{v} "
+                          f"(entree guide2 {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
+            if pieces:
+                ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
+                entry['data-verse-ref'] = f'{bom_book["book_title"]} {ref}'
+                entry['data-verse-text'] = ' '.join(pieces)
+
+        content_html = guide2_section_content_html(chapter['section'])
+        has_prev = chapter_nums.index(chap_idx) > 0
+        has_next = chapter_nums.index(chap_idx) < len(chapter_nums) - 1
+        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
+        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
+
+        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
+        html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
+        html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="guide2" data-volume-title="Book of Mormon Study Guide (Start to Finish)">{content_html}</div>'
+        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
+        html += PAGE_TAIL
+
+        write(f'guide2/chapters/chapter_{book_idx}_{chap_idx}.html', html)
+
 # --- Volume 5 : General Conference -------------------------------------------
 
 for issue in conference_issues:
@@ -879,10 +1073,13 @@ conference_talk_count = sum(len(issue['chapters']) for issue in conference_issue
 print(f'{len(conference_issues)} numeros de conference, {conference_talk_count} discours.')
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
+guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
 print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide_chapter_count} chapitres guide, '
       f'{len(guide_intro_items)} pages intro, '
-      f'{len(guide_verse_index)} versets avec signet.')
+      f'{len(guide_verse_index)} versets avec signet guide. '
+      f'{guide2_chapter_count} chapitres guide2, '
+      f'{len(guide2_verse_index)} versets avec signet guide2.')
 
 # ---------------------------------------------------------------------------
 # CSS
@@ -1291,13 +1488,46 @@ h1 {
 
 .bookmark {
     text-decoration: none;
-    font-size: 15px;
     opacity: 0.55;
+    display: inline-flex;
+    vertical-align: middle;
 }
 
 .bookmark:hover,
 .bookmark:focus-visible {
     opacity: 1;
+}
+
+/* Chaque type de signet a sa propre couleur - un futur volume n'a qu'a
+   ajouter une regle .bookmark-<cle>/.bookmark-toggle-<cle> ici, le reste
+   (toggle, persistance, isolation) est deja generique. */
+.bookmark-guide { color: #d4a017; }
+.bookmark-guide2 { color: #22c55e; }
+
+html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
+html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
+
+.bookmark-toggle {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.bookmark-toggle:hover {
+    background: var(--hover-bg);
+}
+
+.bookmark-toggle-guide { color: #d4a017; }
+.bookmark-toggle-guide2 { color: #22c55e; }
+
+.bookmark-toggle[aria-pressed="false"] {
+    opacity: 0.35;
 }
 
 .guide-content {
@@ -1489,9 +1719,40 @@ js_content = '''
     if (validSizes.indexOf(storedSize) !== -1) {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
+    // Etat cache/affiche de chaque type de signet, generique : un futur type
+    // de signet (nouveau volume, nouvelle couleur) n'a besoin d'aucun ajout
+    // ici, seule sa cle localStorage suffit a le faire reconnaitre.
+    for (var bmI = 0; bmI < localStorage.length; bmI++) {
+        var bmK = localStorage.key(bmI);
+        if (bmK && bmK.indexOf('bukaAMoromona:hideBookmark:') === 0) {
+            if (localStorage.getItem(bmK) === '1') {
+                document.documentElement.setAttribute('data-hide-bookmark-' + bmK.slice('bukaAMoromona:hideBookmark:'.length), '');
+            }
+        }
+    }
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
+    [].slice.call(document.querySelectorAll('.bookmark-toggle')).forEach(function(btn) {
+        var key = btn.getAttribute('data-bookmark-key');
+        var storageKey = 'bukaAMoromona:hideBookmark:' + key;
+        var attr = 'data-hide-bookmark-' + key;
+        var sync = function() {
+            btn.setAttribute('aria-pressed', localStorage.getItem(storageKey) === '1' ? 'false' : 'true');
+        };
+        sync();
+        btn.addEventListener('click', function() {
+            if (localStorage.getItem(storageKey) === '1') {
+                localStorage.removeItem(storageKey);
+                document.documentElement.removeAttribute(attr);
+            } else {
+                localStorage.setItem(storageKey, '1');
+                document.documentElement.setAttribute(attr, '');
+            }
+            sync();
+        });
+    });
+
     var themeToggle = document.querySelector('.theme-toggle');
     if (themeToggle) {
         var currentTheme = function() {

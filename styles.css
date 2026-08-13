@@ -401,13 +401,46 @@ h1 {
 
 .bookmark {
     text-decoration: none;
-    font-size: 15px;
     opacity: 0.55;
+    display: inline-flex;
+    vertical-align: middle;
 }
 
 .bookmark:hover,
 .bookmark:focus-visible {
     opacity: 1;
+}
+
+/* Chaque type de signet a sa propre couleur - un futur volume n'a qu'a
+   ajouter une regle .bookmark-<cle>/.bookmark-toggle-<cle> ici, le reste
+   (toggle, persistance, isolation) est deja generique. */
+.bookmark-guide { color: #d4a017; }
+.bookmark-guide2 { color: #22c55e; }
+
+html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
+html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
+
+.bookmark-toggle {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.bookmark-toggle:hover {
+    background: var(--hover-bg);
+}
+
+.bookmark-toggle-guide { color: #d4a017; }
+.bookmark-toggle-guide2 { color: #22c55e; }
+
+.bookmark-toggle[aria-pressed="false"] {
+    opacity: 0.35;
 }
 
 .guide-content {

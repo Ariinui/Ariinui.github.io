@@ -198,7 +198,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L1",
       "id": "fetch_reo_pf_supplement_py",
-      "community": 3,
+      "community": 4,
       "norm_label": "fetch_reo_pf_supplement.py"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L36",
       "id": "fetch_reo_pf_supplement_normalize",
-      "community": 3,
+      "community": 4,
       "norm_label": "normalize()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L42",
       "id": "fetch_reo_pf_supplement_dereduplicate_candidates",
-      "community": 3,
+      "community": 4,
       "norm_label": "dereduplicate_candidates()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L51",
       "id": "fetch_reo_pf_supplement_strip_candidates",
-      "community": 3,
+      "community": 4,
       "norm_label": "strip_candidates()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L81",
       "id": "fetch_reo_pf_supplement_get_token",
-      "community": 3,
+      "community": 4,
       "norm_label": "get_token()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L87",
       "id": "fetch_reo_pf_supplement_search_exact",
-      "community": 3,
+      "community": 4,
       "norm_label": "search_exact()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L104",
       "id": "fetch_reo_pf_supplement_glosses_from_lexeme_page",
-      "community": 3,
+      "community": 4,
       "norm_label": "glosses_from_lexeme_page()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L127",
       "id": "fetch_reo_pf_supplement_main",
-      "community": 3,
+      "community": 4,
       "norm_label": "main()"
     },
     {
@@ -269,7 +269,7 @@
       "file_type": "rationale",
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L1",
-      "community": 3,
+      "community": 4,
       "norm_label": "one-off: for every tahitian word in the livre de mormon text still without a fre",
       "id": "fetch_reo_pf_supplement_rationale_1"
     },
@@ -278,7 +278,7 @@
       "file_type": "rationale",
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L88",
-      "community": 3,
+      "community": 4,
       "norm_label": "returns list of (href, normalized_lexeme) for exact normalized matches     in th",
       "id": "fetch_reo_pf_supplement_rationale_88"
     },
@@ -288,7 +288,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1",
       "id": "generate_pages_py",
-      "community": 0,
+      "community": 2,
       "norm_label": "generate_pages.py"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L12",
       "id": "generate_pages_to_superscript",
-      "community": 0,
+      "community": 2,
       "norm_label": "to_superscript()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L20",
       "id": "generate_pages_parse_bom_source",
-      "community": 0,
+      "community": 2,
       "norm_label": "parse_bom_source()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L67",
       "id": "generate_pages_split_verse_number",
-      "community": 0,
+      "community": 8,
       "norm_label": "split_verse_number()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L91",
       "id": "generate_pages_clean_bom_en_verse_text",
-      "community": 0,
+      "community": 10,
       "norm_label": "clean_bom_en_verse_text()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L103",
       "id": "generate_pages_parse_bom_en_source",
-      "community": 0,
+      "community": 10,
       "norm_label": "parse_bom_en_source()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L166",
       "id": "generate_pages_tah_normalize",
-      "community": 0,
+      "community": 7,
       "norm_label": "tah_normalize()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L175",
       "id": "generate_pages_wrap_tah_words",
-      "community": 0,
+      "community": 7,
       "norm_label": "wrap_tah_words()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L237",
       "id": "generate_pages_parse_guide_source",
-      "community": 0,
+      "community": 2,
       "norm_label": "parse_guide_source()"
     },
     {
@@ -369,79 +369,124 @@
       "source_file": "generate_pages.py",
       "source_location": "L308",
       "id": "generate_pages_guide_section_content_html",
-      "community": 4,
+      "community": 0,
       "norm_label": "guide_section_content_html()"
+    },
+    {
+      "label": "parse_guide2_source()",
+      "file_type": "code",
+      "source_file": "generate_pages.py",
+      "source_location": "L336",
+      "id": "generate_pages_parse_guide2_source",
+      "community": 2,
+      "norm_label": "parse_guide2_source()"
+    },
+    {
+      "label": "guide2_section_content_html()",
+      "file_type": "code",
+      "source_file": "generate_pages.py",
+      "source_location": "L394",
+      "id": "generate_pages_guide2_section_content_html",
+      "community": 0,
+      "norm_label": "guide2_section_content_html()"
     },
     {
       "label": "wrap_en_words()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L337",
+      "source_location": "L421",
       "id": "generate_pages_wrap_en_words",
-      "community": 4,
+      "community": 0,
       "norm_label": "wrap_en_words()"
     },
     {
       "label": "apply_en_translate()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L358",
+      "source_location": "L442",
       "id": "generate_pages_apply_en_translate",
-      "community": 4,
+      "community": 0,
       "norm_label": "apply_en_translate()"
     },
     {
       "label": "parse_conference_issue()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L375",
+      "source_location": "L459",
       "id": "generate_pages_parse_conference_issue",
-      "community": 4,
+      "community": 0,
       "norm_label": "parse_conference_issue()"
     },
     {
       "label": "load_conference_issues()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L436",
+      "source_location": "L520",
       "id": "generate_pages_load_conference_issues",
-      "community": 4,
+      "community": 0,
       "norm_label": "load_conference_issues()"
     },
     {
       "label": "render_volume_block()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L460",
+      "source_location": "L544",
       "id": "generate_pages_render_volume_block",
-      "community": 0,
+      "community": 9,
       "norm_label": "render_volume_block()"
+    },
+    {
+      "label": "bookmark_link()",
+      "file_type": "code",
+      "source_file": "generate_pages.py",
+      "source_location": "L631",
+      "id": "generate_pages_bookmark_link",
+      "community": 2,
+      "norm_label": "bookmark_link()"
+    },
+    {
+      "label": "bookmark_toggle_control()",
+      "file_type": "code",
+      "source_file": "generate_pages.py",
+      "source_location": "L636",
+      "id": "generate_pages_bookmark_toggle_control",
+      "community": 2,
+      "norm_label": "bookmark_toggle_control()"
     },
     {
       "label": "write()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L546",
+      "source_location": "L656",
       "id": "generate_pages_write",
-      "community": 0,
+      "community": 2,
       "norm_label": "write()"
     },
     {
       "label": "guide_href()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L659",
+      "source_location": "L793",
       "id": "generate_pages_guide_href",
-      "community": 0,
+      "community": 2,
       "norm_label": "guide_href()"
+    },
+    {
+      "label": "guide2_href()",
+      "file_type": "code",
+      "source_file": "generate_pages.py",
+      "source_location": "L812",
+      "id": "generate_pages_guide2_href",
+      "community": 2,
+      "norm_label": "guide2_href()"
     },
     {
       "label": "conference_href()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L667",
+      "source_location": "L818",
       "id": "generate_pages_conference_href",
-      "community": 0,
+      "community": 2,
       "norm_label": "conference_href()"
     },
     {
@@ -449,7 +494,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 0,
+      "community": 8,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },
@@ -458,7 +503,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L176",
-      "community": 0,
+      "community": 7,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_176"
     },
@@ -467,16 +512,169 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L309",
-      "community": 4,
+      "community": 0,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_309"
+    },
+    {
+      "label": "HTML interne d'une section guide2, sans son <p class=\"Chapter-Number\">     (dej",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L395",
+      "id": "generate_pages_rationale_395",
+      "community": 0,
+      "norm_label": "html interne d'une section guide2, sans son <p class=\"chapter-number\">     (dej"
+    },
+    {
+      "label": "Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L422",
+      "id": "generate_pages_rationale_422",
+      "community": 0,
+      "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot"
+    },
+    {
+      "label": "Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L443",
+      "id": "generate_pages_rationale_443",
+      "community": 0,
+      "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha"
+    },
+    {
+      "label": "Un <section id=...> de premier niveau sans div.body-block est un     separateur",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L460",
+      "id": "generate_pages_rationale_460",
+      "community": 0,
+      "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur"
+    },
+    {
+      "label": "Forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L521",
+      "id": "generate_pages_rationale_521",
+      "community": 0,
+      "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc"
+    },
+    {
+      "label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L545",
+      "id": "generate_pages_rationale_545",
+      "community": 9,
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_"
+    },
+    {
+      "label": "script.js",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L1",
+      "id": "script_js",
+      "community": 3,
+      "norm_label": "script.js"
+    },
+    {
+      "label": "wireToggle()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L114",
+      "id": "script_wiretoggle",
+      "community": 3,
+      "norm_label": "wiretoggle()"
+    },
+    {
+      "label": "showEntry()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L145",
+      "id": "script_showentry",
+      "community": 3,
+      "norm_label": "showentry()"
+    },
+    {
+      "label": "goToEntry()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L154",
+      "id": "script_gotoentry",
+      "community": 3,
+      "norm_label": "gotoentry()"
+    },
+    {
+      "label": "entryParts()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L159",
+      "id": "script_entryparts",
+      "community": 3,
+      "norm_label": "entryparts()"
+    },
+    {
+      "label": "todayLong()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L177",
+      "id": "script_todaylong",
+      "community": 3,
+      "norm_label": "todaylong()"
+    },
+    {
+      "label": "underline()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L183",
+      "id": "script_underline",
+      "community": 3,
+      "norm_label": "underline()"
+    },
+    {
+      "label": "entryText()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L187",
+      "id": "script_entrytext",
+      "community": 3,
+      "norm_label": "entrytext()"
+    },
+    {
+      "label": "showToast()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L197",
+      "id": "script_showtoast",
+      "community": 3,
+      "norm_label": "showtoast()"
+    },
+    {
+      "label": "setupTapToTranslate()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L312",
+      "id": "script_setuptaptotranslate",
+      "community": 3,
+      "norm_label": "setuptaptotranslate()"
+    },
+    {
+      "label": "saveReadingPosition()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L404",
+      "id": "script_savereadingposition",
+      "community": 3,
+      "norm_label": "savereadingposition()"
     },
     {
       "label": "Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L338",
-      "community": 4,
+      "community": 11,
       "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "id": "generate_pages_rationale_338"
     },
@@ -485,7 +683,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L359",
-      "community": 4,
+      "community": 12,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_359"
     },
@@ -494,7 +692,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L376",
-      "community": 4,
+      "community": 13,
       "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "id": "generate_pages_rationale_376"
     },
@@ -503,7 +701,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L437",
-      "community": 4,
+      "community": 14,
       "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "id": "generate_pages_rationale_437"
     },
@@ -512,108 +710,9 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L461",
-      "community": 0,
+      "community": 15,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_461"
-    },
-    {
-      "label": "script.js",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L1",
-      "id": "script_js",
-      "community": 2,
-      "norm_label": "script.js"
-    },
-    {
-      "label": "wireToggle()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L83",
-      "id": "script_wiretoggle",
-      "community": 2,
-      "norm_label": "wiretoggle()"
-    },
-    {
-      "label": "showEntry()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L114",
-      "id": "script_showentry",
-      "community": 2,
-      "norm_label": "showentry()"
-    },
-    {
-      "label": "goToEntry()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L123",
-      "id": "script_gotoentry",
-      "community": 2,
-      "norm_label": "gotoentry()"
-    },
-    {
-      "label": "entryParts()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L128",
-      "id": "script_entryparts",
-      "community": 2,
-      "norm_label": "entryparts()"
-    },
-    {
-      "label": "todayLong()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L146",
-      "id": "script_todaylong",
-      "community": 2,
-      "norm_label": "todaylong()"
-    },
-    {
-      "label": "underline()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L152",
-      "id": "script_underline",
-      "community": 2,
-      "norm_label": "underline()"
-    },
-    {
-      "label": "entryText()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L156",
-      "id": "script_entrytext",
-      "community": 2,
-      "norm_label": "entrytext()"
-    },
-    {
-      "label": "showToast()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L166",
-      "id": "script_showtoast",
-      "community": 2,
-      "norm_label": "showtoast()"
-    },
-    {
-      "label": "setupTapToTranslate()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L281",
-      "id": "script_setuptaptotranslate",
-      "community": 2,
-      "norm_label": "setuptaptotranslate()"
-    },
-    {
-      "label": "saveReadingPosition()",
-      "file_type": "code",
-      "source_file": "script.js",
-      "source_location": "L373",
-      "id": "script_savereadingposition",
-      "community": 2,
-      "norm_label": "savereadingposition()"
     }
   ],
   "links": [
@@ -1221,7 +1320,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L337",
+      "source_location": "L336",
+      "weight": 1.0,
+      "_src": "generate_pages_py",
+      "_tgt": "generate_pages_parse_guide2_source",
+      "source": "generate_pages_py",
+      "target": "generate_pages_parse_guide2_source",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L394",
+      "weight": 1.0,
+      "_src": "generate_pages_py",
+      "_tgt": "generate_pages_guide2_section_content_html",
+      "source": "generate_pages_py",
+      "target": "generate_pages_guide2_section_content_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L421",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_wrap_en_words",
@@ -1233,7 +1356,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L358",
+      "source_location": "L442",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_apply_en_translate",
@@ -1245,7 +1368,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L375",
+      "source_location": "L459",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_parse_conference_issue",
@@ -1257,7 +1380,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L436",
+      "source_location": "L520",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_load_conference_issues",
@@ -1269,7 +1392,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L460",
+      "source_location": "L544",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_render_volume_block",
@@ -1281,7 +1404,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L546",
+      "source_location": "L631",
+      "weight": 1.0,
+      "_src": "generate_pages_py",
+      "_tgt": "generate_pages_bookmark_link",
+      "source": "generate_pages_py",
+      "target": "generate_pages_bookmark_link",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L636",
+      "weight": 1.0,
+      "_src": "generate_pages_py",
+      "_tgt": "generate_pages_bookmark_toggle_control",
+      "source": "generate_pages_py",
+      "target": "generate_pages_bookmark_toggle_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L656",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_write",
@@ -1293,7 +1440,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L659",
+      "source_location": "L793",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_guide_href",
@@ -1305,7 +1452,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L667",
+      "source_location": "L812",
+      "weight": 1.0,
+      "_src": "generate_pages_py",
+      "_tgt": "generate_pages_guide2_href",
+      "source": "generate_pages_py",
+      "target": "generate_pages_guide2_href",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L818",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_conference_href",
@@ -1389,7 +1548,31 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L368",
+      "source_location": "L400",
+      "weight": 1.0,
+      "_src": "generate_pages_guide2_section_content_html",
+      "_tgt": "generate_pages_apply_en_translate",
+      "source": "generate_pages_guide2_section_content_html",
+      "target": "generate_pages_apply_en_translate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L395",
+      "weight": 1.0,
+      "_src": "generate_pages_rationale_395",
+      "_tgt": "generate_pages_guide2_section_content_html",
+      "source": "generate_pages_guide2_section_content_html",
+      "target": "generate_pages_rationale_395",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "generate_pages.py",
+      "source_location": "L452",
       "weight": 1.0,
       "_src": "generate_pages_apply_en_translate",
       "_tgt": "generate_pages_wrap_en_words",
@@ -1401,19 +1584,19 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L338",
+      "source_location": "L422",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_338",
+      "_src": "generate_pages_rationale_422",
       "_tgt": "generate_pages_wrap_en_words",
       "source": "generate_pages_wrap_en_words",
-      "target": "generate_pages_rationale_338",
+      "target": "generate_pages_rationale_422",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L426",
+      "source_location": "L510",
       "weight": 1.0,
       "_src": "generate_pages_parse_conference_issue",
       "_tgt": "generate_pages_apply_en_translate",
@@ -1425,19 +1608,19 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L359",
+      "source_location": "L443",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_359",
+      "_src": "generate_pages_rationale_443",
       "_tgt": "generate_pages_apply_en_translate",
       "source": "generate_pages_apply_en_translate",
-      "target": "generate_pages_rationale_359",
+      "target": "generate_pages_rationale_443",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L447",
+      "source_location": "L531",
       "weight": 1.0,
       "_src": "generate_pages_load_conference_issues",
       "_tgt": "generate_pages_parse_conference_issue",
@@ -1449,43 +1632,43 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L376",
+      "source_location": "L460",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_376",
+      "_src": "generate_pages_rationale_460",
       "_tgt": "generate_pages_parse_conference_issue",
       "source": "generate_pages_parse_conference_issue",
-      "target": "generate_pages_rationale_376",
+      "target": "generate_pages_rationale_460",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L437",
+      "source_location": "L521",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_437",
+      "_src": "generate_pages_rationale_521",
       "_tgt": "generate_pages_load_conference_issues",
       "source": "generate_pages_load_conference_issues",
-      "target": "generate_pages_rationale_437",
+      "target": "generate_pages_rationale_521",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L461",
+      "source_location": "L545",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_461",
+      "_src": "generate_pages_rationale_545",
       "_tgt": "generate_pages_render_volume_block",
       "source": "generate_pages_render_volume_block",
-      "target": "generate_pages_rationale_461",
+      "target": "generate_pages_rationale_545",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L83",
+      "source_location": "L114",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_wiretoggle",
@@ -1497,7 +1680,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L114",
+      "source_location": "L145",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_showentry",
@@ -1509,7 +1692,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L123",
+      "source_location": "L154",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_gotoentry",
@@ -1521,7 +1704,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L128",
+      "source_location": "L159",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entryparts",
@@ -1533,7 +1716,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L146",
+      "source_location": "L177",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_todaylong",
@@ -1545,7 +1728,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L152",
+      "source_location": "L183",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_underline",
@@ -1557,7 +1740,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L156",
+      "source_location": "L187",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entrytext",
@@ -1569,7 +1752,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L166",
+      "source_location": "L197",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_showtoast",
@@ -1581,7 +1764,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L281",
+      "source_location": "L312",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_setuptaptotranslate",
@@ -1593,7 +1776,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L373",
+      "source_location": "L404",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_savereadingposition",
@@ -1605,7 +1788,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L124",
+      "source_location": "L155",
       "weight": 1.0,
       "_src": "script_gotoentry",
       "_tgt": "script_showentry",
@@ -1617,7 +1800,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L157",
+      "source_location": "L188",
       "weight": 1.0,
       "_src": "script_entrytext",
       "_tgt": "script_entryparts",
@@ -1629,7 +1812,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L158",
+      "source_location": "L189",
       "weight": 1.0,
       "_src": "script_entrytext",
       "_tgt": "script_todaylong",
@@ -1641,7 +1824,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L159",
+      "source_location": "L190",
       "weight": 1.0,
       "_src": "script_entrytext",
       "_tgt": "script_underline",

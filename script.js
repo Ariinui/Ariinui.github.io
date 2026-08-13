@@ -9,9 +9,40 @@
     if (validSizes.indexOf(storedSize) !== -1) {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
+    // Etat cache/affiche de chaque type de signet, generique : un futur type
+    // de signet (nouveau volume, nouvelle couleur) n'a besoin d'aucun ajout
+    // ici, seule sa cle localStorage suffit a le faire reconnaitre.
+    for (var bmI = 0; bmI < localStorage.length; bmI++) {
+        var bmK = localStorage.key(bmI);
+        if (bmK && bmK.indexOf('bukaAMoromona:hideBookmark:') === 0) {
+            if (localStorage.getItem(bmK) === '1') {
+                document.documentElement.setAttribute('data-hide-bookmark-' + bmK.slice('bukaAMoromona:hideBookmark:'.length), '');
+            }
+        }
+    }
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
+    [].slice.call(document.querySelectorAll('.bookmark-toggle')).forEach(function(btn) {
+        var key = btn.getAttribute('data-bookmark-key');
+        var storageKey = 'bukaAMoromona:hideBookmark:' + key;
+        var attr = 'data-hide-bookmark-' + key;
+        var sync = function() {
+            btn.setAttribute('aria-pressed', localStorage.getItem(storageKey) === '1' ? 'false' : 'true');
+        };
+        sync();
+        btn.addEventListener('click', function() {
+            if (localStorage.getItem(storageKey) === '1') {
+                localStorage.removeItem(storageKey);
+                document.documentElement.removeAttribute(attr);
+            } else {
+                localStorage.setItem(storageKey, '1');
+                document.documentElement.setAttribute(attr, '');
+            }
+            sync();
+        });
+    });
+
     var themeToggle = document.querySelector('.theme-toggle');
     if (themeToggle) {
         var currentTheme = function() {
