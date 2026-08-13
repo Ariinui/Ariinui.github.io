@@ -7,7 +7,7 @@
     <meta name="color-scheme" content="light dark">
     <title>Man Cannot Endure on Borrowed Light</title>
     <link rel="stylesheet" href="../../styles.css">
-    <script src="../../script.js?v=4028d85b"></script>
+    <script src="../../script.js?v=b6813d71"></script>
 </head>
 <body>
     <div class="page">
@@ -54,7 +54,15 @@
         <a href="talk_40.html">Discours precedent</a> | 
         <a href="talk_42.html">Discours suivant</a> | 
     </nav>
-    <a href="../../index.html" class="back-to-toc-float" title="Retour a la table des matieres">Retour a la table des matieres</a>
+    <script>
+    (function() {
+        if (!window.history || !window.history.pushState) return;
+        history.pushState({backToToc: true}, '', location.href);
+        window.addEventListener('popstate', function() {
+            location.replace('../../index.html');
+        });
+    })();
+    </script>
 
     </div>
 </body>

@@ -649,7 +649,15 @@ CHAPTER_NAV = '''
         {prev_link}
         {next_link}
     </nav>
-    <a href="{index_href}" class="back-to-toc-float" title="Retour a la table des matieres">Retour a la table des matieres</a>
+    <script>
+    (function() {{
+        if (!window.history || !window.history.pushState) return;
+        history.pushState({{backToToc: true}}, '', location.href);
+        window.addEventListener('popstate', function() {{
+            location.replace('{index_href}');
+        }});
+    }})();
+    </script>
 '''
 
 
@@ -1284,34 +1292,6 @@ h1 {
 
 .continue-reading:hover {
     background: var(--accent-hover);
-}
-
-.back-to-toc-float {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    color: var(--text);
-    text-decoration: none;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    z-index: 1500;
-    opacity: 0;
-    transform: translateY(16px);
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.back-to-toc-float.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
 }
 
 .volume {
@@ -2074,30 +2054,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupTapToTranslate('.tah-word', '../tah_dict.json');
     setupTapToTranslate('.en-word', '../../en_dict.json');
-
-    // Bouton flottant "retour a la table des matieres" : apparait quand on
-    // scroll vers le haut, se cache immediatement quand on scroll vers le
-    // bas (pas de debounce ici, contrairement a la sauvegarde de position
-    // plus bas, pour que le masquage soit instantane).
-    var backToToc = document.querySelector('.back-to-toc-float');
-    if (backToToc) {
-        var lastScrollY = window.scrollY;
-        var tocTicking = false;
-        window.addEventListener('scroll', function() {
-            if (tocTicking) return;
-            tocTicking = true;
-            window.requestAnimationFrame(function() {
-                var currentScrollY = window.scrollY;
-                if (currentScrollY < lastScrollY) {
-                    backToToc.classList.add('visible');
-                } else if (currentScrollY > lastScrollY) {
-                    backToToc.classList.remove('visible');
-                }
-                lastScrollY = currentScrollY;
-                tocTicking = false;
-            });
-        });
-    }
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une

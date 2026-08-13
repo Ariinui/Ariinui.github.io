@@ -365,30 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTapToTranslate('.tah-word', '../tah_dict.json');
     setupTapToTranslate('.en-word', '../../en_dict.json');
 
-    // Bouton flottant "retour a la table des matieres" : apparait quand on
-    // scroll vers le haut, se cache immediatement quand on scroll vers le
-    // bas (pas de debounce ici, contrairement a la sauvegarde de position
-    // plus bas, pour que le masquage soit instantane).
-    var backToToc = document.querySelector('.back-to-toc-float');
-    if (backToToc) {
-        var lastScrollY = window.scrollY;
-        var tocTicking = false;
-        window.addEventListener('scroll', function() {
-            if (tocTicking) return;
-            tocTicking = true;
-            window.requestAnimationFrame(function() {
-                var currentScrollY = window.scrollY;
-                if (currentScrollY < lastScrollY) {
-                    backToToc.classList.add('visible');
-                } else if (currentScrollY > lastScrollY) {
-                    backToToc.classList.remove('visible');
-                }
-                lastScrollY = currentScrollY;
-                tocTicking = false;
-            });
-        });
-    }
-
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
     // position independante par volume (clef = data-volume-key). Un futur
