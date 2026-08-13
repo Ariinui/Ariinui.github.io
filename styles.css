@@ -514,6 +514,13 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
     word-break: break-word;
 }
 
+/* Question du guide Start to Finish - meme rouge que les citations
+   surlignees du guide Gospel Doctrine (voir .bookmark-guide2). */
+.commentary-head {
+    color: #b22222;
+    font-weight: bold;
+}
+
 .conf-session {
     margin: 0 0 4px;
     font-size: 13px;

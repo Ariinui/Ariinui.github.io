@@ -99,7 +99,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
       "id": "build_tah_dict_py",
-      "community": 1,
+      "community": 2,
       "norm_label": "build_tah_dict.py"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L20",
       "id": "build_tah_dict_normalize",
-      "community": 1,
+      "community": 2,
       "norm_label": "normalize()"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L37",
       "id": "build_tah_dict_dereduplicate_candidates",
-      "community": 1,
+      "community": 2,
       "norm_label": "dereduplicate_candidates()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L52",
       "id": "build_tah_dict_strip_candidates",
-      "community": 1,
+      "community": 2,
       "norm_label": "strip_candidates()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L97",
       "id": "build_tah_dict_glosses_for",
-      "community": 1,
+      "community": 2,
       "norm_label": "glosses_for()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L260",
       "id": "build_tah_dict_strip_accents",
-      "community": 1,
+      "community": 2,
       "norm_label": "strip_accents()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L265",
       "id": "build_tah_dict_fr_words",
-      "community": 1,
+      "community": 2,
       "norm_label": "fr_words()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L269",
       "id": "build_tah_dict_content_stem",
-      "community": 1,
+      "community": 2,
       "norm_label": "content_stem()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L277",
       "id": "build_tah_dict_part_stem",
-      "community": 1,
+      "community": 2,
       "norm_label": "part_stem()"
     },
     {
@@ -179,7 +179,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 2,
       "norm_label": "one-off extraction: builds tah_dict.json (word -> short french gloss) from the r",
       "id": "build_tah_dict_rationale_1"
     },
@@ -188,7 +188,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L38",
-      "community": 1,
+      "community": 2,
       "norm_label": "un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     \"maitatai\" = \"",
       "id": "build_tah_dict_rationale_38"
     },
@@ -288,7 +288,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1",
       "id": "generate_pages_py",
-      "community": 2,
+      "community": 0,
       "norm_label": "generate_pages.py"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L12",
       "id": "generate_pages_to_superscript",
-      "community": 2,
+      "community": 0,
       "norm_label": "to_superscript()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L20",
       "id": "generate_pages_parse_bom_source",
-      "community": 2,
+      "community": 0,
       "norm_label": "parse_bom_source()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L67",
       "id": "generate_pages_split_verse_number",
-      "community": 8,
+      "community": 0,
       "norm_label": "split_verse_number()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L91",
       "id": "generate_pages_clean_bom_en_verse_text",
-      "community": 10,
+      "community": 0,
       "norm_label": "clean_bom_en_verse_text()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L103",
       "id": "generate_pages_parse_bom_en_source",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse_bom_en_source()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L166",
       "id": "generate_pages_tah_normalize",
-      "community": 7,
+      "community": 0,
       "norm_label": "tah_normalize()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L175",
       "id": "generate_pages_wrap_tah_words",
-      "community": 7,
+      "community": 0,
       "norm_label": "wrap_tah_words()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L237",
       "id": "generate_pages_parse_guide_source",
-      "community": 2,
+      "community": 0,
       "norm_label": "parse_guide_source()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L308",
       "id": "generate_pages_guide_section_content_html",
-      "community": 0,
+      "community": 1,
       "norm_label": "guide_section_content_html()"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L336",
       "id": "generate_pages_parse_guide2_source",
-      "community": 2,
+      "community": 0,
       "norm_label": "parse_guide2_source()"
     },
     {
@@ -387,106 +387,106 @@
       "source_file": "generate_pages.py",
       "source_location": "L394",
       "id": "generate_pages_guide2_section_content_html",
-      "community": 0,
+      "community": 1,
       "norm_label": "guide2_section_content_html()"
     },
     {
       "label": "wrap_en_words()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L421",
+      "source_location": "L442",
       "id": "generate_pages_wrap_en_words",
-      "community": 0,
+      "community": 1,
       "norm_label": "wrap_en_words()"
     },
     {
       "label": "apply_en_translate()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L442",
+      "source_location": "L463",
       "id": "generate_pages_apply_en_translate",
-      "community": 0,
+      "community": 1,
       "norm_label": "apply_en_translate()"
     },
     {
       "label": "parse_conference_issue()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L459",
+      "source_location": "L480",
       "id": "generate_pages_parse_conference_issue",
-      "community": 0,
+      "community": 1,
       "norm_label": "parse_conference_issue()"
     },
     {
       "label": "load_conference_issues()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L520",
+      "source_location": "L541",
       "id": "generate_pages_load_conference_issues",
-      "community": 0,
+      "community": 1,
       "norm_label": "load_conference_issues()"
     },
     {
       "label": "render_volume_block()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L544",
+      "source_location": "L565",
       "id": "generate_pages_render_volume_block",
-      "community": 9,
+      "community": 0,
       "norm_label": "render_volume_block()"
     },
     {
       "label": "bookmark_link()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L635",
+      "source_location": "L656",
       "id": "generate_pages_bookmark_link",
-      "community": 2,
+      "community": 0,
       "norm_label": "bookmark_link()"
     },
     {
       "label": "bookmark_filter_row()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L640",
+      "source_location": "L661",
       "id": "generate_pages_bookmark_filter_row",
-      "community": 2,
+      "community": 0,
       "norm_label": "bookmark_filter_row()"
     },
     {
       "label": "write()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L685",
+      "source_location": "L706",
       "id": "generate_pages_write",
-      "community": 2,
+      "community": 0,
       "norm_label": "write()"
     },
     {
       "label": "guide_href()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L822",
+      "source_location": "L843",
       "id": "generate_pages_guide_href",
-      "community": 2,
+      "community": 0,
       "norm_label": "guide_href()"
     },
     {
       "label": "guide2_href()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L841",
+      "source_location": "L862",
       "id": "generate_pages_guide2_href",
-      "community": 2,
+      "community": 0,
       "norm_label": "guide2_href()"
     },
     {
       "label": "conference_href()",
       "file_type": "code",
       "source_file": "generate_pages.py",
-      "source_location": "L847",
+      "source_location": "L868",
       "id": "generate_pages_conference_href",
-      "community": 2,
+      "community": 0,
       "norm_label": "conference_href()"
     },
     {
@@ -494,7 +494,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 8,
+      "community": 0,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },
@@ -503,7 +503,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L176",
-      "community": 7,
+      "community": 0,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_176"
     },
@@ -512,7 +512,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L309",
-      "community": 0,
+      "community": 1,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_309"
     },
@@ -521,54 +521,54 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L395",
-      "community": 0,
+      "community": 1,
       "norm_label": "html interne d'une section guide2, sans son <p class=\"chapter-number\">     (dej",
       "id": "generate_pages_rationale_395"
-    },
-    {
-      "label": "Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
-      "file_type": "rationale",
-      "source_file": "generate_pages.py",
-      "source_location": "L422",
-      "community": 0,
-      "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
-      "id": "generate_pages_rationale_422"
     },
     {
       "label": "Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L443",
-      "community": 0,
+      "community": 1,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_443"
+    },
+    {
+      "label": "Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L464",
+      "id": "generate_pages_rationale_464",
+      "community": 1,
+      "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha"
     },
     {
       "label": "Un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
-      "source_location": "L460",
-      "community": 0,
-      "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
-      "id": "generate_pages_rationale_460"
+      "source_location": "L481",
+      "id": "generate_pages_rationale_481",
+      "community": 1,
+      "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur"
     },
     {
       "label": "Forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
-      "source_location": "L521",
-      "community": 0,
-      "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
-      "id": "generate_pages_rationale_521"
+      "source_location": "L542",
+      "id": "generate_pages_rationale_542",
+      "community": 1,
+      "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc"
     },
     {
       "label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
-      "source_location": "L545",
-      "community": 9,
-      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
-      "id": "generate_pages_rationale_545"
+      "source_location": "L566",
+      "id": "generate_pages_rationale_566",
+      "community": 0,
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_"
     },
     {
       "label": "script.js",
@@ -668,6 +668,42 @@
       "id": "script_savereadingposition",
       "community": 3,
       "norm_label": "savereadingposition()"
+    },
+    {
+      "label": "Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L422",
+      "community": 7,
+      "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
+      "id": "generate_pages_rationale_422"
+    },
+    {
+      "label": "Un <section id=...> de premier niveau sans div.body-block est un     separateur",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L460",
+      "community": 8,
+      "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
+      "id": "generate_pages_rationale_460"
+    },
+    {
+      "label": "Forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L521",
+      "community": 9,
+      "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
+      "id": "generate_pages_rationale_521"
+    },
+    {
+      "label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "file_type": "rationale",
+      "source_file": "generate_pages.py",
+      "source_location": "L545",
+      "community": 10,
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "id": "generate_pages_rationale_545"
     },
     {
       "label": "Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
@@ -1344,7 +1380,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L421",
+      "source_location": "L442",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_wrap_en_words",
@@ -1356,7 +1392,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L442",
+      "source_location": "L463",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_apply_en_translate",
@@ -1368,7 +1404,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L459",
+      "source_location": "L480",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_parse_conference_issue",
@@ -1380,7 +1416,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L520",
+      "source_location": "L541",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_load_conference_issues",
@@ -1392,7 +1428,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L544",
+      "source_location": "L565",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_render_volume_block",
@@ -1404,7 +1440,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L635",
+      "source_location": "L656",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_bookmark_link",
@@ -1416,7 +1452,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L640",
+      "source_location": "L661",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_bookmark_filter_row",
@@ -1428,7 +1464,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L685",
+      "source_location": "L706",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_write",
@@ -1440,7 +1476,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L822",
+      "source_location": "L843",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_guide_href",
@@ -1452,7 +1488,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L841",
+      "source_location": "L862",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_guide2_href",
@@ -1464,7 +1500,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L847",
+      "source_location": "L868",
       "weight": 1.0,
       "_src": "generate_pages_py",
       "_tgt": "generate_pages_conference_href",
@@ -1548,7 +1584,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L400",
+      "source_location": "L421",
       "weight": 1.0,
       "_src": "generate_pages_guide2_section_content_html",
       "_tgt": "generate_pages_apply_en_translate",
@@ -1572,7 +1608,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L452",
+      "source_location": "L473",
       "weight": 1.0,
       "_src": "generate_pages_apply_en_translate",
       "_tgt": "generate_pages_wrap_en_words",
@@ -1584,19 +1620,19 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L422",
+      "source_location": "L443",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_422",
+      "_src": "generate_pages_rationale_443",
       "_tgt": "generate_pages_wrap_en_words",
       "source": "generate_pages_wrap_en_words",
-      "target": "generate_pages_rationale_422",
+      "target": "generate_pages_rationale_443",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L510",
+      "source_location": "L531",
       "weight": 1.0,
       "_src": "generate_pages_parse_conference_issue",
       "_tgt": "generate_pages_apply_en_translate",
@@ -1608,19 +1644,19 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L443",
+      "source_location": "L464",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_443",
+      "_src": "generate_pages_rationale_464",
       "_tgt": "generate_pages_apply_en_translate",
       "source": "generate_pages_apply_en_translate",
-      "target": "generate_pages_rationale_443",
+      "target": "generate_pages_rationale_464",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L531",
+      "source_location": "L552",
       "weight": 1.0,
       "_src": "generate_pages_load_conference_issues",
       "_tgt": "generate_pages_parse_conference_issue",
@@ -1632,36 +1668,36 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L460",
+      "source_location": "L481",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_460",
+      "_src": "generate_pages_rationale_481",
       "_tgt": "generate_pages_parse_conference_issue",
       "source": "generate_pages_parse_conference_issue",
-      "target": "generate_pages_rationale_460",
+      "target": "generate_pages_rationale_481",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L521",
+      "source_location": "L542",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_521",
+      "_src": "generate_pages_rationale_542",
       "_tgt": "generate_pages_load_conference_issues",
       "source": "generate_pages_load_conference_issues",
-      "target": "generate_pages_rationale_521",
+      "target": "generate_pages_rationale_542",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "generate_pages.py",
-      "source_location": "L545",
+      "source_location": "L566",
       "weight": 1.0,
-      "_src": "generate_pages_rationale_545",
+      "_src": "generate_pages_rationale_566",
       "_tgt": "generate_pages_render_volume_block",
       "source": "generate_pages_render_volume_block",
-      "target": "generate_pages_rationale_545",
+      "target": "generate_pages_rationale_566",
       "confidence_score": 1.0
     },
     {

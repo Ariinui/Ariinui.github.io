@@ -392,11 +392,32 @@ def parse_guide2_source(path):
 
 
 def guide2_section_content_html(section_tag):
-    """HTML interne d'une section guide2, sans son <p class="Chapter-Number">
-    (deja rendu par notre propre <h1>/<h2> de page)."""
+    """HTML interne d'une section guide2 : uniquement les paires
+    question/reponse (span.commentary-head + le reste du paragraphe qui
+    suit), meme principe editorial que le guide Gospel Doctrine - jamais de
+    texte de verset duplique (deja affiche cote Livre de Mormon), jamais de
+    resume de chapitre, jamais de citation etendue (Extended_Content_1) ni
+    de paragraphe non rattache a une question. Le numero de chapitre est
+    aussi retire, deja rendu par notre propre <h1>/<h2> de page."""
     chap_p = section_tag.find('p', class_='Chapter-Number')
     if chap_p:
         chap_p.decompose()
+    for tag in section_tag.find_all(['p', 'div'], class_=['verse', 'studySummary', 'Extended_Content_1', 'frame-3']):
+        tag.decompose()
+    for entry in section_tag.find_all('div', class_='guide-entry'):
+        seen_question = False
+        for child in list(entry.contents):
+            if getattr(child, 'name', None) is None:
+                continue
+            classes = child.get('class') or []
+            if child.name == 'p' and 'commentary-subhead' in classes:
+                continue
+            if child.name == 'p' and 'commentary' in classes and child.find('span', class_='commentary-head'):
+                seen_question = True
+                continue
+            if child.name == 'p' and 'commentary-second-para' in classes and seen_question:
+                continue
+            child.decompose()
     apply_en_translate(section_tag)
     return section_tag.decode_contents()
 
@@ -1628,6 +1649,13 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 .guide-content {
     overflow-wrap: break-word;
     word-break: break-word;
+}
+
+/* Question du guide Start to Finish - meme rouge que les citations
+   surlignees du guide Gospel Doctrine (voir .bookmark-guide2). */
+.commentary-head {
+    color: #b22222;
+    font-weight: bold;
 }
 
 .conf-session {
