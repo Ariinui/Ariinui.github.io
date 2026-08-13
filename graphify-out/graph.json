@@ -315,7 +315,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L67",
       "id": "generate_pages_split_verse_number",
-      "community": 8,
+      "community": 9,
       "norm_label": "split_verse_number()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L91",
       "id": "generate_pages_clean_bom_en_verse_text",
-      "community": 9,
+      "community": 8,
       "norm_label": "clean_bom_en_verse_text()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L103",
       "id": "generate_pages_parse_bom_en_source",
-      "community": 9,
+      "community": 8,
       "norm_label": "parse_bom_en_source()"
     },
     {
@@ -494,7 +494,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 8,
+      "community": 9,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },

@@ -2209,7 +2209,10 @@ document.addEventListener('DOMContentLoaded', function() {
             saveTimer = setTimeout(saveReadingPosition, 400);
         });
         window.addEventListener('pagehide', saveReadingPosition);
-        saveReadingPosition();
+        // Delai pour laisser le navigateur finir son scroll natif vers
+        // l'ancre #vN (ex. arrivee via "Continuer la lecture") avant de
+        // capturer/ecraser la position - sinon on lit "haut de page" trop tot.
+        setTimeout(saveReadingPosition, 150);
     }
 
     // Page d'accueil : une ligne "Continuer la lecture" par volume ayant une
