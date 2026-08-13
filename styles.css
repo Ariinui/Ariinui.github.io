@@ -388,7 +388,7 @@ h1 {
    (cote Python), le reste (popover, persistance, isolation) est deja
    generique. */
 .bookmark-guide { color: #d4a017; }
-.bookmark-guide2 { color: #22c55e; }
+.bookmark-guide2 { color: #b22222; }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
