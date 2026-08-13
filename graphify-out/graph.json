@@ -521,54 +521,54 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L408",
-      "id": "generate_pages_rationale_408",
       "community": 1,
-      "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse"
+      "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
+      "id": "generate_pages_rationale_408"
     },
     {
       "label": "Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L454",
-      "id": "generate_pages_rationale_454",
       "community": 1,
-      "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot"
+      "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
+      "id": "generate_pages_rationale_454"
     },
     {
       "label": "Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L475",
-      "id": "generate_pages_rationale_475",
       "community": 1,
-      "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha"
+      "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
+      "id": "generate_pages_rationale_475"
     },
     {
       "label": "Un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L492",
-      "id": "generate_pages_rationale_492",
       "community": 1,
-      "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur"
+      "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
+      "id": "generate_pages_rationale_492"
     },
     {
       "label": "Forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L553",
-      "id": "generate_pages_rationale_553",
       "community": 1,
-      "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc"
+      "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
+      "id": "generate_pages_rationale_553"
     },
     {
       "label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L577",
-      "id": "generate_pages_rationale_577",
       "community": 0,
-      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_"
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "id": "generate_pages_rationale_577"
     },
     {
       "label": "script.js",
