@@ -145,6 +145,11 @@
     <script>
     (function() {
         if (!window.history || !window.history.pushState) return;
+        // Empeche le navigateur de restaurer nativement le scroll (souvent
+        // remis a 0) quand on revient sur l'entree d'historique ci-dessous -
+        // sinon la sauvegarde de position (pagehide) lit "haut de page" au
+        // moment du swipe-retour et ecrase la vraie position de lecture.
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         history.pushState({backToToc: true}, '', location.href);
         window.addEventListener('popstate', function() {
             location.replace('../../index.html');

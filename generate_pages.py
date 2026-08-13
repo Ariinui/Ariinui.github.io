@@ -668,6 +668,11 @@ CHAPTER_NAV = '''
     <script>
     (function() {{
         if (!window.history || !window.history.pushState) return;
+        // Empeche le navigateur de restaurer nativement le scroll (souvent
+        // remis a 0) quand on revient sur l'entree d'historique ci-dessous -
+        // sinon la sauvegarde de position (pagehide) lit "haut de page" au
+        // moment du swipe-retour et ecrase la vraie position de lecture.
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         history.pushState({{backToToc: true}}, '', location.href);
         window.addEventListener('popstate', function() {{
             location.replace('{index_href}');
@@ -1524,17 +1529,19 @@ html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
     background: var(--hover-bg);
 }
 
-.bookmark-filter-control {
-    position: relative;
-}
 
 .bookmark-filter-popover {
+    /* Ancre sur .page-controls (deja position:absolute, donc bloc
+       englobant valide) plutot que sur .bookmark-filter-control lui-meme -
+       ce bouton n'est pas le plus a droite de la rangee (theme-toggle le
+       suit), un ancrage sur lui-meme faisait deborder le popover a gauche
+       de l'ecran sur mobile etroit. */
     position: absolute;
     right: 0;
     top: calc(100% + 8px);
     display: flex;
     flex-direction: column;
-    min-width: 240px;
+    width: min(240px, calc(100vw - 40px));
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
