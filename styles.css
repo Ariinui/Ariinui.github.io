@@ -389,9 +389,30 @@ h1 {
    generique. */
 .bookmark-guide { color: #d4a017; }
 .bookmark-guide2 { color: #b22222; }
+.bookmark-guide3 { color: #1e6fd9; }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
+html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
+
+/* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
+   (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
+   juste une distinction visuelle legere, le reste vient du style generique
+   .guide-content p. */
+.vv-overview {
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--border);
+}
+.vv-overview-label {
+    font-style: italic;
+    opacity: 0.75;
+}
+.vv-note-label {
+    font-weight: 600;
+    opacity: 0.7;
+    margin-top: 0.75em;
+}
 
 /* Un seul bouton d'entete pour tous les signets, avec un popover listant un
    toggle par type - ne grossit jamais dans l'entete quel que soit le nombre
