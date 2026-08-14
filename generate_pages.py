@@ -313,7 +313,6 @@ def guide_section_content_html(section_tag):
     back_to_top = section_tag.find('a', class_='back-to-top')
     if back_to_top:
         back_to_top.decompose()
-    apply_en_translate(section_tag)
     return section_tag.decode_contents()
 
 
@@ -429,7 +428,6 @@ def guide2_section_content_html(section_tag):
         for stray in section_tag.find_all('p', class_=cls):
             if stray.find_parent('div', class_='guide-entry') is None:
                 stray.decompose()
-    apply_en_translate(section_tag)
     return section_tag.decode_contents()
 
 
