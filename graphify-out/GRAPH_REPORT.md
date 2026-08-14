@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-13)
 
 ## Corpus Check
-- 6 files · ~18,734 words
+- 6 files · ~18,737 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -96,23 +96,23 @@ Nodes (3): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verb
 
 ### Community 8 - "Community 8"
 Cohesion: 1.0
-Nodes (2): clean_bom_en_verse_text(), parse_bom_en_source()
+Nodes (2): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume, split_verse_number()
 
 ### Community 9 - "Community 9"
 Cohesion: 1.0
-Nodes (2): guide2_section_content_html(), HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (2): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_, render_volume_block()
 
 ### Community 10 - "Community 10"
 Cohesion: 1.0
-Nodes (2): guide_section_content_html(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (2): clean_bom_en_verse_text(), parse_bom_en_source()
 
 ### Community 11 - "Community 11"
 Cohesion: 1.0
-Nodes (2): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume, split_verse_number()
+Nodes (2): guide_section_content_html(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 12 - "Community 12"
 Cohesion: 1.0
-Nodes (2): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_, render_volume_block()
+Nodes (2): guide2_section_content_html(), HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 13 - "Community 13"
 Cohesion: 1.0
@@ -201,15 +201,15 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Knowledge Gaps
 - **37 isolated node(s):** `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "` (+32 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 8`** (2 nodes): `clean_bom_en_verse_text()`, `parse_bom_en_source()`
+- **Thin community `Community 8`** (2 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`, `split_verse_number()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 9`** (2 nodes): `guide2_section_content_html()`, `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 9`** (2 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`, `render_volume_block()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (2 nodes): `guide_section_content_html()`, `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 10`** (2 nodes): `clean_bom_en_verse_text()`, `parse_bom_en_source()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (2 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`, `split_verse_number()`
+- **Thin community `Community 11`** (2 nodes): `guide_section_content_html()`, `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 12`** (2 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`, `render_volume_block()`
+- **Thin community `Community 12`** (2 nodes): `guide2_section_content_html()`, `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 13`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -261,7 +261,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **Why does `parse_conference_issue()` connect `Community 4` to `Community 0`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Why does `split_verse_number()` connect `Community 11` to `Community 0`?**
+- **Why does `split_verse_number()` connect `Community 8` to `Community 0`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines` to the rest of the system?**
   _37 weakly-connected nodes found - possible documentation gaps or missing edges._

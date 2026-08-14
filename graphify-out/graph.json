@@ -315,7 +315,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L67",
       "id": "generate_pages_split_verse_number",
-      "community": 11,
+      "community": 8,
       "norm_label": "split_verse_number()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L91",
       "id": "generate_pages_clean_bom_en_verse_text",
-      "community": 8,
+      "community": 10,
       "norm_label": "clean_bom_en_verse_text()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L103",
       "id": "generate_pages_parse_bom_en_source",
-      "community": 8,
+      "community": 10,
       "norm_label": "parse_bom_en_source()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L308",
       "id": "generate_pages_guide_section_content_html",
-      "community": 10,
+      "community": 11,
       "norm_label": "guide_section_content_html()"
     },
     {
@@ -387,7 +387,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L406",
       "id": "generate_pages_guide2_section_content_html",
-      "community": 9,
+      "community": 12,
       "norm_label": "guide2_section_content_html()"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L726",
       "id": "generate_pages_render_volume_block",
-      "community": 12,
+      "community": 9,
       "norm_label": "render_volume_block()"
     },
     {
@@ -521,7 +521,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 11,
+      "community": 8,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },
@@ -539,7 +539,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L309",
-      "community": 10,
+      "community": 11,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_309"
     },
@@ -548,7 +548,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L407",
-      "community": 9,
+      "community": 12,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_407"
     },
@@ -593,7 +593,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L727",
-      "community": 12,
+      "community": 9,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_727"
     },
