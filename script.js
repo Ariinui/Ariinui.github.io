@@ -405,6 +405,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 backLink.textContent = 'Retour au verset';
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
+
+                // Arrive via signet = simple consultation ponctuelle d'un
+                // verset, pas un parcours du guide lui-meme : Precedent/
+                // Suivant doit continuer la LECTURE du Livre de Mormon
+                // francais (chapitre reel +-1), jamais rester dans le guide
+                // en mode "liste complete" du chapitre voisin.
+                [].slice.call(nav.querySelectorAll('a')).forEach(function(a) {
+                    var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
+                    if (!m) return;
+                    a.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
+                });
             }
         }
     }
