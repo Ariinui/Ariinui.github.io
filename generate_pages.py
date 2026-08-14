@@ -1208,6 +1208,61 @@ for book_idx, book in enumerate(bom_en_book_data, 1):
 
         write(f'chapters-en/chapter_{book_idx}_{chap_idx}.html', html)
 
+def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, content_fn):
+    """Genere les pages chapitre d'un volume de commentaire lie au Livre de
+    Mormon chapitre par chapitre (guide/guide2/guide3, et tout futur volume du
+    meme genre). Chapitre precedent/suivant navigue TOUJOURS sur le chapitre
+    reel du Livre de Mormon (+1/-1) - y compris vers un chapitre sans
+    commentaire dans CE volume (page generee quand meme, sans entree) -
+    jamais vers "le prochain chapitre qui a du commentaire", qui restait
+    coince a l'interieur du guide et ignorait le Livre de Mormon lui-meme.
+    """
+    for book_idx, bom_book in enumerate(bom_book_data, 1):
+        chapters = chapters_by_bom_idx[book_idx]
+        if not chapters:
+            continue
+        full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
+        total_chapters = len(bom_book['chapters'])
+        for chap_idx in range(1, total_chapters + 1):
+            chapter = chapters.get(chap_idx)
+            if chapter is not None:
+                for entry in chapter['section'].find_all('div', class_='guide-entry'):
+                    vstart = entry.get('data-verse-start')
+                    vend = entry.get('data-verse-end')
+                    if vstart is None:
+                        continue
+                    vstart, vend = int(vstart), int(vend)
+                    pieces = []
+                    for v in range(vstart, vend + 1):
+                        verse_text = french_verse_text.get((book_idx, chap_idx, v))
+                        if verse_text:
+                            pieces.append(f'{to_superscript(v)}{verse_text}')
+                        else:
+                            print(f"ATTENTION: verset francais introuvable pour {bom_book['book_title']} {chap_idx}:{v} "
+                                  f"(entree {volume_key} {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
+                    if pieces:
+                        ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
+                        entry['data-verse-ref'] = f'{full_book_name} {ref}'
+                        entry['data-verse-text'] = '\n\n'.join(pieces)
+                content_html = content_fn(chapter['section'])
+                title = chapter['title']
+            else:
+                content_html = '<p class="guide-empty">Aucun commentaire pour ce chapitre dans ce guide.</p>'
+                title = f'{full_book_name} {chap_idx}'
+
+            has_prev = chap_idx > 1
+            has_next = chap_idx < total_chapters
+            prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
+            next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
+
+            html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
+            html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{title}</h2>\n'
+            html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="{volume_key}" data-volume-title="{volume_title}">{content_html}</div>'
+            html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
+            html += PAGE_TAIL
+
+            write(f'{folder}/chapters/chapter_{book_idx}_{chap_idx}.html', html)
+
 # --- Volume 4 : Book of Mormon Study Guide ----------------------------------
 
 for n, item in enumerate(guide_intro_items, 1):
@@ -1223,135 +1278,15 @@ for n, item in enumerate(guide_intro_items, 1):
 
     write(f'guide/chapters/intro_{n}.html', html)
 
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide_chapters = guide_chapters_by_bom_idx[book_idx]
-    chapter_nums = sorted(guide_chapters.keys())
-    for chap_idx in chapter_nums:
-        chapter = guide_chapters[chap_idx]
-
-        for entry in chapter['section'].find_all('div', class_='guide-entry'):
-            vstart = entry.get('data-verse-start')
-            vend = entry.get('data-verse-end')
-            if vstart is None:
-                continue
-            vstart, vend = int(vstart), int(vend)
-            pieces = []
-            for v in range(vstart, vend + 1):
-                verse_text = french_verse_text.get((book_idx, chap_idx, v))
-                if verse_text:
-                    pieces.append(f'{to_superscript(v)}{verse_text}')
-                else:
-                    print(f"ATTENTION: verset francais introuvable pour {bom_book['book_title']} {chap_idx}:{v} "
-                          f"(entree guide {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
-            if pieces:
-                ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
-                # Nom complet ("1 Nephi") plutot que l'abreviation francaise
-                # source ("1 Ne") au Copier/Partager - meme demande que pour
-                # Start to Finish ci-dessous.
-                full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
-                entry['data-verse-ref'] = f'{full_book_name} {ref}'
-                entry['data-verse-text'] = '\n\n'.join(pieces)
-
-        content_html = guide_section_content_html(chapter['section'])
-        has_prev = chapter_nums.index(chap_idx) > 0
-        has_next = chapter_nums.index(chap_idx) < len(chapter_nums) - 1
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
-
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
-        html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="guide" data-volume-title="Book of Mormon Study Guide">{content_html}</div>'
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
-        html += PAGE_TAIL
-
-        write(f'guide/chapters/chapter_{book_idx}_{chap_idx}.html', html)
+write_guide_volume(guide_chapters_by_bom_idx, 'guide', 'guide', 'Book of Mormon Study Guide', guide_section_content_html)
 
 # --- Volume 6 : Book of Mormon Study Guide (Start to Finish) ----------------
 
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide2_chapters = guide2_chapters_by_bom_idx[book_idx]
-    chapter_nums = sorted(guide2_chapters.keys())
-    for chap_idx in chapter_nums:
-        chapter = guide2_chapters[chap_idx]
-
-        for entry in chapter['section'].find_all('div', class_='guide-entry'):
-            vstart = entry.get('data-verse-start')
-            vend = entry.get('data-verse-end')
-            if vstart is None:
-                continue
-            vstart, vend = int(vstart), int(vend)
-            pieces = []
-            for v in range(vstart, vend + 1):
-                verse_text = french_verse_text.get((book_idx, chap_idx, v))
-                if verse_text:
-                    pieces.append(f'{to_superscript(v)}{verse_text}')
-                else:
-                    print(f"ATTENTION: verset francais introuvable pour {bom_book['book_title']} {chap_idx}:{v} "
-                          f"(entree guide2 {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
-            if pieces:
-                ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
-                # Nom complet ("1 Nephi") plutot que l'abreviation francaise
-                # source ("1 Ne") - uniquement pour Start to Finish, sur
-                # demande explicite ; Gospel Doctrine garde l'abreviation.
-                full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
-                entry['data-verse-ref'] = f'{full_book_name} {ref}'
-                entry['data-verse-text'] = '\n\n'.join(pieces)
-
-        content_html = guide2_section_content_html(chapter['section'])
-        has_prev = chapter_nums.index(chap_idx) > 0
-        has_next = chapter_nums.index(chap_idx) < len(chapter_nums) - 1
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
-
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
-        html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="guide2" data-volume-title="Book of Mormon Study Guide (Start to Finish)">{content_html}</div>'
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
-        html += PAGE_TAIL
-
-        write(f'guide2/chapters/chapter_{book_idx}_{chap_idx}.html', html)
+write_guide_volume(guide2_chapters_by_bom_idx, 'guide2', 'guide2', 'Book of Mormon Study Guide (Start to Finish)', guide2_section_content_html)
 
 # --- Volume 7 : Verse by Verse Book of Mormon --------------------------------
 
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide3_chapters = guide3_chapters_by_bom_idx[book_idx]
-    chapter_nums = sorted(guide3_chapters.keys())
-    for chap_idx in chapter_nums:
-        chapter = guide3_chapters[chap_idx]
-
-        for entry in chapter['section'].find_all('div', class_='guide-entry'):
-            vstart = entry.get('data-verse-start')
-            vend = entry.get('data-verse-end')
-            if vstart is None:
-                continue
-            vstart, vend = int(vstart), int(vend)
-            pieces = []
-            for v in range(vstart, vend + 1):
-                verse_text = french_verse_text.get((book_idx, chap_idx, v))
-                if verse_text:
-                    pieces.append(f'{to_superscript(v)}{verse_text}')
-                else:
-                    print(f"ATTENTION: verset francais introuvable pour {bom_book['book_title']} {chap_idx}:{v} "
-                          f"(entree guide3 {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
-            if pieces:
-                ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
-                full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
-                entry['data-verse-ref'] = f'{full_book_name} {ref}'
-                entry['data-verse-text'] = '\n\n'.join(pieces)
-
-        content_html = vv_section_content_html(chapter['section'])
-        has_prev = chapter_nums.index(chap_idx) > 0
-        has_next = chapter_nums.index(chap_idx) < len(chapter_nums) - 1
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
-
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
-        html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="guide3" data-volume-title="Verse by Verse Book of Mormon">{content_html}</div>'
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
-        html += PAGE_TAIL
-
-        write(f'guide3/chapters/chapter_{book_idx}_{chap_idx}.html', html)
+write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Verse Book of Mormon', vv_section_content_html)
 
 # --- Volume 5 : General Conference -------------------------------------------
 

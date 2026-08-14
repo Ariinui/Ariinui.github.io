@@ -660,6 +660,11 @@ html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
     border-left: 3px solid var(--border);
 }
 
+.guide-content p.guide-empty {
+    font-style: italic;
+    color: var(--text-muted);
+}
+
 .guide-content ol, .guide-content ul {
     padding-left: 1.4em;
 }
