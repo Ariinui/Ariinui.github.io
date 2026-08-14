@@ -1090,7 +1090,11 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
                           f"(entree guide2 {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
             if pieces:
                 ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
-                entry['data-verse-ref'] = f'{bom_book["book_title"]} {ref}'
+                # Nom complet ("1 Nephi") plutot que l'abreviation francaise
+                # source ("1 Ne") - uniquement pour Start to Finish, sur
+                # demande explicite ; Gospel Doctrine garde l'abreviation.
+                full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
+                entry['data-verse-ref'] = f'{full_book_name} {ref}'
                 entry['data-verse-text'] = ' '.join(pieces)
 
         content_html = guide2_section_content_html(chapter['section'])
@@ -2021,12 +2025,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 var title = h4 ? h4.textContent.trim() : '';
                 var bodyParts = [];
                 [].slice.call(entry.children).forEach(function(child) {
-                    if (child !== h4) {
-                        var t = child.textContent.trim();
-                        if (t) bodyParts.push(t);
+                    if (child === h4) return;
+                    var head = child.querySelector('.commentary-head');
+                    var t;
+                    if (head) {
+                        // Start to Finish : question et reponse sont dans le
+                        // meme <p>, sans separation - on isole la question
+                        // (span.commentary-head) du reste pour les afficher
+                        // sur des lignes distinctes au Copier/Partager.
+                        var clone = child.cloneNode(true);
+                        var cloneHead = clone.querySelector('.commentary-head');
+                        var question = cloneHead.textContent.trim();
+                        cloneHead.parentNode.removeChild(cloneHead);
+                        var answer = clone.textContent.trim();
+                        t = answer ? question + '\\n\\n' + answer : question;
+                    } else {
+                        t = child.textContent.trim();
                     }
+                    if (t) bodyParts.push(t);
                 });
-                var guideText = bodyParts.length ? title + '\\n\\n' + bodyParts.join('\\n\\n') : title;
+                var guideText = title
+                    ? (bodyParts.length ? title + '\\n\\n' + bodyParts.join('\\n\\n') : title)
+                    : bodyParts.join('\\n\\n');
                 return {
                     verseRef: entry.getAttribute('data-verse-ref'),
                     verseText: entry.getAttribute('data-verse-text'),
