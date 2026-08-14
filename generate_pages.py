@@ -2331,11 +2331,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Un message Messenger au-dela d'un certain nombre de caracteres
-            // est coupe automatiquement par Messenger (limite non documentee
-            // de facon fiable, valeur prudente retenue ici) - le texte est
-            // donc decoupe en plusieurs messages a envoyer a la suite plutot
-            // que risquer une troncature silencieuse.
-            var MESSENGER_CHUNK_MAX = 1800;
+            // est coupe automatiquement par Messenger. Non documentee
+            // officiellement, mais mesuree empiriquement par l'utilisateur :
+            // un message de 5000 caracteres exactement est coupe en plein mot
+            // pile a cette limite (teste en conditions reelles, 2026-08-14) -
+            // marge de securite retenue pour le prefixe "(x/y)" ajoute a
+            // chaque morceau. Le texte est decoupe en plusieurs messages a
+            // envoyer a la suite plutot que risquer une troncature silencieuse.
+            var MESSENGER_CHUNK_MAX = 4900;
 
             function splitLongBlock(text, maxLen) {
                 // Secours si un seul paragraphe depasse a lui seul la limite :
