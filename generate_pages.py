@@ -2354,7 +2354,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return parts;
             }
 
-            function entryTextParts(entry, underlineNotesLabel) {
+            function entryBlocks(entry, underlineNotesLabel) {
                 var p = entryParts(entry);
                 var notesLabel = underlineNotesLabel ? underline('Notes du guide') : 'Notes du guide';
 
@@ -2364,7 +2364,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     blocks.push(p.verseText);
                     blocks.push(notesLabel);
                 }
-                blocks = blocks.concat(p.bodyParts);
+                return blocks.concat(p.bodyParts);
+            }
+
+            // Copier : texte integral, jamais decoupe (destination inconnue
+            // - Notes, email... pas forcement Messenger).
+            function entryFullText(entry, underlineNotesLabel) {
+                return entryBlocks(entry, underlineNotesLabel).join('\\n\\n');
+            }
+
+            // Partager : decoupe en plusieurs messages, uniquement pour ne
+            // jamais depasser la limite Messenger (voir MESSENGER_CHUNK_MAX).
+            function entryTextParts(entry, underlineNotesLabel) {
+                var blocks = entryBlocks(entry, underlineNotesLabel);
 
                 var safeBlocks = [];
                 blocks.forEach(function(b) {
@@ -2453,13 +2465,8 @@ document.addEventListener('DOMContentLoaded', function() {
             copyBtn.setAttribute('aria-label', 'Copier');
             copyBtn.title = 'Copier';
             copyBtn.addEventListener('click', function() {
-                var parts = entryTextParts(matches[current], true);
-                var i = partIndex % parts.length;
-                navigator.clipboard.writeText(parts[i]).then(function() {
-                    showToast(parts.length > 1
-                        ? 'Partie ' + (i + 1) + '/' + parts.length + ' copiee - colle-la, puis reclique pour la suite'
-                        : 'Copie dans le presse-papier');
-                    partIndex = (i + 1) % parts.length;
+                navigator.clipboard.writeText(entryFullText(matches[current], true)).then(function() {
+                    showToast('Copie dans le presse-papier');
                     copyBtn.innerHTML = ICON_CHECK;
                     copyBtn.classList.add('copied');
                     setTimeout(function() {

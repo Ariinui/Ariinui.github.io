@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-08-13)
 
 ## Corpus Check
-- 6 files · ~18,716 words
+- 6 files · ~18,734 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 99 nodes · 96 edges · 34 communities detected
+- 101 nodes · 100 edges · 34 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -47,7 +47,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `main()` - 6 edges
-2. `entryTextParts()` - 5 edges
+2. `entryBlocks()` - 6 edges
 3. `search_exact()` - 4 edges
 4. `apply_en_translate()` - 4 edges
 5. `parse_conference_issue()` - 4 edges
@@ -67,8 +67,8 @@ Cohesion: 0.14
 Nodes (0): 
 
 ### Community 1 - "Community 1"
-Cohesion: 0.24
-Nodes (7): entryParts(), entryTextParts(), goToEntry(), showEntry(), splitLongBlock(), todayLong(), underline()
+Cohesion: 0.22
+Nodes (9): entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goToEntry(), showEntry(), splitLongBlock(), todayLong() (+1 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.27
@@ -104,11 +104,11 @@ Nodes (2): guide2_section_content_html(), HTML interne d'une section guide2 : un
 
 ### Community 10 - "Community 10"
 Cohesion: 1.0
-Nodes (2): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume, split_verse_number()
+Nodes (2): guide_section_content_html(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 11 - "Community 11"
 Cohesion: 1.0
-Nodes (2): guide_section_content_html(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (2): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume, split_verse_number()
 
 ### Community 12 - "Community 12"
 Cohesion: 1.0
@@ -205,9 +205,9 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 9`** (2 nodes): `guide2_section_content_html()`, `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (2 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`, `split_verse_number()`
+- **Thin community `Community 10`** (2 nodes): `guide_section_content_html()`, `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (2 nodes): `guide_section_content_html()`, `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 11`** (2 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`, `split_verse_number()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 12`** (2 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`, `render_volume_block()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -261,7 +261,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **Why does `parse_conference_issue()` connect `Community 4` to `Community 0`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Why does `split_verse_number()` connect `Community 10` to `Community 0`?**
+- **Why does `split_verse_number()` connect `Community 11` to `Community 0`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`, `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines` to the rest of the system?**
   _37 weakly-connected nodes found - possible documentation gaps or missing edges._
