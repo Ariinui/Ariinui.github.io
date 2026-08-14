@@ -1049,7 +1049,11 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
                           f"(entree guide {vstart}-{vend}) - Copier/Partager n'inclura pas ce verset.")
             if pieces:
                 ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
-                entry['data-verse-ref'] = f'{bom_book["book_title"]} {ref}'
+                # Nom complet ("1 Nephi") plutot que l'abreviation francaise
+                # source ("1 Ne") au Copier/Partager - meme demande que pour
+                # Start to Finish ci-dessous.
+                full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
+                entry['data-verse-ref'] = f'{full_book_name} {ref}'
                 entry['data-verse-text'] = ' '.join(pieces)
 
         content_html = guide_section_content_html(chapter['section'])
