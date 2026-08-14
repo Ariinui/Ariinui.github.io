@@ -1250,7 +1250,7 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
                 # Start to Finish ci-dessous.
                 full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
                 entry['data-verse-ref'] = f'{full_book_name} {ref}'
-                entry['data-verse-text'] = ' '.join(pieces)
+                entry['data-verse-text'] = '\n\n'.join(pieces)
 
         content_html = guide_section_content_html(chapter['section'])
         has_prev = chapter_nums.index(chap_idx) > 0
@@ -1295,7 +1295,7 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
                 # demande explicite ; Gospel Doctrine garde l'abreviation.
                 full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
                 entry['data-verse-ref'] = f'{full_book_name} {ref}'
-                entry['data-verse-text'] = ' '.join(pieces)
+                entry['data-verse-text'] = '\n\n'.join(pieces)
 
         content_html = guide2_section_content_html(chapter['section'])
         has_prev = chapter_nums.index(chap_idx) > 0
@@ -1337,7 +1337,7 @@ for book_idx, bom_book in enumerate(bom_book_data, 1):
                 ref = f'{chap_idx}:{vstart}' if vstart == vend else f'{chap_idx}:{vstart}-{vend}'
                 full_book_name = BOOK_NAME_MAP.get(bom_book['book_title'], bom_book['book_title'])
                 entry['data-verse-ref'] = f'{full_book_name} {ref}'
-                entry['data-verse-text'] = ' '.join(pieces)
+                entry['data-verse-text'] = '\n\n'.join(pieces)
 
         content_html = vv_section_content_html(chapter['section'])
         has_prev = chapter_nums.index(chap_idx) > 0
