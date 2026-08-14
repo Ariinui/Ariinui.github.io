@@ -2268,6 +2268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (matches.length) {
             guideContent.classList.add('isolated');
             var current = 0;
+            var partIndex = 0;
             var counterEl = null;
             var prevBtn = null;
             var nextBtn = null;
@@ -2276,6 +2277,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 matches.forEach(function(el) { el.classList.remove('target'); });
                 matches[i].classList.add('target');
                 current = i;
+                partIndex = 0;
                 if (counterEl) counterEl.textContent = (i + 1) + ' / ' + matches.length;
                 if (prevBtn) prevBtn.disabled = i === 0;
                 if (nextBtn) nextBtn.disabled = i === matches.length - 1;
@@ -2310,13 +2312,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     if (t) bodyParts.push(t);
                 });
-                var guideText = title
-                    ? (bodyParts.length ? title + '\\n\\n' + bodyParts.join('\\n\\n') : title)
-                    : bodyParts.join('\\n\\n');
                 return {
                     verseRef: entry.getAttribute('data-verse-ref'),
                     verseText: entry.getAttribute('data-verse-text'),
-                    guideText: guideText
+                    title: title,
+                    bodyParts: bodyParts
                 };
             }
 
@@ -2330,14 +2330,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 return str.split('').map(function(c) { return c + '\\u0332'; }).join('');
             }
 
-            function entryText(entry, underlineNotesLabel) {
-                var p = entryParts(entry);
-                var datePrefix = todayLong() + '\\n\\n';
-                var notesLabel = underlineNotesLabel ? underline('Notes du guide') : 'Notes du guide';
-                if (p.verseRef && p.verseText) {
-                    return datePrefix + p.verseRef + '\\n\\n' + p.verseText + '\\n\\n' + notesLabel + '\\n\\n' + p.guideText;
+            // Un message Messenger au-dela d'un certain nombre de caracteres
+            // est coupe automatiquement par Messenger (limite non documentee
+            // de facon fiable, valeur prudente retenue ici) - le texte est
+            // donc decoupe en plusieurs messages a envoyer a la suite plutot
+            // que risquer une troncature silencieuse.
+            var MESSENGER_CHUNK_MAX = 1800;
+
+            function splitLongBlock(text, maxLen) {
+                // Secours si un seul paragraphe depasse a lui seul la limite :
+                // coupe au dernier espace avant la limite, jamais en plein mot.
+                var parts = [];
+                while (text.length > maxLen) {
+                    var cut = text.lastIndexOf(' ', maxLen);
+                    if (cut <= 0) cut = maxLen;
+                    parts.push(text.slice(0, cut));
+                    text = text.slice(cut).trim();
                 }
-                return datePrefix + p.guideText;
+                parts.push(text);
+                return parts;
+            }
+
+            function entryTextParts(entry, underlineNotesLabel) {
+                var p = entryParts(entry);
+                var notesLabel = underlineNotesLabel ? underline('Notes du guide') : 'Notes du guide';
+
+                var blocks = [todayLong()];
+                if (p.verseRef && p.verseText) {
+                    blocks.push(p.verseRef);
+                    blocks.push(p.verseText);
+                    blocks.push(notesLabel);
+                }
+                blocks = blocks.concat(p.bodyParts);
+
+                var safeBlocks = [];
+                blocks.forEach(function(b) {
+                    if (b.length > MESSENGER_CHUNK_MAX) {
+                        safeBlocks = safeBlocks.concat(splitLongBlock(b, MESSENGER_CHUNK_MAX));
+                    } else {
+                        safeBlocks.push(b);
+                    }
+                });
+
+                var chunks = [];
+                var chunkCur = '';
+                safeBlocks.forEach(function(b) {
+                    var candidate = chunkCur ? chunkCur + '\\n\\n' + b : b;
+                    if (candidate.length > MESSENGER_CHUNK_MAX && chunkCur) {
+                        chunks.push(chunkCur);
+                        chunkCur = b;
+                    } else {
+                        chunkCur = candidate;
+                    }
+                });
+                if (chunkCur) chunks.push(chunkCur);
+
+                if (chunks.length > 1) {
+                    chunks = chunks.map(function(c, i) {
+                        return '(' + (i + 1) + '/' + chunks.length + ')\\n' + c;
+                    });
+                }
+                return chunks;
             }
 
             function showToast(message) {
@@ -2397,8 +2450,13 @@ document.addEventListener('DOMContentLoaded', function() {
             copyBtn.setAttribute('aria-label', 'Copier');
             copyBtn.title = 'Copier';
             copyBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(entryText(matches[current], true)).then(function() {
-                    showToast('Copie dans le presse-papier');
+                var parts = entryTextParts(matches[current], true);
+                var i = partIndex % parts.length;
+                navigator.clipboard.writeText(parts[i]).then(function() {
+                    showToast(parts.length > 1
+                        ? 'Partie ' + (i + 1) + '/' + parts.length + ' copiee - colle-la, puis reclique pour la suite'
+                        : 'Copie dans le presse-papier');
+                    partIndex = (i + 1) % parts.length;
                     copyBtn.innerHTML = ICON_CHECK;
                     copyBtn.classList.add('copied');
                     setTimeout(function() {
@@ -2416,7 +2474,13 @@ document.addEventListener('DOMContentLoaded', function() {
             shareBtn.setAttribute('aria-label', 'Partager');
             shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
-                var text = entryText(matches[current]);
+                var parts = entryTextParts(matches[current], false);
+                var i = partIndex % parts.length;
+                var text = parts[i];
+                if (parts.length > 1) {
+                    showToast('Partie ' + (i + 1) + '/' + parts.length + ' - partage-la, puis reclique pour la suite');
+                }
+                partIndex = (i + 1) % parts.length;
                 var shareData = { text: text };
                 if (navigator.share) {
                     navigator.share(shareData).catch(function() {});
