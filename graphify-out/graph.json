@@ -99,7 +99,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
       "id": "build_tah_dict_py",
-      "community": 1,
+      "community": 2,
       "norm_label": "build_tah_dict.py"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L20",
       "id": "build_tah_dict_normalize",
-      "community": 1,
+      "community": 2,
       "norm_label": "normalize()"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L37",
       "id": "build_tah_dict_dereduplicate_candidates",
-      "community": 1,
+      "community": 2,
       "norm_label": "dereduplicate_candidates()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L52",
       "id": "build_tah_dict_strip_candidates",
-      "community": 1,
+      "community": 2,
       "norm_label": "strip_candidates()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L97",
       "id": "build_tah_dict_glosses_for",
-      "community": 1,
+      "community": 2,
       "norm_label": "glosses_for()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L260",
       "id": "build_tah_dict_strip_accents",
-      "community": 1,
+      "community": 2,
       "norm_label": "strip_accents()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L265",
       "id": "build_tah_dict_fr_words",
-      "community": 1,
+      "community": 2,
       "norm_label": "fr_words()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L269",
       "id": "build_tah_dict_content_stem",
-      "community": 1,
+      "community": 2,
       "norm_label": "content_stem()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L277",
       "id": "build_tah_dict_part_stem",
-      "community": 1,
+      "community": 2,
       "norm_label": "part_stem()"
     },
     {
@@ -179,7 +179,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
-      "community": 1,
+      "community": 2,
       "norm_label": "one-off extraction: builds tah_dict.json (word -> short french gloss) from the r",
       "id": "build_tah_dict_rationale_1"
     },
@@ -188,7 +188,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L38",
-      "community": 1,
+      "community": 2,
       "norm_label": "un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     \"maitatai\" = \"",
       "id": "build_tah_dict_rationale_38"
     },
@@ -315,7 +315,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L67",
       "id": "generate_pages_split_verse_number",
-      "community": 8,
+      "community": 12,
       "norm_label": "split_verse_number()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L91",
       "id": "generate_pages_clean_bom_en_verse_text",
-      "community": 11,
+      "community": 10,
       "norm_label": "clean_bom_en_verse_text()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L103",
       "id": "generate_pages_parse_bom_en_source",
-      "community": 11,
+      "community": 10,
       "norm_label": "parse_bom_en_source()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L308",
       "id": "generate_pages_guide_section_content_html",
-      "community": 12,
+      "community": 11,
       "norm_label": "guide_section_content_html()"
     },
     {
@@ -387,7 +387,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L406",
       "id": "generate_pages_guide2_section_content_html",
-      "community": 9,
+      "community": 8,
       "norm_label": "guide2_section_content_html()"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L726",
       "id": "generate_pages_render_volume_block",
-      "community": 10,
+      "community": 9,
       "norm_label": "render_volume_block()"
     },
     {
@@ -521,7 +521,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 8,
+      "community": 12,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },
@@ -539,7 +539,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L309",
-      "community": 12,
+      "community": 11,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_309"
     },
@@ -548,7 +548,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L407",
-      "community": 9,
+      "community": 8,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_407"
     },
@@ -593,7 +593,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L727",
-      "community": 10,
+      "community": 9,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_727"
     },
@@ -603,7 +603,7 @@
       "source_file": "script.js",
       "source_location": "L1",
       "id": "script_js",
-      "community": 2,
+      "community": 1,
       "norm_label": "script.js"
     },
     {
@@ -612,34 +612,34 @@
       "source_file": "script.js",
       "source_location": "L130",
       "id": "script_wiretoggle",
-      "community": 2,
+      "community": 1,
       "norm_label": "wiretoggle()"
     },
     {
       "label": "showEntry()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L161",
+      "source_location": "L162",
       "id": "script_showentry",
-      "community": 2,
+      "community": 1,
       "norm_label": "showentry()"
     },
     {
       "label": "goToEntry()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L170",
+      "source_location": "L172",
       "id": "script_gotoentry",
-      "community": 2,
+      "community": 1,
       "norm_label": "gotoentry()"
     },
     {
       "label": "entryParts()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L175",
+      "source_location": "L177",
       "id": "script_entryparts",
-      "community": 2,
+      "community": 1,
       "norm_label": "entryparts()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "script.js",
       "source_location": "L209",
       "id": "script_todaylong",
-      "community": 2,
+      "community": 1,
       "norm_label": "todaylong()"
     },
     {
@@ -657,43 +657,52 @@
       "source_file": "script.js",
       "source_location": "L215",
       "id": "script_underline",
-      "community": 2,
+      "community": 1,
       "norm_label": "underline()"
     },
     {
-      "label": "entryText()",
+      "label": "splitLongBlock()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L219",
-      "id": "script_entrytext",
-      "community": 2,
-      "norm_label": "entrytext()"
+      "source_location": "L226",
+      "id": "script_splitlongblock",
+      "community": 1,
+      "norm_label": "splitlongblock()"
+    },
+    {
+      "label": "entryTextParts()",
+      "file_type": "code",
+      "source_file": "script.js",
+      "source_location": "L240",
+      "id": "script_entrytextparts",
+      "community": 1,
+      "norm_label": "entrytextparts()"
     },
     {
       "label": "showToast()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L229",
+      "source_location": "L282",
       "id": "script_showtoast",
-      "community": 2,
+      "community": 1,
       "norm_label": "showtoast()"
     },
     {
       "label": "setupTapToTranslate()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L344",
+      "source_location": "L408",
       "id": "script_setuptaptotranslate",
-      "community": 2,
+      "community": 1,
       "norm_label": "setuptaptotranslate()"
     },
     {
       "label": "saveReadingPosition()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L412",
+      "source_location": "L476",
       "id": "script_savereadingposition",
-      "community": 2,
+      "community": 1,
       "norm_label": "savereadingposition()"
     },
     {
@@ -1863,7 +1872,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L161",
+      "source_location": "L162",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_showentry",
@@ -1875,7 +1884,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L170",
+      "source_location": "L172",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_gotoentry",
@@ -1887,7 +1896,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L175",
+      "source_location": "L177",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entryparts",
@@ -1923,19 +1932,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L219",
+      "source_location": "L226",
       "weight": 1.0,
       "_src": "script_js",
-      "_tgt": "script_entrytext",
+      "_tgt": "script_splitlongblock",
       "source": "script_js",
-      "target": "script_entrytext",
+      "target": "script_splitlongblock",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L229",
+      "source_location": "L240",
+      "weight": 1.0,
+      "_src": "script_js",
+      "_tgt": "script_entrytextparts",
+      "source": "script_js",
+      "target": "script_entrytextparts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "script.js",
+      "source_location": "L282",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_showtoast",
@@ -1947,7 +1968,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L344",
+      "source_location": "L408",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_setuptaptotranslate",
@@ -1959,7 +1980,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L412",
+      "source_location": "L476",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_savereadingposition",
@@ -1971,7 +1992,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L171",
+      "source_location": "L173",
       "weight": 1.0,
       "_src": "script_gotoentry",
       "_tgt": "script_showentry",
@@ -1983,36 +2004,48 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L220",
+      "source_location": "L241",
       "weight": 1.0,
-      "_src": "script_entrytext",
+      "_src": "script_entrytextparts",
       "_tgt": "script_entryparts",
       "source": "script_entryparts",
-      "target": "script_entrytext",
+      "target": "script_entrytextparts",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L221",
+      "source_location": "L244",
       "weight": 1.0,
-      "_src": "script_entrytext",
+      "_src": "script_entrytextparts",
       "_tgt": "script_todaylong",
       "source": "script_todaylong",
-      "target": "script_entrytext",
+      "target": "script_entrytextparts",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L222",
+      "source_location": "L242",
       "weight": 1.0,
-      "_src": "script_entrytext",
+      "_src": "script_entrytextparts",
       "_tgt": "script_underline",
       "source": "script_underline",
-      "target": "script_entrytext",
+      "target": "script_entrytextparts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "script.js",
+      "source_location": "L255",
+      "weight": 1.0,
+      "_src": "script_entrytextparts",
+      "_tgt": "script_splitlongblock",
+      "source": "script_splitlongblock",
+      "target": "script_entrytextparts",
       "confidence_score": 1.0
     }
   ],
