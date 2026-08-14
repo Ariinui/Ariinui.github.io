@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-13)
 
 ## Corpus Check
-- 6 files · ~18,652 words
+- 6 files · ~18,719 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -100,15 +100,15 @@ Nodes (2): guide2_section_content_html(), HTML interne d'une section guide2 : un
 
 ### Community 9 - "Community 9"
 Cohesion: 1.0
-Nodes (2): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_, render_volume_block()
+Nodes (2): guide_section_content_html(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 10 - "Community 10"
 Cohesion: 1.0
-Nodes (2): clean_bom_en_verse_text(), parse_bom_en_source()
+Nodes (2): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_, render_volume_block()
 
 ### Community 11 - "Community 11"
 Cohesion: 1.0
-Nodes (2): guide_section_content_html(), HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (2): clean_bom_en_verse_text(), parse_bom_en_source()
 
 ### Community 12 - "Community 12"
 Cohesion: 1.0
@@ -203,11 +203,11 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 8`** (2 nodes): `guide2_section_content_html()`, `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 9`** (2 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`, `render_volume_block()`
+- **Thin community `Community 9`** (2 nodes): `guide_section_content_html()`, `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (2 nodes): `clean_bom_en_verse_text()`, `parse_bom_en_source()`
+- **Thin community `Community 10`** (2 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`, `render_volume_block()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (2 nodes): `guide_section_content_html()`, `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 11`** (2 nodes): `clean_bom_en_verse_text()`, `parse_bom_en_source()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 12`** (2 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`, `split_verse_number()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
