@@ -480,7 +480,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupTapToTranslate('.tah-word', '../tah_dict.json');
-    setupTapToTranslate('.en-word', '../../en_dict.json');
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
@@ -530,9 +529,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // position enregistree.
     var continueSlot = document.getElementById('continue-reading-slot');
     if (continueSlot) {
+        // Seuls francais/tahitien sont listes sur la page d'accueil - un
+        // Continuer vers un volume retire de l'accordeon (guides, etc.)
+        // n'a pas de sens ici.
+        var HOME_VOLUME_KEYS = ['french', 'tahitian'];
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
         Object.keys(savedAll).forEach(function(key) {
+            if (HOME_VOLUME_KEYS.indexOf(key) === -1) return;
             var saved = savedAll[key];
             if (!saved || !saved.href) return;
             var link = document.createElement('a');

@@ -73,80 +73,6 @@ def split_verse_number(francais_text):
 
 
 # ---------------------------------------------------------------------------
-# Volume 6 source : Livre de Mormon anglais (book-of-mormon-en/index.html,
-# export Calibre). Structure differente de livre_de_mormon.html (source deja
-# structuree en 'verse-container') : ici chaque verset est un <p class="verse">
-# contenant un <span class="verse-number"> puis le texte, avec des
-# <a class="scripture-ref"> intercales pour les notes de bas de page - leur
-# texte colle la lettre de la note directement au mot qui suit (ex.
-# <a><sup class="marker">a</sup>born</a> -> get_text() = "aborn"), donc on ne
-# peut pas decomposer l'ancre entiere sans perdre le mot : seul le
-# <sup class="marker"> interne est retire, le reste (le vrai mot) est garde
-# en place via unwrap(). Chapitres = <div class="calibre2"> contenant des
-# p.verse ; le titre du livre (h1, present seulement au 1er chapitre de
-# chaque livre) est reporte sur les chapitres suivants via un etat courant.
-# Aucune image (pas de <img> dans les chapitres de toute facon, verifie).
-# ---------------------------------------------------------------------------
-
-def clean_bom_en_verse_text(p_verse):
-    vn = p_verse.find('span', class_='verse-number')
-    if vn:
-        vn.decompose()
-    for ref in p_verse.find_all('a', class_='scripture-ref'):
-        sup = ref.find('sup', class_='marker')
-        if sup:
-            sup.decompose()
-        ref.unwrap()
-    return p_verse.get_text(' ', strip=True)
-
-
-def parse_bom_en_source(path):
-    with open(path, 'r', encoding='utf-8') as file:
-        soup = BeautifulSoup(file, 'lxml')
-
-    # Meme ordre canonique que BOOK_NAME_MAP (verifie : les 15 livres de la
-    # source anglaise apparaissent dans cet ordre exact) - sert a donner a
-    # chaque chapitre un titre court style "1 Nephi 1" plutot que le nom
-    # complet de la source ("The First Book of Nephi").
-    short_names = list(BOOK_NAME_MAP.values())
-
-    books = []
-    current_book_full = None
-
-    for container in soup.find_all('div', class_='calibre2'):
-        header = container.find('header', recursive=False)
-        h1 = header.find('h1', recursive=False) if header else None
-        if h1:
-            current_book_full = h1.get_text(' ', strip=True)
-
-        verses_p = container.find_all('p', class_='verse')
-        if not verses_p:
-            continue
-
-        if not books or books[-1]['book_title_full'] != current_book_full:
-            book_idx = len(books)
-            short_name = short_names[book_idx] if book_idx < len(short_names) else current_book_full
-            books.append({'book_title_full': current_book_full, 'book_title': short_name, 'chapters': []})
-
-        chap_num = len(books[-1]['chapters']) + 1
-        short_name = books[-1]['book_title']
-
-        verses = []
-        for vp in verses_p:
-            vn = vp.find('span', class_='verse-number')
-            num_txt = vn.get_text(strip=True) if vn else ''
-            try:
-                num = int(num_txt)
-            except ValueError:
-                num = None
-            verses.append((num, clean_bom_en_verse_text(vp)))
-
-        books[-1]['chapters'].append({'title': f'{short_name} {chap_num}', 'verses': verses})
-
-    return books
-
-
-# ---------------------------------------------------------------------------
 # Glossaire tahitien au tap (tah_dict.json, extrait une fois pour toutes du
 # dictionnaire REO via build_tah_dict.py - pas une dependance de generation,
 # juste un fichier de donnees commite comme livre_de_mormon.html)
@@ -584,142 +510,6 @@ def vv_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
-# Volume 5 source : General Conference talks (conference-sources/<dossier>/index.html,
-# un dossier par numero - export Calibre depuis churchofjesuschrist.org). Pas
-# d'images (jamais copiees, <img> retirees a l'extraction).
-# ---------------------------------------------------------------------------
-
-CONFERENCE_TALK_TITLE_RE = re.compile(r'^(.*)\s\(([^()]+)\)$')
-
-EN_WORD_RE = re.compile(r"[A-Za-z']+")
-
-try:
-    with open('en_dict.json', 'r', encoding='utf-8') as f:
-        en_dict = json.load(f)
-except FileNotFoundError:
-    en_dict = {}
-
-
-def wrap_en_words(text):
-    """Equivalent anglais de wrap_tah_words() - pas de detection de groupes
-    de mots ici (pas necessaire pour l'anglais, contrairement aux verbes
-    composes tahitiens), juste un lookup mot a mot dans en_dict."""
-    if not en_dict:
-        return text
-    matches = list(EN_WORD_RE.finditer(text))
-    if not matches:
-        return text
-    out = []
-    last_end = 0
-    for m in matches:
-        key = m.group(0).strip("'").lower()
-        if key in en_dict:
-            out.append(text[last_end:m.start()])
-            out.append(f'<span class="en-word" data-w="{key}">{m.group(0)}</span>')
-            last_end = m.end()
-    out.append(text[last_end:])
-    return ''.join(out)
-
-
-def apply_en_translate(tag):
-    """Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne
-    touchant que les noeuds de texte du HTML deja parse - jamais les balises
-    ni les attributs, pour ne pas casser les liens <a href> ou les italiques
-    <em> deja presents dans le corps du discours source."""
-    if not en_dict:
-        return
-    for node in list(tag.find_all(string=True)):
-        if node.parent.name in ('script', 'style'):
-            continue
-        wrapped = wrap_en_words(str(node))
-        if wrapped == str(node):
-            continue
-        frag = BeautifulSoup(wrapped, 'html.parser')
-        node.replace_with(frag)
-
-
-def parse_conference_issue(path):
-    """Un <section id=...> de premier niveau sans div.body-block est un
-    separateur de session (ex. "Saturday Morning Session") - pas un
-    discours, juste une metadonnee gardee pour les discours suivants.
-
-    Certains discours a tiroirs (ex. 1977 : "The Foundations of
-    Righteousness" continue en sous-<section> imbriquees DANS son propre
-    div.body-block - 2.1 "Home Evening", 2.2 "Patriarchal Blessings"...,
-    chacune son <h2> mais sans son propre div.body-block) - detectees et
-    aplaties (h2 remplace par un marqueur <h3 class="conf-subhead">) avant
-    de figer le contenu du discours parent en un seul decode_contents(),
-    plutot que traitees comme des discours separes. Uniquement
-    soup.find_all('section', id=True) DIRECTEMENT sur soup (jamais sur un
-    body-block deja trouve) donnerait ces sous-sections en double - elles
-    ne sont jamais iterees comme entrees de premier niveau."""
-    with open(path, 'r', encoding='utf-8') as file:
-        soup = BeautifulSoup(file, 'html.parser')
-
-    titlepage_h1 = soup.find('h1', class_='title')
-    issue_title = titlepage_h1.get_text(strip=True) if titlepage_h1 else os.path.basename(os.path.dirname(path))
-
-    all_sections = soup.find_all('section', id=True)
-    top_sections = [s for s in all_sections if s.find_parent('section', id=True) is None]
-
-    talks = []
-    current_session = None
-    for sec in top_sections:
-        h1 = sec.find('h1')
-        if not h1:
-            continue
-        title_raw = h1.get_text(' ', strip=True)
-        body_block = sec.find('div', class_='body-block')
-        if body_block is None:
-            current_session = title_raw
-            continue
-        m = CONFERENCE_TALK_TITLE_RE.match(title_raw)
-        talk_title, speaker = (m.group(1).strip(), m.group(2).strip()) if m else (title_raw, None)
-
-        for sub in body_block.find_all('section', id=True):
-            sub_heading = sub.find(['h1', 'h2'])
-            sub_title = sub_heading.get_text(' ', strip=True) if sub_heading else None
-            if sub_heading:
-                sub_heading.decompose()
-            if sub_title:
-                marker = soup.new_tag('h3')
-                marker['class'] = 'conf-subhead'
-                marker.string = sub_title
-                sub.insert_before(marker)
-
-        for img in body_block.find_all('img'):
-            img.decompose()
-        apply_en_translate(body_block)
-        talks.append({
-            'title': talk_title,
-            'speaker': speaker,
-            'session': current_session,
-            'content_html': body_block.decode_contents(),
-        })
-    return issue_title, talks
-
-
-def load_conference_issues(sources_dir='conference-sources'):
-    """Forme attendue par render_volume_block : un 'livre' par numero de
-    conference, ses discours comme 'chapitres'. Un futur numero n'a qu'a
-    etre depose dans un nouveau sous-dossier - aucun code a modifier."""
-    issues = []
-    if not os.path.isdir(sources_dir):
-        return issues
-    for folder in sorted(os.listdir(sources_dir)):
-        issue_path = os.path.join(sources_dir, folder, 'index.html')
-        if not os.path.isfile(issue_path):
-            continue
-        issue_title, talks = parse_conference_issue(issue_path)
-        issues.append({
-            'book_title': issue_title,
-            'folder': folder,
-            'chapters': [dict(t, chapter_num=n) for n, t in enumerate(talks, 1)],
-        })
-    return issues
-
-
-# ---------------------------------------------------------------------------
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
@@ -876,7 +666,6 @@ def write(path, content):
 # ---------------------------------------------------------------------------
 
 bom_book_data = parse_bom_source('livre_de_mormon.html')
-bom_en_book_data = parse_bom_en_source('book-of-mormon-en/index.html')
 guide_intro_items, guide_books_by_name, guide_verse_index_by_name = parse_guide_source(
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html'
 )
@@ -886,7 +675,6 @@ guide2_books_by_name, guide2_verse_index_by_name = parse_guide2_source(
 guide3_books_by_name, guide3_verse_index_by_name = parse_vv_source(
     'verse-by-verse-book-of-mormon/index.html'
 )
-conference_issues = load_conference_issues()
 
 # (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
 # verset en tete - utilise pour prefixer le(s) verset(s) au Copier/Partager
@@ -968,28 +756,25 @@ for (name, chap_num, verse_num), anchor in guide3_verse_index_by_name.items():
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters', 'chapters-fr', 'chapters-tah', 'chapters-en', 'guide', 'guide2', 'guide3', 'conference'):
+for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3'):
     shutil.rmtree(d, ignore_errors=True)
-os.makedirs('chapters', exist_ok=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
-os.makedirs('chapters-en', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
 os.makedirs('guide2/chapters', exist_ok=True)
 os.makedirs('guide3/chapters', exist_ok=True)
-os.makedirs('conference', exist_ok=True)
 
-# --- index.html : bibliotheque a 3 volumes ---------------------------------
+# --- index.html : bibliotheque -----------------------------------------
+#
+# N'affiche que le Livre de Mormon francais et tahitien - les 3 guides
+# d'etude restent generes et pleinement fonctionnels (accessibles via les
+# signets francais et par lien direct), seule leur entree dans cette liste
+# a ete retiree sur demande explicite. Le bilingue/l'anglais/la Conference
+# ont ete supprimes completement (plus de generation du tout, voir plus bas).
 
 toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls='')
 toc_html += '        <h1>Bibliotheque</h1>\n'
 toc_html += '        <div id="continue-reading-slot"></div>\n'
-
-toc_html += render_volume_block(
-    'Livre de Mormon (tahitien / francais)',
-    bom_book_data,
-    lambda bi, ci, ch: f'chapters/chapter_{bi}_{ci}.html'
-)
 
 toc_html += render_volume_block(
     'Livre de Mormon (francais)',
@@ -1003,112 +788,8 @@ toc_html += render_volume_block(
     lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
 )
 
-toc_html += render_volume_block(
-    'Livre de Mormon (anglais)',
-    bom_en_book_data,
-    lambda bi, ci, ch: f'chapters-en/chapter_{bi}_{ci}.html'
-)
-
-guide_all_books = []
-if guide_intro_items:
-    guide_all_books.append({
-        'book_title': 'Introductory Pages',
-        'book_idx': None,
-        'chapters': [{'title': item['title'], 'chapter_num': n} for n, item in enumerate(guide_intro_items, 1)]
-    })
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide_chapters = guide_chapters_by_bom_idx[book_idx]
-    if not guide_chapters:
-        continue  # ex: Words of Mormon, pas de contenu guide
-    guide_all_books.append({
-        'book_title': bom_book['book_title'],
-        'book_idx': book_idx,
-        'chapters': [dict(guide_chapters[n], chapter_num=n) for n in sorted(guide_chapters.keys())]
-    })
-
-def guide_href(bi, ci, ch):
-    if guide_intro_items and bi == 1:
-        return f'guide/chapters/intro_{ci}.html'
-    real_book = guide_all_books[bi - 1]
-    return f'guide/chapters/chapter_{real_book["book_idx"]}_{ci}.html'
-
-toc_html += render_volume_block('Book of Mormon Study Guide (Gospel Doctrine)', guide_all_books, guide_href)
-
-guide2_all_books = []
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide2_chapters = guide2_chapters_by_bom_idx[book_idx]
-    if not guide2_chapters:
-        continue
-    guide2_all_books.append({
-        'book_title': bom_book['book_title'],
-        'book_idx': book_idx,
-        'chapters': [dict(guide2_chapters[n], chapter_num=n) for n in sorted(guide2_chapters.keys())]
-    })
-
-def guide2_href(bi, ci, ch):
-    real_book = guide2_all_books[bi - 1]
-    return f'guide2/chapters/chapter_{real_book["book_idx"]}_{ci}.html'
-
-toc_html += render_volume_block('Book of Mormon Study Guide (Start to Finish)', guide2_all_books, guide2_href)
-
-guide3_all_books = []
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide3_chapters = guide3_chapters_by_bom_idx[book_idx]
-    if not guide3_chapters:
-        continue
-    guide3_all_books.append({
-        'book_title': bom_book['book_title'],
-        'book_idx': book_idx,
-        'chapters': [dict(guide3_chapters[n], chapter_num=n) for n in sorted(guide3_chapters.keys())]
-    })
-
-def guide3_href(bi, ci, ch):
-    real_book = guide3_all_books[bi - 1]
-    return f'guide3/chapters/chapter_{real_book["book_idx"]}_{ci}.html'
-
-toc_html += render_volume_block('Verse by Verse Book of Mormon', guide3_all_books, guide3_href)
-
-def conference_href(bi, ci, ch):
-    return f'conference/{conference_issues[bi - 1]["folder"]}/talk_{ci}.html'
-
-if conference_issues:
-    toc_html += render_volume_block('General Conference', conference_issues, conference_href)
-
 toc_html += PAGE_TAIL
 write('index.html', toc_html)
-
-# --- Volume 1 : chapitres tahitien/francais (inchange) ----------------------
-
-for book_idx, book in enumerate(bom_book_data, 1):
-    for chap_idx, chapter in enumerate(book['chapters'], 1):
-        verses_html = ''
-        for verse in chapter['verses']:
-            verse_num, _ = split_verse_number(verse['francais'])
-            id_attr = f' id="v{verse_num}"' if verse_num is not None else ''
-            verses_html += f'<div class="verse-container"{id_attr}>'
-            verses_html += f'<div class="tahitien">{verse["tahitien"]}</div>'
-            verses_html += f'<div class="francais">{verse["francais"]}</div>'
-            verses_html += '</div>'
-
-        introduction_html = ''
-        if chapter['introduction']:
-            introduction_html = '<div class="verse-container introduction">'
-            introduction_html += f'<div class="tahitien">{chapter["introduction"]["tahitien"]}</div>'
-            introduction_html += f'<div class="francais">{chapter["introduction"]["francais"]}</div>'
-            introduction_html += '</div>'
-
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
-
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
-        html += f'<div class="verses-bi" data-volume-key="bilingual" data-volume-title="Livre de Mormon (tahitien / français)">'
-        html += verses_html + introduction_html
-        html += '</div>'
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
-        html += PAGE_TAIL
-
-        write(f'chapters/chapter_{book_idx}_{chap_idx}.html', html)
 
 # --- Volume 2 : Livre de Mormon francais seul, avec signets vers le guide ---
 
@@ -1183,30 +864,6 @@ for book_idx, book in enumerate(bom_book_data, 1):
         html += PAGE_TAIL
 
         write(f'chapters-tah/chapter_{book_idx}_{chap_idx}.html', html)
-
-# --- Volume 6 : Livre de Mormon anglais seul, tap-to-translate vers en_dict --
-
-for book_idx, book in enumerate(bom_en_book_data, 1):
-    for chap_idx, chapter in enumerate(book['chapters'], 1):
-        verses_html = ''
-        for verse_num, verse_text in chapter['verses']:
-            verse_text = wrap_en_words(verse_text)
-            id_attr = f' id="v{verse_num}"' if verse_num is not None else ''
-            sup = f'<sup>{verse_num}</sup>' if verse_num is not None else ''
-            verses_html += f'<p class="verse-fr"{id_attr}>{sup}{verse_text}</p>'
-
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
-
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
-        html += f'<div class="verses-fr" data-volume-key="english" data-volume-title="Livre de Mormon (anglais)">'
-        html += verses_html
-        html += '</div>'
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
-        html += PAGE_TAIL
-
-        write(f'chapters-en/chapter_{book_idx}_{chap_idx}.html', html)
 
 def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, content_fn):
     """Genere les pages chapitre d'un volume de commentaire lie au Livre de
@@ -1287,32 +944,6 @@ write_guide_volume(guide2_chapters_by_bom_idx, 'guide2', 'guide2', 'Book of Morm
 # --- Volume 7 : Verse by Verse Book of Mormon --------------------------------
 
 write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Verse Book of Mormon', vv_section_content_html)
-
-# --- Volume 5 : General Conference -------------------------------------------
-
-for issue in conference_issues:
-    folder = issue['folder']
-    talks = issue['chapters']
-    for idx, talk in enumerate(talks, 1):
-        prev_link = f'<a href="talk_{idx-1}.html">Discours precedent</a> | ' if idx > 1 else ''
-        next_link = f'<a href="talk_{idx+1}.html">Discours suivant</a> | ' if idx < len(talks) else ''
-
-        html = PAGE_HEAD.format(title=talk['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{issue["book_title"]}</h1>\n'
-        if talk['session']:
-            html += f'    <p class="conf-session">{talk["session"]}</p>\n'
-        html += f'    <h2>{talk["title"]}</h2>\n'
-        if talk['speaker']:
-            html += f'    <p class="conf-speaker">{talk["speaker"]}</p>\n'
-        html += (f'<div class="guide-content" data-volume-key="conference-{folder}" '
-                  f'data-volume-title="{issue["book_title"]}">{talk["content_html"]}</div>')
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
-        html += PAGE_TAIL
-
-        write(f'conference/{folder}/talk_{idx}.html', html)
-
-conference_talk_count = sum(len(issue['chapters']) for issue in conference_issues)
-print(f'{len(conference_issues)} numeros de conference, {conference_talk_count} discours.')
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
@@ -2529,7 +2160,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupTapToTranslate('.tah-word', '../tah_dict.json');
-    setupTapToTranslate('.en-word', '../../en_dict.json');
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
@@ -2579,9 +2209,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // position enregistree.
     var continueSlot = document.getElementById('continue-reading-slot');
     if (continueSlot) {
+        // Seuls francais/tahitien sont listes sur la page d'accueil - un
+        // Continuer vers un volume retire de l'accordeon (guides, etc.)
+        // n'a pas de sens ici.
+        var HOME_VOLUME_KEYS = ['french', 'tahitian'];
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
         Object.keys(savedAll).forEach(function(key) {
+            if (HOME_VOLUME_KEYS.indexOf(key) === -1) return;
             var saved = savedAll[key];
             if (!saved || !saved.href) return;
             var link = document.createElement('a');
