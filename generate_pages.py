@@ -851,7 +851,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
-        html += f'    <h1>{book_display_title(book["book_title"])}</h1>\n    <h2>{display_chapter_title}</h2>\n'
+        html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
         html += verses_html + introduction_html
         html += '</div>'
@@ -883,7 +883,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{book_display_title(book["book_title"])}</h1>\n    <h2>{display_chapter_title}</h2>\n'
+        html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
         html += verses_html + introduction_html
         html += '</div>'

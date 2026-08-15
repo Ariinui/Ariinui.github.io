@@ -95,6 +95,12 @@ h1 {
     font-size: 22px;
 }
 
+.chapter-title {
+    margin: 0 0 16px;
+    font-size: 22px;
+    text-align: center;
+}
+
 .page-controls {
     position: absolute;
     top: 32px;
@@ -658,11 +664,6 @@ html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
     margin-left: 0 !important;
     padding-left: 1em;
     border-left: 3px solid var(--border);
-}
-
-.guide-content p.guide-empty {
-    font-style: italic;
-    color: var(--text-muted);
 }
 
 .guide-content ol, .guide-content ul {
