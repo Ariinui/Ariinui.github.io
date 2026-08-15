@@ -159,6 +159,31 @@ BOOK_NAME_MAP = {
     '4 Ne': '4 Nephi', 'Morm': 'Mormon', 'Ether': 'Ether', 'Moro': 'Moroni',
 }
 
+# Nom complet francais affiche (accordeon d'accueil + <h1> de chaque page,
+# guides inclus) - book_title (l'abrege ci-dessus) reste utilise tel quel
+# comme cle interne (BOOK_NAME_MAP, guide_chapters_by_bom_idx...), jamais
+# remplace directement, pour ne rien casser dans le matching guide<->BdM.
+BOOK_TITLE_FR_FULL = {
+    '1 Ne': '1 Néphi', '2 Ne': '2 Néphi', 'Jacob': 'Jacob', 'Enos': 'Énos',
+    'Jarom': 'Jarom', 'Omni': 'Omni', 'W Of M': 'Paroles de Mormon',
+    'Mosiah': 'Mosiah', 'Alma': 'Alma', 'Hel': 'Hélaman', '3 Ne': '3 Néphi',
+    '4 Ne': '4 Néphi', 'Morm': 'Mormon', 'Ether': 'Éther', 'Moro': 'Moroni',
+}
+
+
+def book_display_title(title):
+    return BOOK_TITLE_FR_FULL.get(title, title)
+
+
+def chapter_display_title(book_title, raw_title):
+    """raw_title est toujours '{book_title} Chapitre N' (source) - ne
+    remplace que le prefixe abrege par le nom complet, garde le reste
+    (numero de chapitre) tel quel plutot que de le reconstruire."""
+    full = book_display_title(book_title)
+    if full != book_title and raw_title.startswith(book_title + ' '):
+        return full + raw_title[len(book_title):]
+    return raw_title
+
 
 def parse_guide_source(path):
     with open(path, 'r', encoding='utf-8') as file:
@@ -529,7 +554,7 @@ def render_volume_block(title, books, chapter_href):
                     <div class="accordion-item">
                         <button class="accordion-button" type="button" aria-expanded="false">
                             <span class="chevron" aria-hidden="true"></span>
-                            {book["book_title"]}
+                            {book_display_title(book["book_title"])}
                         </button>
                         <div class="accordion-content">
                             <div class="chapter-grid">
@@ -537,7 +562,7 @@ def render_volume_block(title, books, chapter_href):
         for chap_idx, chapter in enumerate(book['chapters'], 1):
             chap_num = chapter.get('chapter_num', chap_idx)
             href = chapter_href(book_idx, chap_num, chapter)
-            html += f'<a class="chapter-link" href="{href}" title="{chapter["title"]}">{chap_num}</a>'
+            html += f'<a class="chapter-link" href="{href}" title="{chapter_display_title(book["book_title"], chapter["title"])}">{chap_num}</a>'
         html += '''
                             </div>
                         </div>
@@ -824,8 +849,9 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
-        html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
+        display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
+        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
+        html += f'    <h1>{book_display_title(book["book_title"])}</h1>\n    <h2>{display_chapter_title}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
         html += verses_html + introduction_html
         html += '</div>'
@@ -855,8 +881,9 @@ for book_idx, book in enumerate(bom_book_data, 1):
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        html = PAGE_HEAD.format(title=chapter['title'], styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h1>{book["book_title"]}</h1>\n    <h2>{chapter["title"]}</h2>\n'
+        display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
+        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
+        html += f'    <h1>{book_display_title(book["book_title"])}</h1>\n    <h2>{display_chapter_title}</h2>\n'
         html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
         html += verses_html + introduction_html
         html += '</div>'
@@ -913,7 +940,7 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
 
             html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-            html += f'    <h1>{bom_book["book_title"]}</h1>\n    <h2>{title}</h2>\n'
+            html += f'    <h1>{book_display_title(bom_book["book_title"])}</h1>\n    <h2>{title}</h2>\n'
             html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="{volume_key}" data-volume-title="{volume_title}">{content_html}</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
             html += PAGE_TAIL
