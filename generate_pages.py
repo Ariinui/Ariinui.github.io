@@ -1758,6 +1758,27 @@ html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
     border-color: #4ade80;
 }
 
+.entry-card-actions button.refs-toggle-btn {
+    position: relative;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+}
+
+.entry-card-actions button.refs-toggle-btn.active {
+    color: var(--text-faint);
+}
+
+.entry-card-actions button.refs-toggle-btn.active::after {
+    content: '';
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    top: 50%;
+    height: 2px;
+    background: currentColor;
+    transform: rotate(-12deg);
+}
+
 .entry-card-nav button:disabled {
     opacity: 0.4;
     cursor: default;
@@ -2095,6 +2116,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return str.split('').map(function(c) { return c + '\\u0332'; }).join('');
             }
 
+            // Retire les references entre parentheses du corps du texte
+            // ("(voir 1 Nephi 2:16)", "(Ensign, oct. 2011, p. 43)"...) -
+            // option de partage uniquement (jamais Copier), non recursif
+            // mais suffisant : les parentheses de ce contenu ne s'embrouillent
+            // jamais entre elles (verifie sur le Student Manual).
+            function stripParenRefs(text) {
+                return text.replace(/\\s*\\([^()]*\\)/g, '').replace(/[ \\t]{2,}/g, ' ').trim();
+            }
+
             // Un message Messenger au-dela d'un certain nombre de caracteres
             // est coupe automatiquement par Messenger. Non documentee
             // officiellement, mais mesuree empiriquement par l'utilisateur :
@@ -2119,9 +2149,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return parts;
             }
 
-            function entryBlocks(entry, underlineNotesLabel) {
+            function entryBlocks(entry, underlineNotesLabel, stripRefs) {
                 var p = entryParts(entry);
                 var notesLabel = underlineNotesLabel ? underline('Notes du guide') : 'Notes du guide';
+                var bodyParts = stripRefs ? p.bodyParts.map(stripParenRefs) : p.bodyParts;
 
                 var blocks = [todayLong()];
                 if (p.verseRef && p.verseText) {
@@ -2129,19 +2160,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     blocks.push(p.verseText);
                     blocks.push(notesLabel);
                 }
-                return blocks.concat(p.bodyParts);
+                return blocks.concat(bodyParts);
             }
 
             // Copier : texte integral, jamais decoupe (destination inconnue
-            // - Notes, email... pas forcement Messenger).
+            // - Notes, email... pas forcement Messenger), jamais de retrait
+            // de reference non plus (ce toggle n'existe que sur Partager).
             function entryFullText(entry, underlineNotesLabel) {
-                return entryBlocks(entry, underlineNotesLabel).join('\\n\\n');
+                return entryBlocks(entry, underlineNotesLabel, false).join('\\n\\n');
             }
 
             // Partager : decoupe en plusieurs messages, uniquement pour ne
             // jamais depasser la limite Messenger (voir MESSENGER_CHUNK_MAX).
-            function entryTextParts(entry, underlineNotesLabel) {
-                var blocks = entryBlocks(entry, underlineNotesLabel);
+            function entryTextParts(entry, underlineNotesLabel, stripRefs) {
+                var blocks = entryBlocks(entry, underlineNotesLabel, stripRefs);
 
                 var safeBlocks = [];
                 blocks.forEach(function(b) {
@@ -2249,7 +2281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             shareBtn.setAttribute('aria-label', 'Partager');
             shareBtn.title = 'Partager';
             shareBtn.addEventListener('click', function() {
-                var parts = entryTextParts(matches[current], false);
+                var parts = entryTextParts(matches[current], false, refsHidden());
                 var i = partIndex % parts.length;
                 var text = parts[i];
                 if (parts.length > 1) {
@@ -2268,8 +2300,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            // Interrupteur persistant : retire les references entre
+            // parentheses du corps du texte au moment de Partager
+            // uniquement (jamais Copier). Etat garde en localStorage,
+            // comme les autres reglages du site (taille de texte, signets).
+            var REFS_HIDE_KEY = 'bukaAMoromona:hideRefsOnShare';
+            function refsHidden() { return localStorage.getItem(REFS_HIDE_KEY) === '1'; }
+
+            var refsToggleBtn = document.createElement('button');
+            refsToggleBtn.type = 'button';
+            refsToggleBtn.className = 'refs-toggle-btn';
+            refsToggleBtn.textContent = '(…)';
+            function updateRefsToggleUI() {
+                var hidden = refsHidden();
+                refsToggleBtn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+                refsToggleBtn.classList.toggle('active', hidden);
+                refsToggleBtn.title = hidden
+                    ? 'Références (...) masquées au partage - cliquer pour les remettre'
+                    : 'Masquer les références (...) au partage';
+            }
+            refsToggleBtn.addEventListener('click', function() {
+                if (refsHidden()) localStorage.removeItem(REFS_HIDE_KEY);
+                else localStorage.setItem(REFS_HIDE_KEY, '1');
+                updateRefsToggleUI();
+            });
+            updateRefsToggleUI();
+
             actionsRow.appendChild(copyBtn);
             actionsRow.appendChild(shareBtn);
+            actionsRow.appendChild(refsToggleBtn);
             controls.appendChild(actionsRow);
 
             guideContent.parentNode.insertBefore(controls, guideContent.nextSibling);

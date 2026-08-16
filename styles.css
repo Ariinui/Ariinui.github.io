@@ -645,6 +645,27 @@ html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
     border-color: #4ade80;
 }
 
+.entry-card-actions button.refs-toggle-btn {
+    position: relative;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+}
+
+.entry-card-actions button.refs-toggle-btn.active {
+    color: var(--text-faint);
+}
+
+.entry-card-actions button.refs-toggle-btn.active::after {
+    content: '';
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    top: 50%;
+    height: 2px;
+    background: currentColor;
+    transform: rotate(-12deg);
+}
+
 .entry-card-nav button:disabled {
     opacity: 0.4;
     cursor: default;
