@@ -1812,6 +1812,15 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
     color: var(--guide1-color);
 }
 
+/* La source Gospel Doctrine surligne des extraits de versets en rouge
+   (<font color="#b22222">, code d'origine) - recolore en or pour rester
+   fidele a la couleur du signet de CE guide plutot que le rouge de
+   Start to Finish, qui n'avait ete choisi que par coincidence avec ce
+   rouge deja present dans cette source (voir .commentary-head). */
+.guide-content[data-volume-key="guide"] font[color] {
+    color: var(--guide1-color) !important;
+}
+
 .guide-content p {
     margin: 0.7em 0;
     line-height: 1.6;
