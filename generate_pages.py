@@ -682,6 +682,26 @@ JWW_BOOK_NAMES = sorted(set(BOOK_NAME_MAP.values()), key=len, reverse=True)
 JWW_BOOK_PREFIX_RE = re.compile(r'^(' + '|'.join(re.escape(b) for b in JWW_BOOK_NAMES) + r')\s+(.+)$')
 JWW_WHITESPACE_RE = re.compile(r'\s+')
 
+# Source = PDF converti en HTMLZ (pas un export Calibre depuis un ebook comme
+# les autres volumes) - chaque page imprimee laisse un en-tete/pied de page
+# comme paragraphe ORDINAIRE (pas bold-only, donc pas filtre par la logique
+# de reconnaissance d'en-tete ci-dessus) : numero de page seul ("309"),
+# "N John W. Welch Notes"/"John W. Welch Notes" seul, glyphe ornemental de
+# debut de page (""), et l'intitule courant du chapitre/plage repete
+# sur chaque page ("Alma 8-12", parfois prefixe "2: 1 Nephi 1-7"). Sans ce
+# filtre, ce bruit s'intercale au milieu du texte d'une entree (verifie en
+# navigateur : "...16 John W. Welch Notes As you read..." colle en pleine
+# phrase). Un vrai paragraphe de commentaire n'est jamais REDUIT a un simple
+# numero ou a "Livre plage" seul, donc filtrer ces formes exactes ne perd
+# aucun contenu reel.
+JWW_NOISE_RE = re.compile(
+    r'^\d{1,4}$'
+    r'|^(\d{1,4}\s+)?John W\. Welch Notes$'
+    r'|^$'
+    r'|^(?:\d+:\s*)?(?:' + '|'.join(re.escape(b) for b in JWW_BOOK_NAMES) + r')\s+\d+(?:[-‐-―]\d+)?$',
+    re.IGNORECASE
+)
+
 
 def parse_jww_source(path):
     with open(path, 'r', encoding='utf-8') as file:
@@ -740,6 +760,9 @@ def parse_jww_source(path):
             continue
 
         if state['current_entry'] is None:
+            continue
+        body_text = JWW_WHITESPACE_RE.sub(' ', p.get_text(' ', strip=True)).strip()
+        if JWW_NOISE_RE.match(body_text):
             continue
         node = p.extract()
         for a in node.find_all('a'):
