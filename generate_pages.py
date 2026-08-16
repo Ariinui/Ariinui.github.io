@@ -535,6 +535,103 @@ def vv_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
+# Volume "Book of Mormon Student Manual" (churchofjesuschrist.org, francais) -
+# 56 pages scrapees dans book-of-mormon-student-manual/NN-slug.html (source
+# publique de l'Eglise, commitee telle quelle comme les autres guides).
+# Chaque entree verset est un <section><header><h2>Livre C:V . Titre</h2>
+# </header><ul>...</ul></section> - le <h2> est parfois une citation seule
+# sans titre, ou une citation multiple ("3:19-20 ; 5:11-14") dont seule la
+# premiere est retenue comme ancre. Les sections sans citation reconnue
+# (Introduction, Commentaire, Points a mediter, Idees de taches, preambule
+# de livre) sont ignorees - pas de chapitre BdM unique auquel les rattacher
+# proprement (un chapitre du manuel peut couvrir plusieurs chapitres/livres).
+# ---------------------------------------------------------------------------
+
+FR_TO_EN_BOOK = {BOOK_TITLE_FR_FULL[k]: v for k, v in BOOK_NAME_MAP.items()}
+STUDENT_MANUAL_BOOK_ALT = '|'.join(re.escape(b) for b in sorted(FR_TO_EN_BOOK, key=len, reverse=True))
+STUDENT_MANUAL_CITATION_RE = re.compile(
+    rf'^({STUDENT_MANUAL_BOOK_ALT})\s+(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?'
+)
+
+
+def parse_student_manual_source(folder):
+    soup_factory = BeautifulSoup('', 'html.parser')
+    books_by_name = {}
+    verse_index_by_name = {}
+    seen_by_book_chapter = {}
+
+    def get_chapter_section(book_name, chap_num):
+        chapters = books_by_name.setdefault(book_name, {})
+        if chap_num not in chapters:
+            chapters[chap_num] = {'title': f'{book_name} {chap_num}', 'section': soup_factory.new_tag('div')}
+        return chapters[chap_num]['section']
+
+    for fname in sorted(os.listdir(folder)):
+        if not fname.endswith('.html'):
+            continue
+        with open(os.path.join(folder, fname), 'r', encoding='utf-8') as f:
+            soup = BeautifulSoup(f, 'html.parser')
+        article = soup.find('article') or soup
+
+        for sec in article.find_all('section'):
+            header = sec.find('header', recursive=False)
+            if not header:
+                continue
+            h2 = header.find('h2')
+            if not h2:
+                continue
+            text = h2.get_text(' ', strip=True).replace('\xa0', ' ')
+            m = STUDENT_MANUAL_CITATION_RE.match(text)
+            if not m:
+                continue
+
+            book_name = FR_TO_EN_BOOK[m.group(1)]
+            chap_num = int(m.group(2))
+            v_start = int(m.group(3))
+            v_end = int(m.group(4)) if m.group(4) else v_start
+            remainder = text[m.end():].strip()
+            title = remainder.lstrip('. ').strip() if remainder.startswith('.') else None
+
+            body_tag = soup_factory.new_tag('div')
+            for child in list(sec.children):
+                if child is header or not getattr(child, 'name', None):
+                    continue
+                body_tag.append(child.extract())
+            for a in body_tag.find_all('a'):
+                a.unwrap()
+            for img in body_tag.find_all('img'):
+                img.decompose()
+
+            dst_section = get_chapter_section(book_name, chap_num)
+            key = (book_name, chap_num)
+            seen = seen_by_book_chapter.setdefault(key, {})
+            seen[v_start] = seen.get(v_start, 0) + 1
+            n = seen[v_start]
+            anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
+            wrapper = soup_factory.new_tag('div')
+            wrapper['class'] = 'guide-entry'
+            wrapper['id'] = anchor_id
+            wrapper['data-verse-start'] = str(v_start)
+            wrapper['data-verse-end'] = str(v_end)
+            if title:
+                head = soup_factory.new_tag('h4')
+                head['class'] = 'student-manual-head'
+                head.string = title
+                wrapper.append(head)
+            wrapper.append(body_tag)
+            dst_section.append(wrapper)
+            idx_key = (book_name, chap_num, v_start)
+            if idx_key not in verse_index_by_name:
+                verse_index_by_name[idx_key] = anchor_id
+
+    return books_by_name, verse_index_by_name
+
+
+def student_manual_section_content_html(section_tag):
+    return section_tag.decode_contents()
+
+
+# ---------------------------------------------------------------------------
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
@@ -647,6 +744,7 @@ BOOKMARK_FILTER_ROWS = (
     bookmark_filter_row('guide', "Gospel Doctrine")
     + bookmark_filter_row('guide2', "Start to Finish")
     + bookmark_filter_row('guide3', "Verse by Verse")
+    + bookmark_filter_row('guide5', "Manuel de l'élève")
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -699,6 +797,9 @@ guide2_books_by_name, guide2_verse_index_by_name = parse_guide2_source(
 )
 guide3_books_by_name, guide3_verse_index_by_name = parse_vv_source(
     'verse-by-verse-book-of-mormon/index.html'
+)
+guide5_books_by_name, guide5_verse_index_by_name = parse_student_manual_source(
+    'book-of-mormon-student-manual'
 )
 
 # (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
@@ -778,16 +879,30 @@ for (name, chap_num, verse_num), anchor in guide3_verse_index_by_name.items():
     if book_idx is not None:
         guide3_verse_index[(book_idx, chap_num, verse_num)] = anchor
 
+# guide5 (Book of Mormon Student Manual) : meme mapping de noms que les
+# autres guides - le parseur donne deja les noms courts anglais canoniques.
+guide5_chapters_by_bom_idx = {}
+for book_idx, bom_book in enumerate(bom_book_data, 1):
+    guide_name = BOOK_NAME_MAP.get(bom_book['book_title'])
+    guide5_chapters_by_bom_idx[book_idx] = guide5_books_by_name.get(guide_name, {})
+
+guide5_verse_index = {}  # (book_idx, chapter_num, verse_num) -> anchor_id
+for (name, chap_num, verse_num), anchor in guide5_verse_index_by_name.items():
+    book_idx = guide_name_to_bom_idx.get(name)
+    if book_idx is not None:
+        guide5_verse_index[(book_idx, chap_num, verse_num)] = anchor
+
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3'):
+for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide5'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
 os.makedirs('guide2/chapters', exist_ok=True)
 os.makedirs('guide3/chapters', exist_ok=True)
+os.makedirs('guide5/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -840,6 +955,10 @@ for book_idx, book in enumerate(bom_book_data, 1):
             if anchor3:
                 guide3_link = f'../guide3/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor3}'
                 verses_html += bookmark_link(guide3_link, 'guide3', "Voir le commentaire Verse by Verse")
+            anchor5 = guide5_verse_index.get((book_idx, chap_idx, verse_num))
+            if anchor5:
+                guide5_link = f'../guide5/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor5}'
+                verses_html += bookmark_link(guide5_link, 'guide5', "Voir le commentaire du Manuel de l'eleve")
             verses_html += '</p>'
 
         introduction_html = ''
@@ -971,10 +1090,12 @@ write_guide_volume(guide2_chapters_by_bom_idx, 'guide2', 'guide2', 'Book of Morm
 # --- Volume 7 : Verse by Verse Book of Mormon --------------------------------
 
 write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Verse Book of Mormon', vv_section_content_html)
+write_guide_volume(guide5_chapters_by_bom_idx, 'guide5', 'guide5', "Book of Mormon Student Manual", student_manual_section_content_html, lang='fr')
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
 guide3_chapter_count = sum(len(c) for c in guide3_chapters_by_bom_idx.values())
+guide5_chapter_count = sum(len(c) for c in guide5_chapters_by_bom_idx.values())
 print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide_chapter_count} chapitres guide, '
       f'{len(guide_intro_items)} pages intro, '
@@ -982,7 +1103,9 @@ print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide2_chapter_count} chapitres guide2, '
       f'{len(guide2_verse_index)} versets avec signet guide2. '
       f'{guide3_chapter_count} chapitres guide3, '
-      f'{len(guide3_verse_index)} versets avec signet guide3.')
+      f'{len(guide3_verse_index)} versets avec signet guide3. '
+      f'{guide5_chapter_count} chapitres guide5, '
+      f'{len(guide5_verse_index)} versets avec signet guide5.')
 
 # ---------------------------------------------------------------------------
 # CSS
@@ -1005,6 +1128,7 @@ css_content = '''
     --guide1-color: #d4a017;
     --guide2-color: #b22222;
     --guide3-color: #1e6fd9;
+    --guide5-color: #2f9e44;
 }
 
 :root[data-text-size="xsmall"] {
@@ -1042,6 +1166,7 @@ css_content = '''
         --guide1-color: #ffd43b;
         --guide2-color: #ff6b6b;
         --guide3-color: #4dabf7;
+    --guide5-color: #51cf66;
     }
 }
 
@@ -1064,6 +1189,7 @@ css_content = '''
     --guide1-color: #ffd43b;
     --guide2-color: #ff6b6b;
     --guide3-color: #4dabf7;
+    --guide5-color: #51cf66;
 }
 
 * {
@@ -1399,10 +1525,12 @@ h1 {
 .bookmark-guide { color: var(--guide1-color); }
 .bookmark-guide2 { color: var(--guide2-color); }
 .bookmark-guide3 { color: var(--guide3-color); }
+.bookmark-guide5 { color: var(--guide5-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
+html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -1549,6 +1677,12 @@ html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
 .commentary-head {
     color: var(--guide2-color);
     font-weight: bold;
+}
+
+.guide-content h4.student-manual-head {
+    color: var(--guide5-color);
+    font-weight: bold;
+    margin-bottom: 0.4em;
 }
 
 .conf-session {

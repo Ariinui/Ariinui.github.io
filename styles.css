@@ -15,6 +15,7 @@
     --guide1-color: #d4a017;
     --guide2-color: #b22222;
     --guide3-color: #1e6fd9;
+    --guide5-color: #2f9e44;
 }
 
 :root[data-text-size="xsmall"] {
@@ -52,6 +53,7 @@
         --guide1-color: #ffd43b;
         --guide2-color: #ff6b6b;
         --guide3-color: #4dabf7;
+    --guide5-color: #51cf66;
     }
 }
 
@@ -74,6 +76,7 @@
     --guide1-color: #ffd43b;
     --guide2-color: #ff6b6b;
     --guide3-color: #4dabf7;
+    --guide5-color: #51cf66;
 }
 
 * {
@@ -409,10 +412,12 @@ h1 {
 .bookmark-guide { color: var(--guide1-color); }
 .bookmark-guide2 { color: var(--guide2-color); }
 .bookmark-guide3 { color: var(--guide3-color); }
+.bookmark-guide5 { color: var(--guide5-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
+html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -559,6 +564,12 @@ html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
 .commentary-head {
     color: var(--guide2-color);
     font-weight: bold;
+}
+
+.guide-content h4.student-manual-head {
+    color: var(--guide5-color);
+    font-weight: bold;
+    margin-bottom: 0.4em;
 }
 
 .conf-session {
