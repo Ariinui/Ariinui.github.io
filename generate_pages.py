@@ -592,15 +592,26 @@ def parse_student_manual_source(folder):
             remainder = text[m.end():].strip()
             title = remainder.lstrip('. ').strip() if remainder.startswith('.') else None
 
-            body_tag = soup_factory.new_tag('div')
+            # Chaque <li> devient un <p> AU MEME NIVEAU que les autres
+            # paragraphes (jamais un <ul> imbrique) - sinon Copier/Partager
+            # (qui ne separe que les enfants directs de .guide-entry) fond
+            # tous les elements de la liste en un seul bloc de texte.
+            body_nodes = []
             for child in list(sec.children):
                 if child is header or not getattr(child, 'name', None):
                     continue
-                body_tag.append(child.extract())
-            for a in body_tag.find_all('a'):
-                a.unwrap()
-            for img in body_tag.find_all('img'):
-                img.decompose()
+                node = child.extract()
+                if node.name in ('ul', 'ol'):
+                    for li in node.find_all('li', recursive=False):
+                        li.name = 'p'
+                        body_nodes.append(li)
+                else:
+                    body_nodes.append(node)
+            for node in body_nodes:
+                for a in node.find_all('a'):
+                    a.unwrap()
+                for img in node.find_all('img'):
+                    img.decompose()
 
             dst_section = get_chapter_section(book_name, chap_num)
             key = (book_name, chap_num)
@@ -618,7 +629,8 @@ def parse_student_manual_source(folder):
                 head['class'] = 'student-manual-head'
                 head.string = title
                 wrapper.append(head)
-            wrapper.append(body_tag)
+            for node in body_nodes:
+                wrapper.append(node)
             dst_section.append(wrapper)
             idx_key = (book_name, chap_num, v_start)
             if idx_key not in verse_index_by_name:
