@@ -1207,6 +1207,16 @@ h1 {
     font-size: 22px;
 }
 
+/* Centre ("Chapitre N" seul, sans nom de livre) - un texte centre n'est pas
+   protege par le padding-right de h1 (fonctionne seulement pour du texte
+   aligne a gauche), donc une vraie marge haute degage la rangee de boutons
+   .page-controls (position absolute, meme sommet du flux que ce titre). */
+.chapter-title {
+    margin: 52px 0 16px;
+    font-size: 22px;
+    text-align: center;
+}
+
 .page-controls {
     position: absolute;
     top: 32px;
