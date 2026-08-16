@@ -2445,11 +2445,15 @@ document.addEventListener('DOMContentLoaded', function() {
 write('script.js', js_content)
 
 # Cache-busting : sans ca, le navigateur (et le CDN de GitHub Pages) peut
-# continuer a servir un ancien script.js en cache apres un deploy, donnant
-# l'impression qu'un fix ne "marche pas" alors qu'il est bien en ligne.
-# Version = hash du contenu, ajoutee en ?v= sur toutes les pages generees.
+# continuer a servir un ancien script.js/styles.css en cache apres un
+# deploy, donnant l'impression qu'un fix ne "marche pas" alors qu'il est
+# bien en ligne. Version = hash du contenu, ajoutee en ?v= sur toutes les
+# pages generees. styles.css n'avait jamais ce traitement (seul script.js
+# l'avait) - ajoute le 2026-08-16 apres qu'un fix de couleur CSS soit reste
+# invisible chez l'utilisateur a cause du cache navigateur.
 import hashlib
 script_version = hashlib.md5(js_content.encode('utf-8')).hexdigest()[:8]
+css_version = hashlib.md5(css_content.encode('utf-8')).hexdigest()[:8]
 for root, dirs, files in os.walk('.'):
     dirs[:] = [d for d in dirs if d != '.git']
     for fname in files:
@@ -2459,6 +2463,7 @@ for root, dirs, files in os.walk('.'):
         with open(fpath, 'r', encoding='utf-8') as f:
             content = f.read()
         new_content = content.replace('script.js"', f'script.js?v={script_version}"')
+        new_content = new_content.replace('styles.css"', f'styles.css?v={css_version}"')
         if new_content != content:
             with open(fpath, 'w', encoding='utf-8') as f:
                 f.write(new_content)
