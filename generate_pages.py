@@ -694,14 +694,17 @@ JWW_WHITESPACE_RE = re.compile(r'\s+')
 # phrase). Un vrai paragraphe de commentaire n'est jamais REDUIT a un simple
 # numero ou a "Livre plage" seul, donc filtrer ces formes exactes ne perd
 # aucun contenu reel.
+JWW_BOOK_ALT = '|'.join(re.escape(b) for b in JWW_BOOK_NAMES)
 JWW_NOISE_RE = re.compile(
     r'^\d{1,4}$'
     r'|^(\d{1,4}\s+)?John W\. Welch Notes$'
+    r'|^$'
     r'|^$'
-    r'|^(?:\d+:\s*)?(?:' + '|'.join(re.escape(b) for b in JWW_BOOK_NAMES) + r')\s+\d+(?:[-‐-―]\d+)?$',
+    r'|^\(.*[Cc]ontinued.*\)$'
+    r'|^(?:\d+:\s*)?(?:' + JWW_BOOK_ALT + r')\s+\d+(?:[-‐-―]\d+)?$'
+    r'|^(?:' + JWW_BOOK_ALT + r')(?:\s+\d+)?[-‐-―](?:' + JWW_BOOK_ALT + r')(?:\s+\d+)?$',
     re.IGNORECASE
 )
-
 
 def parse_jww_source(path):
     with open(path, 'r', encoding='utf-8') as file:
