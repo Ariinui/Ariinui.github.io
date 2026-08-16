@@ -694,6 +694,7 @@ JWW_WHITESPACE_RE = re.compile(r'\s+')
 # phrase). Un vrai paragraphe de commentaire n'est jamais REDUIT a un simple
 # numero ou a "Livre plage" seul, donc filtrer ces formes exactes ne perd
 # aucun contenu reel.
+JWW_TERMINAL_RE = re.compile(r'[.!?…][\'"’”)\]]*$')
 JWW_BOOK_ALT = '|'.join(re.escape(b) for b in JWW_BOOK_NAMES)
 JWW_NOISE_RE = re.compile(
     r'^\d{1,4}$'
@@ -720,7 +721,23 @@ def parse_jww_source(path):
             chapters[chap_num] = {'title': f'{book_name} {chap_num}', 'section': soup.new_tag('div')}
         return chapters[chap_num]['section']
 
-    state = {'current_entry': None}
+    # Source = PDF converti en HTMLZ : chaque LIGNE imprimee devient son
+    # propre <p>, pas chaque paragraphe (verifie : un paragraphe de plusieurs
+    # lignes se decoupe en autant de <p> que de lignes, sans marqueur fiable
+    # de fin de paragraphe - une <p> vide separatrice n'est PAS un signal
+    # fiable, mesure sur le corpus). Le seul signal fiable est la ponctuation
+    # terminale : une ligne qui ne se termine pas par .!?... est forcement la
+    # continuation de la phrase en cours (coupure de mise en page, jamais de
+    # vraie fin), donc bufferisee et fusionnee avec la ligne suivante jusqu'a
+    # rencontrer une ponctuation terminale - sinon chaque ligne de ~15-20 mots
+    # devient un <p> isole (illisible, surtout visible sur mobile ou le
+    # rendu casse plus fort entre blocs qu'en desktop).
+    state = {'current_entry': None, 'buffer': None}
+
+    def flush_buffer():
+        if state['buffer'] is not None and state['current_entry'] is not None:
+            state['current_entry'].append(state['buffer'])
+        state['buffer'] = None
 
     for p in soup.find_all('p'):
         children = [c for c in p.children if getattr(c, 'name', None) or (hasattr(c, 'strip') and c.strip())]
@@ -737,6 +754,7 @@ def parse_jww_source(path):
             m = JWW_BOOK_PREFIX_RE.match(text)
             vm = VERSE_REF_RE.search(m.group(2)) if m else None
             if not m or ':' not in m.group(2) or not vm:
+                flush_buffer()
                 state['current_entry'] = None
                 continue
 
@@ -750,6 +768,7 @@ def parse_jww_source(path):
             seen[v_start] = seen.get(v_start, 0) + 1
             n = seen[v_start]
             anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
+            flush_buffer()
             wrapper = soup.new_tag('div')
             wrapper['class'] = 'guide-entry'
             wrapper['id'] = anchor_id
@@ -765,14 +784,23 @@ def parse_jww_source(path):
         if state['current_entry'] is None:
             continue
         body_text = JWW_WHITESPACE_RE.sub(' ', p.get_text(' ', strip=True)).strip()
-        if JWW_NOISE_RE.match(body_text):
+        if not body_text or JWW_NOISE_RE.match(body_text):
             continue
         node = p.extract()
         for a in node.find_all('a'):
             a.unwrap()
         for img in node.find_all('img'):
             img.decompose()
-        state['current_entry'].append(node)
+        if state['buffer'] is None:
+            state['buffer'] = soup.new_tag('p')
+        else:
+            state['buffer'].append(' ')
+        for child in list(node.children):
+            state['buffer'].append(child.extract())
+        if JWW_TERMINAL_RE.search(body_text):
+            flush_buffer()
+
+    flush_buffer()
 
     return books_by_name, verse_index_by_name
 
