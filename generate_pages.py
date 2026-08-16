@@ -1124,6 +1124,10 @@ css_content = '''
     --hover-bg: #eef1f5;
     --intro-bg: #f9f9f9;
     --reading-font-size: 16px;
+    --guide1-color: #d4a017;
+    --guide2-color: #b22222;
+    --guide3-color: #1e6fd9;
+    --guide4-color: #2f9e44;
 }
 
 :root[data-text-size="xsmall"] {
@@ -1158,6 +1162,10 @@ css_content = '''
         --accent-hover: #7fb3e8;
         --hover-bg: #242832;
         --intro-bg: #20242c;
+        --guide1-color: #ffd43b;
+        --guide2-color: #ff6b6b;
+        --guide3-color: #4dabf7;
+        --guide4-color: #51cf66;
     }
 }
 
@@ -1177,6 +1185,10 @@ css_content = '''
     --accent-hover: #7fb3e8;
     --hover-bg: #242832;
     --intro-bg: #20242c;
+    --guide1-color: #ffd43b;
+    --guide2-color: #ff6b6b;
+    --guide3-color: #4dabf7;
+    --guide4-color: #51cf66;
 }
 
 * {
@@ -1509,10 +1521,10 @@ h1 {
    ajouter une regle .bookmark-<cle> ici + une ligne dans BOOKMARK_FILTER_ROWS
    (cote Python), le reste (popover, persistance, isolation) est deja
    generique. */
-.bookmark-guide { color: #d4a017; }
-.bookmark-guide2 { color: #b22222; }
-.bookmark-guide3 { color: #1e6fd9; }
-.bookmark-guide4 { color: #2f9e44; }
+.bookmark-guide { color: var(--guide1-color); }
+.bookmark-guide2 { color: var(--guide2-color); }
+.bookmark-guide3 { color: var(--guide3-color); }
+.bookmark-guide4 { color: var(--guide4-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
@@ -1542,8 +1554,8 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
    quand une entree cite un verset precis ; .thought-overview = meme role que
    .vv-overview pour les jours sans verset precis, mais garde le corps du
    texte (pas juste un libelle) puisque la source a toujours un vrai contenu. */
-.thought-head {
-    color: #2f9e44;
+.guide-content h4.thought-head {
+    color: var(--guide4-color);
     font-weight: bold;
     margin-bottom: 0.4em;
 }
@@ -1681,7 +1693,7 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
 /* Question du guide Start to Finish - meme rouge que les citations
    surlignees du guide Gospel Doctrine (voir .bookmark-guide2). */
 .commentary-head {
-    color: #b22222;
+    color: var(--guide2-color);
     font-weight: bold;
 }
 
@@ -1788,6 +1800,16 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
     margin: 1.4em 0 0.4em;
     font-size: 15px;
     color: var(--accent);
+}
+
+/* Gospel Doctrine (data-volume-key="guide") : ses <h4> viennent tels quels
+   de la source (titres de citation) et suivaient jusqu'ici le bleu generique
+   .guide-content h4 au lieu de la couleur de son propre signet - l'attribut
+   ajoute juste assez de specificite pour gagner sur la regle generique
+   ci-dessus sans toucher aux autres guides (guide2/guide4 ont deja leur
+   propre classe plus specifique, guide3 n'utilise pas de <h4>). */
+.guide-content[data-volume-key="guide"] h4 {
+    color: var(--guide1-color);
 }
 
 .guide-content p {
