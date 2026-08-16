@@ -15,7 +15,6 @@
     --guide1-color: #d4a017;
     --guide2-color: #b22222;
     --guide3-color: #1e6fd9;
-    --guide4-color: #2f9e44;
 }
 
 :root[data-text-size="xsmall"] {
@@ -53,7 +52,6 @@
         --guide1-color: #ffd43b;
         --guide2-color: #ff6b6b;
         --guide3-color: #4dabf7;
-        --guide4-color: #51cf66;
     }
 }
 
@@ -76,7 +74,6 @@
     --guide1-color: #ffd43b;
     --guide2-color: #ff6b6b;
     --guide3-color: #4dabf7;
-    --guide4-color: #51cf66;
 }
 
 * {
@@ -412,12 +409,10 @@ h1 {
 .bookmark-guide { color: var(--guide1-color); }
 .bookmark-guide2 { color: var(--guide2-color); }
 .bookmark-guide3 { color: var(--guide3-color); }
-.bookmark-guide4 { color: var(--guide4-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
-html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -436,25 +431,6 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
     font-weight: 600;
     opacity: 0.7;
     margin-top: 0.75em;
-}
-
-/* Volume 8 (Pensee du jour) : question/titre en vert (meme cle que le signet)
-   quand une entree cite un verset precis ; .thought-overview = meme role que
-   .vv-overview pour les jours sans verset precis, mais garde le corps du
-   texte (pas juste un libelle) puisque la source a toujours un vrai contenu. */
-.guide-content h4.thought-head {
-    color: var(--guide4-color);
-    font-weight: bold;
-    margin-bottom: 0.4em;
-}
-.thought-overview {
-    margin-bottom: 1em;
-    padding-bottom: 1em;
-    border-bottom: 1px solid var(--border);
-}
-.thought-overview-label {
-    font-style: italic;
-    opacity: 0.75;
 }
 
 /* Un seul bouton d'entete pour tous les signets, avec un popover listant un
@@ -694,7 +670,7 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
    de la source (titres de citation) et suivaient jusqu'ici le bleu generique
    .guide-content h4 au lieu de la couleur de son propre signet - l'attribut
    ajoute juste assez de specificite pour gagner sur la regle generique
-   ci-dessus sans toucher aux autres guides (guide2/guide4 ont deja leur
+   ci-dessus sans toucher aux autres guides (guide2 a deja sa
    propre classe plus specifique, guide3 n'utilise pas de <h4>). */
 .guide-content[data-volume-key="guide"] h4 {
     color: var(--guide1-color);

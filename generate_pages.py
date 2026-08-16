@@ -535,97 +535,6 @@ def vv_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
-# Volume 8 : "Pensee du jour" - export Messenger filtre (voir
-# daily-thoughts-source/entries.json, genere localement hors repo a partir du
-# JSON Messenger brut - jamais commite tel quel, seul ce JSON deja nettoye
-# (un seul expediteur, refs BdM resolues, aucun nom d'autre participant) l'est).
-# Meme forme de sortie que parse_vv_source (books_by_name/verse_index_by_name)
-# pour brancher sur le meme pipeline write_guide_volume/bookmark_link.
-# ---------------------------------------------------------------------------
-
-def escape_html(s):
-    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-
-
-def render_thought_body_html(body_text):
-    paragraphs = re.split(r'\n{2,}', body_text.strip())
-    html_parts = []
-    for para in paragraphs:
-        para = para.strip()
-        if not para:
-            continue
-        esc = escape_html(para)
-        esc = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', esc)
-        esc = esc.replace('\n', '<br>')
-        html_parts.append(f'<p>{esc}</p>')
-    frag = BeautifulSoup(''.join(html_parts), 'html.parser')
-    return list(frag.children)
-
-
-def parse_daily_thoughts_source(path):
-    with open(path, 'r', encoding='utf-8') as file:
-        raw_entries = json.load(file)
-
-    soup = BeautifulSoup('', 'html.parser')
-    books_by_name = {}
-    verse_index_by_name = {}
-    seen_by_book_chapter = {}
-
-    def get_chapter_section(book_name, chap_num):
-        chapters = books_by_name.setdefault(book_name, {})
-        if chap_num not in chapters:
-            chapters[chap_num] = {'title': f'{book_name} {chap_num}', 'section': soup.new_tag('div')}
-        return chapters[chap_num]['section']
-
-    for item in raw_entries:
-        book_name = item['book_name']
-        chap_num = item['chapter']
-        v_start = item['verse_start']
-        v_end = item['verse_end']
-        title = item['title']
-        body = item['body']
-        if not body:
-            continue
-        section = get_chapter_section(book_name, chap_num)
-
-        wrapper = soup.new_tag('div')
-        if v_start is not None:
-            key = (book_name, chap_num)
-            seen = seen_by_book_chapter.setdefault(key, {})
-            seen[v_start] = seen.get(v_start, 0) + 1
-            n = seen[v_start]
-            anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
-            wrapper['class'] = 'guide-entry'
-            wrapper['id'] = anchor_id
-            wrapper['data-verse-start'] = str(v_start)
-            wrapper['data-verse-end'] = str(v_end)
-            idx_key = (book_name, chap_num, v_start)
-            if idx_key not in verse_index_by_name:
-                verse_index_by_name[idx_key] = anchor_id
-        else:
-            wrapper['class'] = 'thought-overview'
-            label = soup.new_tag('p')
-            label['class'] = 'thought-overview-label'
-            label.string = f'{book_name} {chap_num}'
-            wrapper.append(label)
-
-        if title:
-            head = soup.new_tag('h4')
-            head['class'] = 'thought-head'
-            head.string = title
-            wrapper.append(head)
-        for node in render_thought_body_html(body):
-            wrapper.append(node)
-        section.append(wrapper)
-
-    return books_by_name, verse_index_by_name
-
-
-def thought_section_content_html(section_tag):
-    return section_tag.decode_contents()
-
-
-# ---------------------------------------------------------------------------
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
@@ -738,7 +647,6 @@ BOOKMARK_FILTER_ROWS = (
     bookmark_filter_row('guide', "Gospel Doctrine")
     + bookmark_filter_row('guide2', "Start to Finish")
     + bookmark_filter_row('guide3', "Verse by Verse")
-    + bookmark_filter_row('guide4', "Pensée du jour")
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -791,9 +699,6 @@ guide2_books_by_name, guide2_verse_index_by_name = parse_guide2_source(
 )
 guide3_books_by_name, guide3_verse_index_by_name = parse_vv_source(
     'verse-by-verse-book-of-mormon/index.html'
-)
-guide4_books_by_name, guide4_verse_index_by_name = parse_daily_thoughts_source(
-    'daily-thoughts-source/entries.json'
 )
 
 # (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
@@ -873,32 +778,16 @@ for (name, chap_num, verse_num), anchor in guide3_verse_index_by_name.items():
     if book_idx is not None:
         guide3_verse_index[(book_idx, chap_num, verse_num)] = anchor
 
-# guide4 (Pensee du jour) : meme mapping de noms que les 3 autres guides -
-# le JSON source (daily-thoughts-source/entries.json) utilise deja directement
-# les noms courts anglais canoniques (BOOK_NAME_MAP.values()).
-guide4_chapters_by_bom_idx = {}
-for book_idx, bom_book in enumerate(bom_book_data, 1):
-    guide_name = BOOK_NAME_MAP.get(bom_book['book_title'])
-    guide4_chapters = guide4_books_by_name.get(guide_name, {})
-    guide4_chapters_by_bom_idx[book_idx] = guide4_chapters
-
-guide4_verse_index = {}  # (book_idx, chapter_num, verse_num) -> anchor_id
-for (name, chap_num, verse_num), anchor in guide4_verse_index_by_name.items():
-    book_idx = guide_name_to_bom_idx.get(name)
-    if book_idx is not None:
-        guide4_verse_index[(book_idx, chap_num, verse_num)] = anchor
-
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide4'):
+for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
 os.makedirs('guide2/chapters', exist_ok=True)
 os.makedirs('guide3/chapters', exist_ok=True)
-os.makedirs('guide4/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -951,10 +840,6 @@ for book_idx, book in enumerate(bom_book_data, 1):
             if anchor3:
                 guide3_link = f'../guide3/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor3}'
                 verses_html += bookmark_link(guide3_link, 'guide3', "Voir le commentaire Verse by Verse")
-            anchor4 = guide4_verse_index.get((book_idx, chap_idx, verse_num))
-            if anchor4:
-                guide4_link = f'../guide4/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor4}'
-                verses_html += bookmark_link(guide4_link, 'guide4', "Voir la pensee du jour")
             verses_html += '</p>'
 
         introduction_html = ''
@@ -1087,14 +972,9 @@ write_guide_volume(guide2_chapters_by_bom_idx, 'guide2', 'guide2', 'Book of Morm
 
 write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Verse Book of Mormon', vv_section_content_html)
 
-# --- Volume 8 : Pensee du jour (journal de lecture famille, filtre) ---------
-
-write_guide_volume(guide4_chapters_by_bom_idx, 'guide4', 'guide4', 'Pensée du jour', thought_section_content_html, lang='fr')
-
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
 guide3_chapter_count = sum(len(c) for c in guide3_chapters_by_bom_idx.values())
-guide4_chapter_count = sum(len(c) for c in guide4_chapters_by_bom_idx.values())
 print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide_chapter_count} chapitres guide, '
       f'{len(guide_intro_items)} pages intro, '
@@ -1102,9 +982,7 @@ print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide2_chapter_count} chapitres guide2, '
       f'{len(guide2_verse_index)} versets avec signet guide2. '
       f'{guide3_chapter_count} chapitres guide3, '
-      f'{len(guide3_verse_index)} versets avec signet guide3. '
-      f'{guide4_chapter_count} chapitres guide4, '
-      f'{len(guide4_verse_index)} versets avec signet guide4.')
+      f'{len(guide3_verse_index)} versets avec signet guide3.')
 
 # ---------------------------------------------------------------------------
 # CSS
@@ -1127,7 +1005,6 @@ css_content = '''
     --guide1-color: #d4a017;
     --guide2-color: #b22222;
     --guide3-color: #1e6fd9;
-    --guide4-color: #2f9e44;
 }
 
 :root[data-text-size="xsmall"] {
@@ -1165,7 +1042,6 @@ css_content = '''
         --guide1-color: #ffd43b;
         --guide2-color: #ff6b6b;
         --guide3-color: #4dabf7;
-        --guide4-color: #51cf66;
     }
 }
 
@@ -1188,7 +1064,6 @@ css_content = '''
     --guide1-color: #ffd43b;
     --guide2-color: #ff6b6b;
     --guide3-color: #4dabf7;
-    --guide4-color: #51cf66;
 }
 
 * {
@@ -1524,12 +1399,10 @@ h1 {
 .bookmark-guide { color: var(--guide1-color); }
 .bookmark-guide2 { color: var(--guide2-color); }
 .bookmark-guide3 { color: var(--guide3-color); }
-.bookmark-guide4 { color: var(--guide4-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
-html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -1548,25 +1421,6 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
     font-weight: 600;
     opacity: 0.7;
     margin-top: 0.75em;
-}
-
-/* Volume 8 (Pensee du jour) : question/titre en vert (meme cle que le signet)
-   quand une entree cite un verset precis ; .thought-overview = meme role que
-   .vv-overview pour les jours sans verset precis, mais garde le corps du
-   texte (pas juste un libelle) puisque la source a toujours un vrai contenu. */
-.guide-content h4.thought-head {
-    color: var(--guide4-color);
-    font-weight: bold;
-    margin-bottom: 0.4em;
-}
-.thought-overview {
-    margin-bottom: 1em;
-    padding-bottom: 1em;
-    border-bottom: 1px solid var(--border);
-}
-.thought-overview-label {
-    font-style: italic;
-    opacity: 0.75;
 }
 
 /* Un seul bouton d'entete pour tous les signets, avec un popover listant un
@@ -1806,7 +1660,7 @@ html[data-hide-bookmark-guide4] .bookmark-guide4 { display: none; }
    de la source (titres de citation) et suivaient jusqu'ici le bleu generique
    .guide-content h4 au lieu de la couleur de son propre signet - l'attribut
    ajoute juste assez de specificite pour gagner sur la regle generique
-   ci-dessus sans toucher aux autres guides (guide2/guide4 ont deja leur
+   ci-dessus sans toucher aux autres guides (guide2 a deja sa
    propre classe plus specifique, guide3 n'utilise pas de <h4>). */
 .guide-content[data-volume-key="guide"] h4 {
     color: var(--guide1-color);
