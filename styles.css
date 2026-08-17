@@ -18,6 +18,7 @@
     --guide5-color: #2f9e44;
     --guide6-color: #7c3aed;
     --guide7-color: #f76707;
+    --guide8-color: #0ca678;
 }
 
 :root[data-text-size="xsmall"] {
@@ -58,6 +59,7 @@
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
+    --guide8-color: #20c997;
     }
 }
 
@@ -83,6 +85,7 @@
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
+    --guide8-color: #20c997;
 }
 
 * {
@@ -421,6 +424,7 @@ h1 {
 .bookmark-guide5 { color: var(--guide5-color); }
 .bookmark-guide6 { color: var(--guide6-color); }
 .bookmark-guide7 { color: var(--guide7-color); }
+.bookmark-guide8 { color: var(--guide8-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
@@ -428,6 +432,7 @@ html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
 html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
 html[data-hide-bookmark-guide6] .bookmark-guide6 { display: none; }
 html[data-hide-bookmark-guide7] .bookmark-guide7 { display: none; }
+html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -777,7 +782,8 @@ html[data-hide-bookmark-guide7] .bookmark-guide7 { display: none; }
 }
 
 .guide-content p.Indent1,
-.guide-content [style*="margin-left"] {
+.guide-content [style*="margin-left"],
+.guide-content blockquote {
     margin-left: 0 !important;
     padding-left: 1em;
     border-left: 3px solid var(--border);

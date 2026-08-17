@@ -1016,6 +1016,150 @@ def evidence_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
+# Volume 12 source : Book of Mormon Minute (Brant A. Gardner, 4 volumes,
+# scripturecentral.org API JSON) - book-of-mormon-minute-source/chapters.json
+# ---------------------------------------------------------------------------
+#
+# Contrairement a Book of Mormon Evidence (volume precedent, citations
+# dispersees sur plusieurs chapitres), ce commentaire est verset par verset
+# et localise a UN SEUL chapitre par page source (comme guide/guide2/guide3)
+# - aucun probleme de duplication/poids a gerer ici. Complication propre a
+# cette source : les 4 volumes utilisent DEUX gabarits HTML differents
+# (verifie avant de coder) - volume 1 marque chaque section par un <h2>
+# "Episode N: 1 Nephi 1:1", volumes 2-4 par un <h3> de theme suivi d'un <h4>
+# "Jacob 1:1-4" contenant la vraie reference. Plutot que coder un cas par
+# gabarit, un seul mecanisme generique : n'importe quel titre (h1-h6) dont le
+# texte contient une reference exploitable devient une frontiere de nouvelle
+# entree ; tout titre qui n'en contient pas (titre de chapitre redondant,
+# "Comments", theme de section) est conserve comme sous-titre visuel a
+# l'interieur de l'entree courante plutot que rejete.
+
+BOMM_DASH = '[-–—\xad]'
+BOMM_FULL_REF_RE = re.compile(
+    r'(' + '|'.join(re.escape(b) for b in EVIDENCE_BOOK_ORDER) + r')\s+(\d+)\s*:\s*(\d+)\s*' + BOMM_DASH + r'?\s*(\d+)?'
+)
+BOMM_BARE_COLON_RE = re.compile(r'(?<!\d)(\d+)\s*:\s*(\d+)\s*' + BOMM_DASH + r'?\s*(\d+)?')
+BOMM_BARE_NUM_RE = re.compile(r'^\s*(\d+)\s*' + BOMM_DASH + r'?\s*(\d+)?\s*(?:Part\s*\d+)?\s*$', re.IGNORECASE)
+BOMM_EPISODE_PREFIX_RE = re.compile(r'^Episode\s+\d+\s*:\s*', re.IGNORECASE)
+BOMM_HEADING_RE = re.compile(r'^h[1-6]$')
+
+
+def parse_bomm_title_book_chapter(title):
+    """'1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut
+    d'une page, utilise quand un titre de section ne cite qu'un numero de
+    verset nu, sans repeter le livre/chapitre (rare, verifie : 1 seul cas
+    sur tout le corpus, 'Episode 41: 35-38' dans 1 Nephi 4)."""
+    for book in EVIDENCE_BOOK_ORDER:
+        if title.startswith(book + ' '):
+            tail = title[len(book):].strip()
+            if tail.isdigit():
+                return book, int(tail)
+    return None, None
+
+
+def parse_bomm_heading_ref(text, page_book, page_chap):
+    core = BOMM_EPISODE_PREFIX_RE.sub('', text).strip()
+    m = BOMM_FULL_REF_RE.search(core)
+    if m:
+        vstart = int(m.group(3))
+        vend = int(m.group(4)) if m.group(4) else vstart
+        return m.group(1), int(m.group(2)), vstart, vend
+    m = BOMM_BARE_COLON_RE.search(core)
+    if m:
+        vstart = int(m.group(2))
+        vend = int(m.group(3)) if m.group(3) else vstart
+        return page_book, int(m.group(1)), vstart, vend
+    m = BOMM_BARE_NUM_RE.match(core)
+    if m:
+        vstart = int(m.group(1))
+        vend = int(m.group(2)) if m.group(2) else vstart
+        return page_book, page_chap, vstart, vend
+    return None
+
+
+def parse_bomm_source(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        items = json.load(file)
+
+    books_by_name = {}
+    verse_index_by_name = {}
+    seen_by_book_chapter = {}
+    scratch_soup = BeautifulSoup('', 'html.parser')
+
+    def get_chapter_section(book_name, chap_num):
+        chapters = books_by_name.setdefault(book_name, {})
+        if chap_num not in chapters:
+            chapters[chap_num] = {'title': f'{book_name} {chap_num}', 'section': scratch_soup.new_tag('div')}
+        return chapters[chap_num]['section']
+
+    for item in items:
+        page_book, page_chap = parse_bomm_title_book_chapter(item['title'])
+        if page_book is None:
+            continue
+        frag = BeautifulSoup(item['additionalText'], 'html.parser')
+        for empty_fn in frag.find_all('ul', class_='footnotes'):
+            if not empty_fn.get_text(strip=True):
+                empty_fn.decompose()
+        section = get_chapter_section(page_book, page_chap)
+
+        state = {'entry': None, 'ref': None}
+
+        def finalize():
+            entry, ref = state['entry'], state['ref']
+            if entry is None:
+                return
+            if not entry.contents:
+                state['entry'] = None
+                state['ref'] = None
+                return
+            if ref is not None:
+                book, chap, vstart, vend = ref
+                key = (book, chap)
+                seen = seen_by_book_chapter.setdefault(key, {})
+                seen[vstart] = seen.get(vstart, 0) + 1
+                n = seen[vstart]
+                anchor_id = f'v{vstart}' if n == 1 else f'v{vstart}-{n}'
+                entry['id'] = anchor_id
+                entry['data-verse-start'] = str(vstart)
+                entry['data-verse-end'] = str(vend)
+                idx_key = (book, chap, vstart)
+                if idx_key not in verse_index_by_name:
+                    verse_index_by_name[idx_key] = anchor_id
+            section.append(entry)
+            state['entry'] = None
+            state['ref'] = None
+
+        for el in list(frag.contents):
+            is_heading = getattr(el, 'name', None) and BOMM_HEADING_RE.match(el.name)
+            if is_heading:
+                text = el.get_text(' ', strip=True)
+                ref = parse_bomm_heading_ref(text, page_book, page_chap)
+                if ref is not None:
+                    finalize()
+                    wrapper = scratch_soup.new_tag('div')
+                    wrapper['class'] = 'guide-entry'
+                    state['entry'] = wrapper
+                    state['ref'] = ref
+                    continue
+                if text == item['title']:
+                    continue
+            if state['entry'] is None:
+                wrapper = scratch_soup.new_tag('div')
+                wrapper['class'] = 'guide-entry'
+                state['entry'] = wrapper
+                state['ref'] = None
+            state['entry'].append(el.extract())
+
+        finalize()
+
+    return books_by_name, verse_index_by_name
+
+
+def bomm_section_content_html(section_tag):
+    return section_tag.decode_contents()
+
+
+# ---------------------------------------------------------------------------
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
@@ -1131,6 +1275,7 @@ BOOKMARK_FILTER_ROWS = (
     + bookmark_filter_row('guide5', "Manuel de l'élève")
     + bookmark_filter_row('guide6', "ScripturePlus")
     + bookmark_filter_row('guide7', "Book of Mormon Evidence")
+    + bookmark_filter_row('guide8', "Book of Mormon Minute")
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -1189,6 +1334,7 @@ guide5_books_by_name, guide5_verse_index_by_name = parse_student_manual_source(
 )
 guide6_books_by_name, guide6_verse_index_by_name = parse_jww_source('jww-notes/index.html')
 guide7_books_by_name, guide7_verse_index_by_name = parse_evidence_source('book-of-mormon-evidence-source/evidences.json')
+guide8_books_by_name, guide8_verse_index_by_name = parse_bomm_source('book-of-mormon-minute-source/chapters.json')
 
 # (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
 # verset en tete - utilise pour prefixer le(s) verset(s) au Copier/Partager
@@ -1306,10 +1452,22 @@ for (name, chap_num, verse_num), anchor in guide7_verse_index_by_name.items():
     if book_idx is not None:
         guide7_verse_index[(book_idx, chap_num, verse_num)] = anchor
 
+# guide8 (Book of Mormon Minute) : meme mapping de noms que les autres.
+guide8_chapters_by_bom_idx = {}
+for book_idx, bom_book in enumerate(bom_book_data, 1):
+    guide_name = BOOK_NAME_MAP.get(bom_book['book_title'])
+    guide8_chapters_by_bom_idx[book_idx] = guide8_books_by_name.get(guide_name, {})
+
+guide8_verse_index = {}  # (book_idx, chapter_num, verse_num) -> anchor_id
+for (name, chap_num, verse_num), anchor in guide8_verse_index_by_name.items():
+    book_idx = guide_name_to_bom_idx.get(name)
+    if book_idx is not None:
+        guide8_verse_index[(book_idx, chap_num, verse_num)] = anchor
+
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide5', 'guide6', 'guide7'):
+for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide5', 'guide6', 'guide7', 'guide8'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
@@ -1319,6 +1477,7 @@ os.makedirs('guide3/chapters', exist_ok=True)
 os.makedirs('guide5/chapters', exist_ok=True)
 os.makedirs('guide6/chapters', exist_ok=True)
 os.makedirs('guide7/chapters', exist_ok=True)
+os.makedirs('guide8/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -1383,6 +1542,10 @@ for book_idx, book in enumerate(bom_book_data, 1):
             if anchor7:
                 guide7_link = f'../guide7/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor7}'
                 verses_html += bookmark_link(guide7_link, 'guide7', "Voir Book of Mormon Evidence")
+            anchor8 = guide8_verse_index.get((book_idx, chap_idx, verse_num))
+            if anchor8:
+                guide8_link = f'../guide8/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor8}'
+                verses_html += bookmark_link(guide8_link, 'guide8', "Voir Book of Mormon Minute")
             verses_html += '</p>'
 
         introduction_html = ''
@@ -1517,6 +1680,7 @@ write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Ver
 write_guide_volume(guide5_chapters_by_bom_idx, 'guide5', 'guide5', "Book of Mormon Student Manual", student_manual_section_content_html, lang='fr')
 write_guide_volume(guide6_chapters_by_bom_idx, 'guide6', 'guide6', 'ScripturePlus', jww_section_content_html)
 write_guide_volume(guide7_chapters_by_bom_idx, 'guide7', 'guide7', 'Book of Mormon Evidence', evidence_section_content_html)
+write_guide_volume(guide8_chapters_by_bom_idx, 'guide8', 'guide8', 'Book of Mormon Minute', bomm_section_content_html)
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
@@ -1524,6 +1688,7 @@ guide3_chapter_count = sum(len(c) for c in guide3_chapters_by_bom_idx.values())
 guide5_chapter_count = sum(len(c) for c in guide5_chapters_by_bom_idx.values())
 guide6_chapter_count = sum(len(c) for c in guide6_chapters_by_bom_idx.values())
 guide7_chapter_count = sum(len(c) for c in guide7_chapters_by_bom_idx.values())
+guide8_chapter_count = sum(len(c) for c in guide8_chapters_by_bom_idx.values())
 print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide_chapter_count} chapitres guide, '
       f'{len(guide_intro_items)} pages intro, '
@@ -1537,7 +1702,9 @@ print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide6_chapter_count} chapitres guide6, '
       f'{len(guide6_verse_index)} versets avec signet guide6. '
       f'{guide7_chapter_count} chapitres guide7, '
-      f'{len(guide7_verse_index)} versets avec signet guide7.')
+      f'{len(guide7_verse_index)} versets avec signet guide7. '
+      f'{guide8_chapter_count} chapitres guide8, '
+      f'{len(guide8_verse_index)} versets avec signet guide8.')
 
 # ---------------------------------------------------------------------------
 # CSS
@@ -1563,6 +1730,7 @@ css_content = '''
     --guide5-color: #2f9e44;
     --guide6-color: #7c3aed;
     --guide7-color: #f76707;
+    --guide8-color: #0ca678;
 }
 
 :root[data-text-size="xsmall"] {
@@ -1603,6 +1771,7 @@ css_content = '''
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
+    --guide8-color: #20c997;
     }
 }
 
@@ -1628,6 +1797,7 @@ css_content = '''
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
+    --guide8-color: #20c997;
 }
 
 * {
@@ -1966,6 +2136,7 @@ h1 {
 .bookmark-guide5 { color: var(--guide5-color); }
 .bookmark-guide6 { color: var(--guide6-color); }
 .bookmark-guide7 { color: var(--guide7-color); }
+.bookmark-guide8 { color: var(--guide8-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
@@ -1973,6 +2144,7 @@ html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
 html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
 html[data-hide-bookmark-guide6] .bookmark-guide6 { display: none; }
 html[data-hide-bookmark-guide7] .bookmark-guide7 { display: none; }
+html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -2322,7 +2494,8 @@ html[data-hide-bookmark-guide7] .bookmark-guide7 { display: none; }
 }
 
 .guide-content p.Indent1,
-.guide-content [style*="margin-left"] {
+.guide-content [style*="margin-left"],
+.guide-content blockquote {
     margin-left: 0 !important;
     padding-left: 1em;
     border-left: 3px solid var(--border);
