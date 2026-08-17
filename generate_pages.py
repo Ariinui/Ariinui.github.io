@@ -1035,13 +1035,20 @@ def evidence_section_content_html(section_tag):
 # l'interieur de l'entree courante plutot que rejete.
 
 BOMM_DASH = '[-–—\xad]'
+# Certains titres source concatenent un trait d'union invisible (&shy;,
+# U+00AD - reste du copier-coller d'origine, jamais affiche) ET un vrai
+# tiret cadratin l'un derriere l'autre ("7\xad-10") - + (au lieu de ?) pour
+# avaler toute la sequence, sinon la fin de plage (vend) echoue et retombe
+# sur vstart, faussant a la fois la plage retiree ci-dessous et le texte
+# francais complet inclus au Copier/Partager.
 BOMM_FULL_REF_RE = re.compile(
-    r'(' + '|'.join(re.escape(b) for b in EVIDENCE_BOOK_ORDER) + r')\s+(\d+)\s*:\s*(\d+)\s*' + BOMM_DASH + r'?\s*(\d+)?'
+    r'(' + '|'.join(re.escape(b) for b in EVIDENCE_BOOK_ORDER) + r')\s+(\d+)\s*:\s*(\d+)\s*' + BOMM_DASH + r'*\s*(\d+)?'
 )
-BOMM_BARE_COLON_RE = re.compile(r'(?<!\d)(\d+)\s*:\s*(\d+)\s*' + BOMM_DASH + r'?\s*(\d+)?')
-BOMM_BARE_NUM_RE = re.compile(r'^\s*(\d+)\s*' + BOMM_DASH + r'?\s*(\d+)?\s*(?:Part\s*\d+)?\s*$', re.IGNORECASE)
+BOMM_BARE_COLON_RE = re.compile(r'(?<!\d)(\d+)\s*:\s*(\d+)\s*' + BOMM_DASH + r'*\s*(\d+)?')
+BOMM_BARE_NUM_RE = re.compile(r'^\s*(\d+)\s*' + BOMM_DASH + r'*\s*(\d+)?\s*(?:Part\s*\d+)?\s*$', re.IGNORECASE)
 BOMM_EPISODE_PREFIX_RE = re.compile(r'^Episode\s+\d+\s*:\s*', re.IGNORECASE)
 BOMM_HEADING_RE = re.compile(r'^h[1-6]$')
+BOMM_VERSE_LEAD_RE = re.compile(r'^(\d+)\s+[A-Z]')
 
 
 def parse_bomm_title_book_chapter(title):
@@ -1156,6 +1163,23 @@ def parse_bomm_source(path):
                 wrapper['class'] = 'guide-entry'
                 state['entry'] = wrapper
                 state['ref'] = None
+            # Volume 1 (gabarit <h2> "Episode N:") ne met PAS le verset cite
+            # dans un <blockquote> comme les volumes 2-4, mais dans un <p>
+            # ordinaire commencant par son numero ("1 I, Nephi, having been
+            # born...") - meme doublon avec le francais que les blockquote
+            # deja retires ci-dessus. Retrait inconditionnel (pas de
+            # verification contre vstart-vend de l'entree) : verifie sur le
+            # corpus complet qu'un paragraphe de commentaire ne commence
+            # jamais par un chiffre suivi d'une majuscule dans cette source,
+            # et la plage declaree dans certains titres est elle-meme
+            # incomplete (ex. "Episode 70: 1 Nephi 9:1" couvre en realite
+            # les versets 1 ET 2) - se fier au numero de verset plutot qu'a
+            # la plage annoncee evite ces faux negatifs.
+            if getattr(el, 'name', None) == 'p':
+                lead = BOMM_VERSE_LEAD_RE.match(el.get_text(' ', strip=True))
+                if lead:
+                    el.extract()
+                    continue
             state['entry'].append(el.extract())
 
         finalize()
