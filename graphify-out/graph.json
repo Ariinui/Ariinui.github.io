@@ -548,117 +548,117 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L69",
-      "id": "generate_pages_rationale_69",
       "community": 0,
-      "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume"
+      "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
+      "id": "generate_pages_rationale_69"
     },
     {
       "label": "Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L103",
-      "id": "generate_pages_rationale_103",
       "community": 0,
-      "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp"
+      "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
+      "id": "generate_pages_rationale_103"
     },
     {
       "label": "raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L180",
-      "id": "generate_pages_rationale_180",
       "community": 4,
-      "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que"
+      "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
+      "id": "generate_pages_rationale_180"
     },
     {
       "label": "HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L293",
-      "id": "generate_pages_rationale_293",
       "community": 0,
-      "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'."
+      "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
+      "id": "generate_pages_rationale_293"
     },
     {
       "label": "HTML interne d'une section guide2 : uniquement les paires     question/reponse",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L392",
-      "id": "generate_pages_rationale_392",
       "community": 0,
-      "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse"
+      "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
+      "id": "generate_pages_rationale_392"
     },
     {
       "label": "1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L871",
-      "id": "generate_pages_rationale_871",
       "community": 6,
-      "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]"
+      "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
+      "id": "generate_pages_rationale_871"
     },
     {
       "label": "Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L921",
-      "id": "generate_pages_rationale_921",
       "community": 6,
-      "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net"
+      "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
+      "id": "generate_pages_rationale_921"
     },
     {
       "label": "1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1115",
-      "id": "generate_pages_rationale_1115",
       "community": 0,
-      "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag"
+      "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
+      "id": "generate_pages_rationale_1115"
     },
     {
       "label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1259",
-      "id": "generate_pages_rationale_1259",
       "community": 4,
-      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_"
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "id": "generate_pages_rationale_1259"
     },
     {
       "label": "Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1594",
-      "id": "generate_pages_rationale_1594",
       "community": 5,
-      "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html"
+      "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
+      "id": "generate_pages_rationale_1594"
     },
     {
       "label": "La description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1606",
-      "id": "generate_pages_rationale_1606",
       "community": 5,
-      "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur"
+      "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
+      "id": "generate_pages_rationale_1606"
     },
     {
       "label": "Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1627",
-      "id": "generate_pages_rationale_1627",
       "community": 5,
-      "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles"
+      "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
+      "id": "generate_pages_rationale_1627"
     },
     {
       "label": "Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1835",
-      "id": "generate_pages_rationale_1835",
       "community": 4,
-      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon"
+      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
+      "id": "generate_pages_rationale_1835"
     },
     {
       "label": "script.js",
