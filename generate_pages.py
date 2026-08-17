@@ -1100,6 +1100,14 @@ def parse_bomm_source(path):
         for empty_fn in frag.find_all('ul', class_='footnotes'):
             if not empty_fn.get_text(strip=True):
                 empty_fn.decompose()
+        # Chaque entree cite le(s) verset(s) en clair dans un <blockquote>
+        # (texte anglais) - deja affiche en francais juste au-dessus via le
+        # signet, ET re-prefixe en francais au Copier/Partager
+        # (data-verse-text, mecanisme generique de write_guide_volume) :
+        # sans ce retrait, le verset apparaissait deux fois dans le texte
+        # partage. Meme raisonnement que le retrait de p.verse sur guide2.
+        for bq in frag.find_all('blockquote'):
+            bq.decompose()
         section = get_chapter_section(page_book, page_chap)
 
         state = {'entry': None, 'ref': None}
