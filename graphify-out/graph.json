@@ -539,63 +539,63 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L292",
-      "id": "generate_pages_rationale_292",
       "community": 0,
-      "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'."
+      "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
+      "id": "generate_pages_rationale_292"
     },
     {
       "label": "HTML interne d'une section guide2 : uniquement les paires     question/reponse",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L391",
-      "id": "generate_pages_rationale_391",
       "community": 0,
-      "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse"
+      "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
+      "id": "generate_pages_rationale_391"
     },
     {
       "label": "1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L870",
-      "id": "generate_pages_rationale_870",
       "community": 5,
-      "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]"
+      "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
+      "id": "generate_pages_rationale_870"
     },
     {
       "label": "Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L920",
-      "id": "generate_pages_rationale_920",
       "community": 5,
-      "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net"
+      "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
+      "id": "generate_pages_rationale_920"
     },
     {
       "label": "1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1088",
-      "id": "generate_pages_rationale_1088",
       "community": 0,
-      "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag"
+      "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
+      "id": "generate_pages_rationale_1088"
     },
     {
       "label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1232",
-      "id": "generate_pages_rationale_1232",
       "community": 4,
-      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_"
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "id": "generate_pages_rationale_1232"
     },
     {
       "label": "Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1667",
-      "id": "generate_pages_rationale_1667",
       "community": 4,
-      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon"
+      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
+      "id": "generate_pages_rationale_1667"
     },
     {
       "label": "script.js",
