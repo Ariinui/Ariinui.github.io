@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import html
 import json
 import os
 import re
@@ -1570,6 +1571,140 @@ os.makedirs('guide6/chapters', exist_ok=True)
 os.makedirs('guide7/chapters', exist_ok=True)
 os.makedirs('guide8/chapters', exist_ok=True)
 
+# ---------------------------------------------------------------------------
+# Cameos : section AUTONOME distincte des 8 guides verset-par-verset - fiches
+# biographiques/thematiques (bookofmormonexplorer.org/cameos), pas de signet,
+# pas de lien vers un verset precis. Accessible depuis l'accueil par un
+# bouton dedie (icone ampoule), pas via l'accordeon volume>livre>chapitre.
+# Source deja assemblee (cameos-source/cameos.json) : le site d'origine est
+# une SPA React sans rendu serveur, mais tout le contenu (index + texte
+# d'analyse) est integre statiquement dans son bundle JS - extrait par
+# script plutot que par navigation page a page (voir memoire du projet).
+# ---------------------------------------------------------------------------
+
+CAMEO_CATEGORIES = (
+    ('major_speakers', 'major-speakers', 'Major Speakers', "Ceux qui ont écrit l'essentiel du Livre de Mormon."),
+    ('minor_speakers', 'minor-speakers', 'Minor Speakers', "Des voix plus brèves, mais marquantes."),
+    ('concepts', 'concepts', 'Concepts', "Des thèmes et expressions récurrents à travers le texte."),
+    ('influences', 'influences', 'Influences', "Des liens textuels entre les auteurs du Livre de Mormon."),
+)
+
+
+def cameo_clean_field(value):
+    """Certains champs de la source (ex. le nom d'une entree) contiennent du
+    HTML brut (un lien vers churchofjesuschrist.org) - reduit au texte seul
+    pour rester simple (demande explicite), puis echappe pour reinsertion
+    sans danger dans notre propre HTML."""
+    if not value:
+        return ''
+    if '<' in value:
+        value = BeautifulSoup(value, 'html.parser').get_text(' ', strip=True)
+    return html.escape(value)
+
+
+def cameo_render_paragraphs(text):
+    """La description (contrairement au texte d'analyse, deja extrait en
+    texte pur) peut contenir des liens HTML bruts vers churchofjesuschrist.org
+    - reduits au texte seul comme les autres champs (demande explicite de
+    contenu simplifie), sinon les balises s'affichaient echappees en clair."""
+    if not text:
+        return ''
+    parts = [p.strip() for p in text.split('\n\n') if p.strip()]
+    cleaned = []
+    for p in parts:
+        if '<' in p:
+            p = BeautifulSoup(p, 'html.parser').get_text(' ', strip=True)
+            # get_text(' ', ...) insere un espace la ou une balise de lien
+            # retiree se trouvait, laissant "( X )" au lieu de "(X)".
+            p = re.sub(r'\(\s+', '(', p)
+            p = re.sub(r'\s+\)', ')', p)
+            p = re.sub(r' +([,.;:!?])', r'\1', p)
+        cleaned.append(p)
+    return ''.join(f'<p>{html.escape(p)}</p>' for p in cleaned)
+
+
+def cameo_render_entry(entry):
+    """Une entree top-level (personne/concept) peut avoir plusieurs
+    sous-articles (entry['data']) - chacun devient une section, avec un
+    sous-titre uniquement si son nom differe du titre principal (evite de
+    repeter "Nephi, Son of Lehi" en sous-titre de sa propre bio)."""
+    out = []
+    for sub in entry['data']:
+        name = cameo_clean_field(sub.get('name', ''))
+        if name and name != cameo_clean_field(entry['name']):
+            out.append(f'<h2 class="cameo-subheading">{name}</h2>')
+        if sub.get('year'):
+            out.append(f'<p class="cameo-meta">{html.escape(sub["year"])}</p>')
+        if sub.get('description'):
+            out.append(f'<div class="cameo-description">{cameo_render_paragraphs(sub["description"])}</div>')
+        fact_1 = cameo_clean_field(sub.get('fact_1', ''))
+        if fact_1:
+            out.append(f'<p class="cameo-fact">💡 {fact_1}</p>')
+        if sub.get('analysis_1'):
+            out.append(f'<div class="cameo-analysis">{cameo_render_paragraphs(sub["analysis_1"])}</div>')
+        # "fact_2" est parfois juste le libelle du bouton source ("Read
+        # more...") plutot qu'un vrai fait - n'affiche le bandeau que si ce
+        # n'est pas ce cas precis, mais garde toujours l'analyse qui suit.
+        fact_2 = cameo_clean_field(sub.get('fact_2', ''))
+        if fact_2 and fact_2 != 'Read more...':
+            out.append(f'<p class="cameo-fact">💡 {fact_2}</p>')
+        if sub.get('analysis_2'):
+            out.append(f'<div class="cameo-analysis">{cameo_render_paragraphs(sub["analysis_2"])}</div>')
+    return ''.join(out)
+
+
+def write_cameos(source_path):
+    with open(source_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    shutil.rmtree('cameos', ignore_errors=True)
+    os.makedirs('cameos', exist_ok=True)
+
+    category_tiles = ''
+    for key, folder, label, blurb in CAMEO_CATEGORIES:
+        os.makedirs(f'cameos/{folder}', exist_ok=True)
+        entries = data[key]
+
+        grid_tiles = ''
+        for entry in entries:
+            name = cameo_clean_field(entry['name'])
+            grid_tiles += f'<a class="cameo-tile" href="{folder}/{entry["link"]}.html">{name}</a>'
+
+        cat_html = PAGE_HEAD.format(title=label, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
+        cat_html += f'    <p class="cameo-back"><a href="../cameos.html">← Book of Mormon Voices</a></p>\n'
+        cat_html += f'    <h1>{label}</h1>\n'
+        cat_html += f'    <p class="cameo-intro">{blurb}</p>\n'
+        cat_html += f'    <div class="cameo-grid">{grid_tiles}</div>\n'
+        cat_html += PAGE_TAIL
+        write(f'cameos/{folder}.html', cat_html)
+
+        for entry in entries:
+            detail_html = PAGE_HEAD.format(title=cameo_clean_field(entry['name']), styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
+            detail_html += f'    <p class="cameo-back"><a href="../{folder}.html">← {label}</a></p>\n'
+            detail_html += f'    <h1>{cameo_clean_field(entry["name"])}</h1>\n'
+            detail_html += f'<div class="cameo-content">{cameo_render_entry(entry)}</div>'
+            detail_html += PAGE_TAIL
+            write(f'cameos/{folder}/{entry["link"]}.html', detail_html)
+
+        category_tiles += (
+            f'<a class="cameo-category-tile" href="cameos/{folder}.html">'
+            f'<h3>{label}</h3><p>{blurb}</p></a>'
+        )
+
+    landing_html = PAGE_HEAD.format(title='Book of Mormon Voices', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL)
+    landing_html += '    <p class="cameo-back"><a href="index.html">← Bibliothèque</a></p>\n'
+    landing_html += '    <h1>Book of Mormon Voices</h1>\n'
+    landing_html += '    <p class="cameo-intro">Analyses stylométriques des personnages et des thèmes du Livre de Mormon.</p>\n'
+    landing_html += f'    <div class="cameo-category-grid">{category_tiles}</div>\n'
+    landing_html += PAGE_TAIL
+    write('cameos.html', landing_html)
+
+    total_entries = sum(len(data[key]) for key, _, _, _ in CAMEO_CATEGORIES)
+    print(f'Cameos : {total_entries} fiches sur {len(CAMEO_CATEGORIES)} categories.')
+
+
+write_cameos('cameos-source/cameos.json')
+
 # --- index.html : bibliotheque -----------------------------------------
 #
 # N'affiche que le Livre de Mormon francais et tahitien - les 3 guides
@@ -1593,6 +1728,13 @@ toc_html += render_volume_block(
     bom_book_data,
     lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
 )
+
+toc_html += '''
+        <a class="cameo-home-button" href="cameos.html">
+            <span class="cameo-home-icon" aria-hidden="true">💡</span>
+            <span>Book of Mormon Voices</span>
+        </a>
+'''
 
 toc_html += PAGE_TAIL
 write('index.html', toc_html)
@@ -1822,6 +1964,7 @@ css_content = '''
     --guide6-color: #7c3aed;
     --guide7-color: #f76707;
     --guide8-color: #0ca678;
+    --cameo-accent: #b8860b;
 }
 
 :root[data-text-size="xsmall"] {
@@ -1863,6 +2006,7 @@ css_content = '''
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
+    --cameo-accent: #f0c454;
     }
 }
 
@@ -1889,6 +2033,7 @@ css_content = '''
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
+    --cameo-accent: #f0c454;
 }
 
 * {
@@ -2139,6 +2284,161 @@ h1 {
     background: var(--accent);
     color: #ffffff;
     border-color: var(--accent);
+}
+
+/* Cameos : section autonome, identite visuelle propre (pas les couleurs de
+   signet des guides, qui n'ont pas de sens ici puisque rien n'est relie a
+   un verset). Cartes/tuiles plutot que la lecture continue des guides. */
+.cameo-home-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.cameo-home-button:hover,
+.cameo-home-button:focus-visible {
+    border-color: var(--cameo-accent);
+    background: var(--hover-bg);
+}
+
+.cameo-home-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.cameo-back {
+    margin-bottom: 1em;
+}
+
+.cameo-back a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.cameo-back a:hover {
+    color: var(--accent);
+}
+
+.cameo-intro {
+    color: var(--text-muted);
+    margin-bottom: 1.6em;
+    max-width: 60ch;
+}
+
+.cameo-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.cameo-category-tile {
+    display: block;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s, transform 0.1s;
+}
+
+.cameo-category-tile:hover,
+.cameo-category-tile:focus-visible {
+    border-color: var(--cameo-accent);
+}
+
+.cameo-category-tile h3 {
+    margin: 0 0 6px;
+    color: var(--cameo-accent);
+    font-size: 18px;
+}
+
+.cameo-category-tile p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.cameo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.cameo-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14px 10px;
+    min-height: 56px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.cameo-tile:hover,
+.cameo-tile:focus-visible {
+    border-color: var(--cameo-accent);
+    color: var(--cameo-accent);
+}
+
+.cameo-content {
+    max-width: 68ch;
+}
+
+.cameo-content .cameo-subheading {
+    margin: 1.8em 0 0.6em;
+    padding-top: 1.2em;
+    border-top: 1px solid var(--border);
+    font-size: 19px;
+    color: var(--text);
+}
+
+.cameo-content .cameo-subheading:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.cameo-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.8em;
+}
+
+.cameo-description p,
+.cameo-analysis p {
+    margin: 0.7em 0;
+    line-height: 1.65;
+    font-size: var(--reading-font-size);
+}
+
+.cameo-fact {
+    margin: 1em 0;
+    padding: 12px 14px;
+    background: var(--intro-bg);
+    border-left: 3px solid var(--cameo-accent);
+    border-radius: 0 8px 8px 0;
+    font-size: var(--reading-font-size);
+    line-height: 1.5;
 }
 
 .verse-container {

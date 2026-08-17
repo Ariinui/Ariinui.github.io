@@ -19,6 +19,7 @@
     --guide6-color: #7c3aed;
     --guide7-color: #f76707;
     --guide8-color: #0ca678;
+    --cameo-accent: #b8860b;
 }
 
 :root[data-text-size="xsmall"] {
@@ -60,6 +61,7 @@
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
+    --cameo-accent: #f0c454;
     }
 }
 
@@ -86,6 +88,7 @@
     --guide6-color: #9775fa;
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
+    --cameo-accent: #f0c454;
 }
 
 * {
@@ -336,6 +339,161 @@ h1 {
     background: var(--accent);
     color: #ffffff;
     border-color: var(--accent);
+}
+
+/* Cameos : section autonome, identite visuelle propre (pas les couleurs de
+   signet des guides, qui n'ont pas de sens ici puisque rien n'est relie a
+   un verset). Cartes/tuiles plutot que la lecture continue des guides. */
+.cameo-home-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.cameo-home-button:hover,
+.cameo-home-button:focus-visible {
+    border-color: var(--cameo-accent);
+    background: var(--hover-bg);
+}
+
+.cameo-home-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.cameo-back {
+    margin-bottom: 1em;
+}
+
+.cameo-back a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.cameo-back a:hover {
+    color: var(--accent);
+}
+
+.cameo-intro {
+    color: var(--text-muted);
+    margin-bottom: 1.6em;
+    max-width: 60ch;
+}
+
+.cameo-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.cameo-category-tile {
+    display: block;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s, transform 0.1s;
+}
+
+.cameo-category-tile:hover,
+.cameo-category-tile:focus-visible {
+    border-color: var(--cameo-accent);
+}
+
+.cameo-category-tile h3 {
+    margin: 0 0 6px;
+    color: var(--cameo-accent);
+    font-size: 18px;
+}
+
+.cameo-category-tile p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.cameo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.cameo-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14px 10px;
+    min-height: 56px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.cameo-tile:hover,
+.cameo-tile:focus-visible {
+    border-color: var(--cameo-accent);
+    color: var(--cameo-accent);
+}
+
+.cameo-content {
+    max-width: 68ch;
+}
+
+.cameo-content .cameo-subheading {
+    margin: 1.8em 0 0.6em;
+    padding-top: 1.2em;
+    border-top: 1px solid var(--border);
+    font-size: 19px;
+    color: var(--text);
+}
+
+.cameo-content .cameo-subheading:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.cameo-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.8em;
+}
+
+.cameo-description p,
+.cameo-analysis p {
+    margin: 0.7em 0;
+    line-height: 1.65;
+    font-size: var(--reading-font-size);
+}
+
+.cameo-fact {
+    margin: 1em 0;
+    padding: 12px 14px;
+    background: var(--intro-bg);
+    border-left: 3px solid var(--cameo-accent);
+    border-radius: 0 8px 8px 0;
+    font-size: var(--reading-font-size);
+    line-height: 1.5;
 }
 
 .verse-container {
