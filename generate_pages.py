@@ -941,9 +941,35 @@ def clean_evidence_body(body_html, entry_uid):
     for a in frag.find_all('a', id=EVIDENCE_EMPTY_ANCHOR_RE):
         if not a.get_text(strip=True) and not a.get('href'):
             a.decompose()
+    # Ancre orpheline vue sur au moins un article (Evidence #198) : un
+    # <div id="edn1"></div> vide juste avant le vrai
+    # <div id="edn1">...Endnotes...</div> - doublon d'id jamais reference
+    # (aucun href="#edn1" nulle part), probable reliquat d'edition cote
+    # source. Un <div> completement vide n'est jamais du contenu utile,
+    # retire quel que soit son id.
+    for div in frag.find_all('div', id=True):
+        if not div.contents:
+            div.decompose()
+    # Certains articles source ont des id="" litteraux sur leurs <li> de
+    # note (bug d'origine cote scripturecentral.org, ex. Evidence #187) -
+    # retire plutot que de laisser plusieurs elements partager le meme id
+    # vide sur la page assemblee (HTML invalide, sans impact fonctionnel
+    # puisque rien ne pointe vers ces ancres, mais autant nettoyer).
+    for tag in frag.find_all(id=''):
+        del tag['id']
+    # Un meme article peut citer la meme note deux fois dans son propre
+    # texte (id="footnoterefN" duplique cote source, ex. Evidence #73) -
+    # seule la PREMIERE occurrence garde l'id brut+prefixe (ce que le lien
+    # "retour au texte" de la liste de notes cible naturellement) ; les
+    # occurrences suivantes recoivent un suffixe pour rester uniques sur la
+    # page assemblee - rien ne pointe specifiquement vers elles, aucune
+    # perte fonctionnelle.
+    seen_source_ids = {}
     for tag in frag.find_all(id=EVIDENCE_FOOTNOTE_ID_RE):
         m = EVIDENCE_FOOTNOTE_ID_RE.match(tag['id'])
-        tag['id'] = f'{m.group(1)}_{entry_uid}_{m.group(2)}'
+        n = seen_source_ids[tag['id']] = seen_source_ids.get(tag['id'], 0) + 1
+        suffix = '' if n == 1 else f'_dup{n}'
+        tag['id'] = f'{m.group(1)}_{entry_uid}_{m.group(2)}{suffix}'
     for a in frag.find_all('a', href=re.compile(r'^#footnote')):
         m = EVIDENCE_FOOTNOTE_ID_RE.match(a['href'][1:])
         if m:
