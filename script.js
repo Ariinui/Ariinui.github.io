@@ -260,6 +260,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     blocks.push(p.verseText);
                     blocks.push(notesLabel);
                 }
+                // Titre (<h4> : Gospel Doctrine, Student Manual, ScripturePlus,
+                // BOM Evidence) - perdu par inadvertance lors du refactor vers
+                // entryBlocks() (8ffcfdec), jamais reintegre depuis. guide2/
+                // guide3/guide8 n'ont pas de <h4> donc p.title est vide, ignore.
+                if (p.title) blocks.push(p.title);
                 return blocks.concat(bodyParts);
             }
 
@@ -587,3 +592,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+    });
+}

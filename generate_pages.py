@@ -1300,6 +1300,13 @@ PAGE_HEAD = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Buka a Moromona">
     <title>{title}</title>
     <link rel="stylesheet" href="{styles_href}">
     <script src="{script_href}"></script>
@@ -3215,6 +3222,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     blocks.push(p.verseText);
                     blocks.push(notesLabel);
                 }
+                // Titre (<h4> : Gospel Doctrine, Student Manual, ScripturePlus,
+                // BOM Evidence) - perdu par inadvertance lors du refactor vers
+                // entryBlocks() (8ffcfdec), jamais reintegre depuis. guide2/
+                // guide3/guide8 n'ont pas de <h4> donc p.title est vide, ignore.
+                if (p.title) blocks.push(p.title);
                 return blocks.concat(bodyParts);
             }
 
@@ -3542,6 +3554,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+    });
+}
 '''
 
 write('script.js', js_content)
@@ -3569,3 +3587,104 @@ for root, dirs, files in os.walk('.'):
         if new_content != content:
             with open(fpath, 'w', encoding='utf-8') as f:
                 f.write(new_content)
+
+# --- PWA : manifest, service worker, page hors-ligne --------------------
+#
+# GitHub Pages sert ce repo (Ariinui.github.io) directement a la racine du
+# domaine (pas de sous-chemin) - tous les chemins ci-dessous peuvent donc
+# etre absolus ("/xxx") sans recalcul de profondeur par page, contrairement
+# a styles.css/script.js qui restent en relatif pour ne rien casser.
+manifest_content = '''{
+  "name": "Buka a Moromona",
+  "short_name": "Buka a Moromona",
+  "description": "Livre de Mormon en francais et tahitien, avec guides d'etude",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f6f8",
+  "theme_color": "#1b4d89",
+  "lang": "fr",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
+'''
+write('manifest.json', manifest_content)
+
+offline_html = PAGE_HEAD.format(title='Hors ligne', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls='')
+offline_html += '''
+        <h1>Pas de connexion</h1>
+        <p>Cette page n'a pas encore ete visitee hors-ligne. Reconnecte-toi pour la charger une premiere fois, elle restera ensuite disponible hors-ligne.</p>
+        <p><a href="/index.html">Retour a la bibliotheque</a></p>
+'''
+offline_html += PAGE_TAIL
+write('offline.html', offline_html)
+
+# Portee "legere" demandee par l'utilisateur : pas de precache des ~2400
+# pages generees. Coquille (shell) en cache-first des l'installation ;
+# le reste passe en network-first, chaque page visitee avec succes est
+# alors mise en cache pour un futur acces hors-ligne (RUNTIME_CACHE).
+shell_assets = [
+    '/',
+    '/index.html',
+    f'/styles.css?v={css_version}',
+    f'/script.js?v={script_version}',
+    '/manifest.json',
+    '/offline.html',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png',
+    '/icons/apple-touch-icon.png',
+]
+
+sw_content = '''const SHELL_CACHE = 'bam-shell-v1';
+const RUNTIME_CACHE = 'bam-runtime-v1';
+const SHELL_ASSETS = __SHELL_ASSETS__;
+
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(SHELL_CACHE)
+      .then(function(cache) { return cache.addAll(SHELL_ASSETS); })
+      .then(function() { return self.skipWaiting(); })
+  );
+});
+
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(names) {
+      return Promise.all(
+        names
+          .filter(function(name) { return name !== SHELL_CACHE && name !== RUNTIME_CACHE; })
+          .map(function(name) { return caches.delete(name); })
+      );
+    }).then(function() { return self.clients.claim(); })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  var request = event.request;
+  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) {
+    return;
+  }
+  event.respondWith(
+    fetch(request).then(function(response) {
+      if (response && response.ok) {
+        var copy = response.clone();
+        caches.open(RUNTIME_CACHE).then(function(cache) { cache.put(request, copy); });
+      }
+      return response;
+    }).catch(function() {
+      return caches.match(request).then(function(cached) {
+        if (cached) return cached;
+        if (request.mode === 'navigate') return caches.match('/offline.html');
+        return undefined;
+      });
+    })
+  );
+});
+'''
+sw_content = sw_content.replace('__SHELL_ASSETS__', json.dumps(shell_assets))
+write('sw.js', sw_content)
+
+print('PWA : manifest.json, sw.js, offline.html generes.')
