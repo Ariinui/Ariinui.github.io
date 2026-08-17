@@ -1274,8 +1274,8 @@ BOOKMARK_FILTER_ROWS = (
     + bookmark_filter_row('guide3', "Verse by Verse")
     + bookmark_filter_row('guide5', "Manuel de l'élève")
     + bookmark_filter_row('guide6', "ScripturePlus")
-    + bookmark_filter_row('guide7', "Book of Mormon Evidence")
-    + bookmark_filter_row('guide8', "Book of Mormon Minute")
+    + bookmark_filter_row('guide7', "BOM Evidence")
+    + bookmark_filter_row('guide8', "BOM Minute")
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -1541,11 +1541,11 @@ for book_idx, book in enumerate(bom_book_data, 1):
             anchor7 = guide7_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor7:
                 guide7_link = f'../guide7/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor7}'
-                verses_html += bookmark_link(guide7_link, 'guide7', "Voir Book of Mormon Evidence")
+                verses_html += bookmark_link(guide7_link, 'guide7', "Voir BOM Evidence")
             anchor8 = guide8_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor8:
                 guide8_link = f'../guide8/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor8}'
-                verses_html += bookmark_link(guide8_link, 'guide8', "Voir Book of Mormon Minute")
+                verses_html += bookmark_link(guide8_link, 'guide8', "Voir BOM Minute")
             verses_html += '</p>'
 
         introduction_html = ''
@@ -1679,8 +1679,8 @@ write_guide_volume(guide2_chapters_by_bom_idx, 'guide2', 'guide2', 'Book of Morm
 write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Verse Book of Mormon', vv_section_content_html)
 write_guide_volume(guide5_chapters_by_bom_idx, 'guide5', 'guide5', "Book of Mormon Student Manual", student_manual_section_content_html, lang='fr')
 write_guide_volume(guide6_chapters_by_bom_idx, 'guide6', 'guide6', 'ScripturePlus', jww_section_content_html)
-write_guide_volume(guide7_chapters_by_bom_idx, 'guide7', 'guide7', 'Book of Mormon Evidence', evidence_section_content_html)
-write_guide_volume(guide8_chapters_by_bom_idx, 'guide8', 'guide8', 'Book of Mormon Minute', bomm_section_content_html)
+write_guide_volume(guide7_chapters_by_bom_idx, 'guide7', 'guide7', 'BOM Evidence', evidence_section_content_html)
+write_guide_volume(guide8_chapters_by_bom_idx, 'guide8', 'guide8', 'BOM Minute', bomm_section_content_html)
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
