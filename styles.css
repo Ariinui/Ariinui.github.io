@@ -17,6 +17,7 @@
     --guide3-color: #1e6fd9;
     --guide5-color: #2f9e44;
     --guide6-color: #7c3aed;
+    --guide7-color: #f76707;
 }
 
 :root[data-text-size="xsmall"] {
@@ -56,6 +57,7 @@
         --guide3-color: #4dabf7;
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
+    --guide7-color: #ffa94d;
     }
 }
 
@@ -80,6 +82,7 @@
     --guide3-color: #4dabf7;
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
+    --guide7-color: #ffa94d;
 }
 
 * {
@@ -417,12 +420,14 @@ h1 {
 .bookmark-guide3 { color: var(--guide3-color); }
 .bookmark-guide5 { color: var(--guide5-color); }
 .bookmark-guide6 { color: var(--guide6-color); }
+.bookmark-guide7 { color: var(--guide7-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
 html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
 html[data-hide-bookmark-guide6] .bookmark-guide6 { display: none; }
+html[data-hide-bookmark-guide7] .bookmark-guide7 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -575,6 +580,49 @@ html[data-hide-bookmark-guide6] .bookmark-guide6 { display: none; }
     color: var(--guide5-color);
     font-weight: bold;
     margin-bottom: 0.4em;
+}
+
+.guide-content h4.evidence-head {
+    color: var(--guide7-color);
+    font-weight: bold;
+    margin-bottom: 0.4em;
+}
+
+.guide-content p.evidence-abstract {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.guide-content figure {
+    margin: 1em 0;
+}
+
+.guide-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.guide-content figcaption {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.4em;
+}
+
+.guide-content ul.footnotes {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 1.5em;
+    padding-top: 1em;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.guide-content ul.footnotes li {
+    margin-bottom: 0.6em;
 }
 
 .conf-session {

@@ -810,6 +810,212 @@ def jww_section_content_html(section_tag):
 
 
 # ---------------------------------------------------------------------------
+# Volume 11 source : Book of Mormon Evidence (scripturecentral.org, API JSON)
+# ---------------------------------------------------------------------------
+#
+# Contrairement aux guides precedents (un fichier HTML local exporte d'un
+# ebook), la source ici est book-of-mormon-evidence-source/evidences.json -
+# 415 articles "Evidence" recuperes via l'API JSON de scripturecentral.org
+# (voir fetch_evidence_source.py), filtres a la publication sur
+# volumeReferences=Book of Mormon. Chaque article peut citer des versets
+# disperses sur PLUSIEURS livres/chapitres a la fois (contrairement aux
+# guides precedents, localises a un seul chapitre par entree) - une meme
+# entree apparait donc dupliquee sur chaque verset qu'elle cite, meme
+# principe que les guides existants pousse plus loin.
+
+EVIDENCE_BOOK_ORDER = [
+    '1 Nephi', '2 Nephi', 'Jacob', 'Enos', 'Jarom', 'Omni', 'Words of Mormon',
+    'Mosiah', 'Alma', 'Helaman', '3 Nephi', '4 Nephi', 'Mormon', 'Ether', 'Moroni',
+]
+EVIDENCE_CANONICAL_BOOKS = set(EVIDENCE_BOOK_ORDER)
+
+EVIDENCE_CLAUSE_RE = re.compile(r'^(.*?)\s+(\d.*)$')
+EVIDENCE_VERSE_RE = re.compile(r'^(\d+)(?:\s*[-–]\s*(\d+))?$')
+
+
+def parse_evidence_scripture_reference(ref_text):
+    """'1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)].
+    Un chapitre entier sans verset precis (ex. 'Moroni 2') donne (book, chap,
+    None, None) - garde comme contenu de page mais sans signet (aucun verset
+    a accrocher), meme convention que les survols de chapitre du volume
+    Verse by Verse (guide3). Les references hors Livre de Mormon (Bible,
+    D&C...) sont ignorees ICI SEULEMENT pour le signet - le corps de
+    l'article les cite normalement en texte/lien, decision actee avec
+    l'utilisateur plutot que d'exclure l'article entier."""
+    results = []
+    if not ref_text:
+        return results
+    for clause in ref_text.split(';'):
+        clause = clause.strip()
+        m = EVIDENCE_CLAUSE_RE.match(clause)
+        if not m:
+            continue
+        book_name, rest = m.group(1).strip(), m.group(2).strip()
+        if book_name not in EVIDENCE_CANONICAL_BOOKS:
+            continue
+        current_chapter = None
+        for piece in rest.split(','):
+            piece = piece.strip()
+            if ':' in piece:
+                chap_str, verse_str = piece.split(':', 1)
+                if not chap_str.strip().isdigit():
+                    continue
+                current_chapter = int(chap_str.strip())
+                vm = EVIDENCE_VERSE_RE.match(verse_str.strip())
+                if vm:
+                    vstart = int(vm.group(1))
+                    vend = int(vm.group(2)) if vm.group(2) else vstart
+                    results.append((book_name, current_chapter, vstart, vend))
+            else:
+                vm = EVIDENCE_VERSE_RE.match(piece)
+                if not vm:
+                    continue
+                if current_chapter is not None:
+                    vstart = int(vm.group(1))
+                    vend = int(vm.group(2)) if vm.group(2) else vstart
+                    results.append((book_name, current_chapter, vstart, vend))
+                else:
+                    results.append((book_name, int(vm.group(1)), None, None))
+    return results
+
+
+EVIDENCE_FOOTNOTE_ID_RE = re.compile(r'^(footnote|footnoteref)(\d+)$')
+EVIDENCE_EMPTY_ANCHOR_RE = re.compile(r'^p\d+$')
+
+
+def clean_evidence_body(body_html, entry_uid):
+    """Parse le HTML de l'article et retourne un fragment pret a inserer.
+    Deux nettoyages necessaires (aucun des guides precedents n'en avait
+    besoin, source differente) :
+    1. Les sections internes (Further Reading / Relevant Scriptures /
+       Endnotes) utilisent class="accordion"/"accordion-content" cote
+       scripturecentral.org - collision directe avec les memes classes deja
+       utilisees par l'accordeon volume>livre>chapitre de CE site (CSS
+       max-height:0 par defaut, .show ajoute uniquement par le clic sur
+       .accordion-button) : sans ce retrait, ces sections s'afficheraient
+       repliees a zero hauteur en permanence.
+    2. Les ancres de notes (id="footnoteN"/"footnoterefN") sont uniques par
+       ARTICLE cote source, mais une meme page de chapitre peut afficher
+       plusieurs entrees (articles differents, ou le meme article cite sur
+       plusieurs plages du meme chapitre) - suffixees par entry_uid pour
+       rester uniques sur la page assemblee.
+    """
+    frag = BeautifulSoup(body_html, 'html.parser')
+    for tag in frag.find_all(class_='accordion'):
+        del tag['class']
+    for tag in frag.find_all(class_='accordion-content'):
+        del tag['class']
+    for a in frag.find_all('a', id=EVIDENCE_EMPTY_ANCHOR_RE):
+        if not a.get_text(strip=True) and not a.get('href'):
+            a.decompose()
+    for tag in frag.find_all(id=EVIDENCE_FOOTNOTE_ID_RE):
+        m = EVIDENCE_FOOTNOTE_ID_RE.match(tag['id'])
+        tag['id'] = f'{m.group(1)}_{entry_uid}_{m.group(2)}'
+    for a in frag.find_all('a', href=re.compile(r'^#footnote')):
+        m = EVIDENCE_FOOTNOTE_ID_RE.match(a['href'][1:])
+        if m:
+            a['href'] = f'#{m.group(1)}_{entry_uid}_{m.group(2)}'
+    return frag
+
+
+def parse_evidence_source(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        items = json.load(file)
+
+    books_by_name = {}
+    verse_index_by_name = {}
+    seen_by_book_chapter = {}
+    scratch_soup = BeautifulSoup('', 'html.parser')
+
+    def get_chapter_section(book_name, chap_num):
+        chapters = books_by_name.setdefault(book_name, {})
+        if chap_num not in chapters:
+            chapters[chap_num] = {'title': f'{book_name} {chap_num}', 'section': scratch_soup.new_tag('div')}
+        return chapters[chap_num]['section']
+
+    for item in items:
+        refs = parse_evidence_scripture_reference(item.get('scriptureReference', ''))
+        if not refs:
+            continue
+
+        # Un article peut citer des dizaines de versets a la fois - dupliquer
+        # son corps complet (notes, Further Reading, Relevant Scriptures) sur
+        # chacun gonflait certaines pages a plus d'1 Mo (mesure : 1 Ne 1 a
+        # 1,36 Mo avant ce fix). Seule la PREMIERE occurrence (le premier
+        # verset cite qui a un numero de verset precis - une citation de
+        # chapitre entier n'a pas d'ancre a offrir en lien) affiche le
+        # contenu integral ; les occurrences suivantes n'affichent que
+        # titre+resume+un lien vers cette premiere occurrence.
+        primary_idx = next((i for i, r in enumerate(refs) if r[2] is not None), 0)
+
+        occurrence_anchors = []
+        for book_name, chap_num, vstart, vend in refs:
+            if vstart is None:
+                occurrence_anchors.append(None)
+                continue
+            key = (book_name, chap_num)
+            seen = seen_by_book_chapter.setdefault(key, {})
+            seen[vstart] = seen.get(vstart, 0) + 1
+            n = seen[vstart]
+            anchor_id = f'v{vstart}' if n == 1 else f'v{vstart}-{n}'
+            occurrence_anchors.append(anchor_id)
+            idx_key = (book_name, chap_num, vstart)
+            if idx_key not in verse_index_by_name:
+                verse_index_by_name[idx_key] = anchor_id
+
+        primary_book, primary_chap = refs[primary_idx][0], refs[primary_idx][1]
+        primary_book_idx = EVIDENCE_BOOK_ORDER.index(primary_book) + 1
+        primary_anchor = occurrence_anchors[primary_idx]
+        primary_href = f'chapter_{primary_book_idx}_{primary_chap}.html'
+        if primary_anchor is not None:
+            primary_href += f'#{primary_anchor}'
+
+        for occ, (book_name, chap_num, vstart, vend) in enumerate(refs):
+            wrapper = scratch_soup.new_tag('div')
+            wrapper['class'] = 'guide-entry'
+
+            head = scratch_soup.new_tag('h4')
+            head['class'] = 'evidence-head'
+            head.string = f"Evidence #{item['number']}: {item['title']}"
+            wrapper.append(head)
+
+            if item.get('summary'):
+                abstract = scratch_soup.new_tag('p')
+                abstract['class'] = 'evidence-abstract'
+                em = scratch_soup.new_tag('em')
+                em.string = item['summary']
+                abstract.append(em)
+                wrapper.append(abstract)
+
+            if occ == primary_idx:
+                entry_uid = f"e{item['number']}"
+                frag = clean_evidence_body(item['body'], entry_uid)
+                for child in list(frag.contents):
+                    wrapper.append(child.extract())
+            else:
+                link_p = scratch_soup.new_tag('p')
+                link_a = scratch_soup.new_tag('a', href=primary_href)
+                link_a.string = "Voir l'article complet (sources et notes) ->"
+                link_a['class'] = 'evidence-see-full'
+                link_p.append(link_a)
+                wrapper.append(link_p)
+
+            anchor_id = occurrence_anchors[occ]
+            if anchor_id is not None:
+                wrapper['id'] = anchor_id
+                wrapper['data-verse-start'] = str(vstart)
+                wrapper['data-verse-end'] = str(vend)
+
+            get_chapter_section(book_name, chap_num).append(wrapper)
+
+    return books_by_name, verse_index_by_name
+
+
+def evidence_section_content_html(section_tag):
+    return section_tag.decode_contents()
+
+
+# ---------------------------------------------------------------------------
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
@@ -924,6 +1130,7 @@ BOOKMARK_FILTER_ROWS = (
     + bookmark_filter_row('guide3', "Verse by Verse")
     + bookmark_filter_row('guide5', "Manuel de l'élève")
     + bookmark_filter_row('guide6', "ScripturePlus")
+    + bookmark_filter_row('guide7', "Book of Mormon Evidence")
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -981,6 +1188,7 @@ guide5_books_by_name, guide5_verse_index_by_name = parse_student_manual_source(
     'book-of-mormon-student-manual'
 )
 guide6_books_by_name, guide6_verse_index_by_name = parse_jww_source('jww-notes/index.html')
+guide7_books_by_name, guide7_verse_index_by_name = parse_evidence_source('book-of-mormon-evidence-source/evidences.json')
 
 # (book_idx, chapter_num, verse_num) -> texte francais sans le numero de
 # verset en tete - utilise pour prefixer le(s) verset(s) au Copier/Partager
@@ -1085,10 +1293,23 @@ for (name, chap_num, verse_num), anchor in guide6_verse_index_by_name.items():
     if book_idx is not None:
         guide6_verse_index[(book_idx, chap_num, verse_num)] = anchor
 
+# guide7 (Book of Mormon Evidence) : le parseur donne deja les noms courts
+# anglais canoniques (BOOK_NAME_MAP.values()), meme mapping que les autres.
+guide7_chapters_by_bom_idx = {}
+for book_idx, bom_book in enumerate(bom_book_data, 1):
+    guide_name = BOOK_NAME_MAP.get(bom_book['book_title'])
+    guide7_chapters_by_bom_idx[book_idx] = guide7_books_by_name.get(guide_name, {})
+
+guide7_verse_index = {}  # (book_idx, chapter_num, verse_num) -> anchor_id
+for (name, chap_num, verse_num), anchor in guide7_verse_index_by_name.items():
+    book_idx = guide_name_to_bom_idx.get(name)
+    if book_idx is not None:
+        guide7_verse_index[(book_idx, chap_num, verse_num)] = anchor
+
 # Repart de zero a chaque generation : les numeros de chapitre du guide ont
 # des trous (livres/chapitres absents de la source), donc une ancienne
 # execution peut laisser des fichiers a un chemin qui n'est plus le bon.
-for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide5', 'guide6'):
+for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide5', 'guide6', 'guide7'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters-fr', exist_ok=True)
 os.makedirs('chapters-tah', exist_ok=True)
@@ -1097,6 +1318,7 @@ os.makedirs('guide2/chapters', exist_ok=True)
 os.makedirs('guide3/chapters', exist_ok=True)
 os.makedirs('guide5/chapters', exist_ok=True)
 os.makedirs('guide6/chapters', exist_ok=True)
+os.makedirs('guide7/chapters', exist_ok=True)
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -1157,6 +1379,10 @@ for book_idx, book in enumerate(bom_book_data, 1):
             if anchor6:
                 guide6_link = f'../guide6/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor6}'
                 verses_html += bookmark_link(guide6_link, 'guide6', "Voir le commentaire ScripturePlus")
+            anchor7 = guide7_verse_index.get((book_idx, chap_idx, verse_num))
+            if anchor7:
+                guide7_link = f'../guide7/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor7}'
+                verses_html += bookmark_link(guide7_link, 'guide7', "Voir Book of Mormon Evidence")
             verses_html += '</p>'
 
         introduction_html = ''
@@ -1290,12 +1516,14 @@ write_guide_volume(guide2_chapters_by_bom_idx, 'guide2', 'guide2', 'Book of Morm
 write_guide_volume(guide3_chapters_by_bom_idx, 'guide3', 'guide3', 'Verse by Verse Book of Mormon', vv_section_content_html)
 write_guide_volume(guide5_chapters_by_bom_idx, 'guide5', 'guide5', "Book of Mormon Student Manual", student_manual_section_content_html, lang='fr')
 write_guide_volume(guide6_chapters_by_bom_idx, 'guide6', 'guide6', 'ScripturePlus', jww_section_content_html)
+write_guide_volume(guide7_chapters_by_bom_idx, 'guide7', 'guide7', 'Book of Mormon Evidence', evidence_section_content_html)
 
 guide_chapter_count = sum(len(c) for c in guide_chapters_by_bom_idx.values())
 guide2_chapter_count = sum(len(c) for c in guide2_chapters_by_bom_idx.values())
 guide3_chapter_count = sum(len(c) for c in guide3_chapters_by_bom_idx.values())
 guide5_chapter_count = sum(len(c) for c in guide5_chapters_by_bom_idx.values())
 guide6_chapter_count = sum(len(c) for c in guide6_chapters_by_bom_idx.values())
+guide7_chapter_count = sum(len(c) for c in guide7_chapters_by_bom_idx.values())
 print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide_chapter_count} chapitres guide, '
       f'{len(guide_intro_items)} pages intro, '
@@ -1307,7 +1535,9 @@ print(f'{sum(len(b["chapters"]) for b in bom_book_data)} chapitres LoM, '
       f'{guide5_chapter_count} chapitres guide5, '
       f'{len(guide5_verse_index)} versets avec signet guide5. '
       f'{guide6_chapter_count} chapitres guide6, '
-      f'{len(guide6_verse_index)} versets avec signet guide6.')
+      f'{len(guide6_verse_index)} versets avec signet guide6. '
+      f'{guide7_chapter_count} chapitres guide7, '
+      f'{len(guide7_verse_index)} versets avec signet guide7.')
 
 # ---------------------------------------------------------------------------
 # CSS
@@ -1332,6 +1562,7 @@ css_content = '''
     --guide3-color: #1e6fd9;
     --guide5-color: #2f9e44;
     --guide6-color: #7c3aed;
+    --guide7-color: #f76707;
 }
 
 :root[data-text-size="xsmall"] {
@@ -1371,6 +1602,7 @@ css_content = '''
         --guide3-color: #4dabf7;
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
+    --guide7-color: #ffa94d;
     }
 }
 
@@ -1395,6 +1627,7 @@ css_content = '''
     --guide3-color: #4dabf7;
     --guide5-color: #51cf66;
     --guide6-color: #9775fa;
+    --guide7-color: #ffa94d;
 }
 
 * {
@@ -1732,12 +1965,14 @@ h1 {
 .bookmark-guide3 { color: var(--guide3-color); }
 .bookmark-guide5 { color: var(--guide5-color); }
 .bookmark-guide6 { color: var(--guide6-color); }
+.bookmark-guide7 { color: var(--guide7-color); }
 
 html[data-hide-bookmark-guide] .bookmark-guide { display: none; }
 html[data-hide-bookmark-guide2] .bookmark-guide2 { display: none; }
 html[data-hide-bookmark-guide3] .bookmark-guide3 { display: none; }
 html[data-hide-bookmark-guide5] .bookmark-guide5 { display: none; }
 html[data-hide-bookmark-guide6] .bookmark-guide6 { display: none; }
+html[data-hide-bookmark-guide7] .bookmark-guide7 { display: none; }
 
 /* Volume 7 (Verse by Verse) : survol de chapitre/plage sans verset precis
    (pas de signet dessus) et libelle "Note"/"Notes" fusionne dans l'entree -
@@ -1890,6 +2125,49 @@ html[data-hide-bookmark-guide6] .bookmark-guide6 { display: none; }
     color: var(--guide5-color);
     font-weight: bold;
     margin-bottom: 0.4em;
+}
+
+.guide-content h4.evidence-head {
+    color: var(--guide7-color);
+    font-weight: bold;
+    margin-bottom: 0.4em;
+}
+
+.guide-content p.evidence-abstract {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.guide-content figure {
+    margin: 1em 0;
+}
+
+.guide-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.guide-content figcaption {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.4em;
+}
+
+.guide-content ul.footnotes {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 1.5em;
+    padding-top: 1em;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.guide-content ul.footnotes li {
+    margin-bottom: 0.6em;
 }
 
 .conf-session {
