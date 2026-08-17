@@ -252,7 +252,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L67",
       "id": "generate_pages_split_verse_number",
-      "community": 10,
+      "community": 9,
       "norm_label": "split_verse_number()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L259",
       "id": "generate_pages_guide_section_content_html",
-      "community": 9,
+      "community": 10,
       "norm_label": "guide_section_content_html()"
     },
     {
@@ -503,7 +503,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 10,
+      "community": 9,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },
@@ -530,7 +530,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L260",
-      "community": 9,
+      "community": 10,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_260"
     },
@@ -575,18 +575,18 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1175",
-      "id": "generate_pages_rationale_1175",
       "community": 4,
-      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_"
+      "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
+      "id": "generate_pages_rationale_1175"
     },
     {
       "label": "Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1610",
-      "id": "generate_pages_rationale_1610",
       "community": 4,
-      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon"
+      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
+      "id": "generate_pages_rationale_1610"
     },
     {
       "label": "script.js",
