@@ -256,6 +256,38 @@ def parse_guide_source(path):
     return intro_items, books_by_name, verse_index_by_name
 
 
+# Le source du guide surligne des citations en rouge sous plusieurs
+# notations incoherentes (annees d'edition manuelle differente) :
+# <font color="#b22222">, style="color:#b22222"/"color: rgb(178, 34, 34)"
+# (meme couleur, notations differentes), et des variantes de rouge/marron
+# proches (maroon, #c00000, #990000, #a52a2a) - mesure sur tout le corpus
+# avant de coder : l'ancienne regle CSS (font[color] uniquement) ne
+# couvrait que 24 occurrences sur plus de 2900. Recolore directement les
+# attributs ici plutot que d'empiler des selecteurs CSS pour chaque
+# notation - une seule regle Python couvre toutes les variantes trouvees.
+GUIDE_RED_FAMILY = {
+    '#b22222', 'rgb(178, 34, 34)', 'rgb(178,34,34)', 'maroon',
+    '#c00000', '#990000', '#a52a2a',
+}
+GUIDE_STYLE_COLOR_RE = re.compile(r'(?<!background-)color\s*:\s*([^;]+)', re.IGNORECASE)
+
+
+def recolor_guide_citations(section_tag):
+    for tag in section_tag.find_all(style=True):
+        def repl(m):
+            if m.group(1).strip().lower() in GUIDE_RED_FAMILY:
+                return 'color: var(--guide1-color)'
+            return m.group(0)
+        new_style = GUIDE_STYLE_COLOR_RE.sub(repl, tag['style'])
+        if new_style != tag['style']:
+            tag['style'] = new_style
+    for tag in section_tag.find_all('font', color=True):
+        if tag['color'].strip().lower() in GUIDE_RED_FAMILY:
+            del tag['color']
+            existing = tag.get('style', '')
+            tag['style'] = (existing + '; ' if existing else '') + 'color: var(--guide1-color)'
+
+
 def guide_section_content_html(section_tag):
     """HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'."""
     h2 = section_tag.find('h2')
@@ -264,6 +296,7 @@ def guide_section_content_html(section_tag):
     back_to_top = section_tag.find('a', class_='back-to-top')
     if back_to_top:
         back_to_top.decompose()
+    recolor_guide_citations(section_tag)
     return section_tag.decode_contents()
 
 
