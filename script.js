@@ -545,6 +545,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                 }
             }
+            // document.title contient deja "NomDuLivre Chapitre N" (voir
+            // chapter_display_title cote Python) - h2 seul seit juste
+            // "Chapitre N" depuis le retrait du h1 nom de livre en tete de
+            // page, insuffisant pour identifier le livre dans "Continuer".
             var h2 = document.querySelector('h2');
             var h1 = document.querySelector('h1');
             var all = {};
@@ -552,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
             all[volumeKey] = {
                 volumeTitle: volumeTitle,
                 href: location.pathname + (current ? '#' + current.id : ''),
-                chapterTitle: h2 ? h2.textContent.trim() : (h1 ? h1.textContent.trim() : ''),
+                chapterTitle: document.title || (h2 ? h2.textContent.trim() : (h1 ? h1.textContent.trim() : '')),
                 itemId: current ? current.id : null
             };
             localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
