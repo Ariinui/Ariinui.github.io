@@ -1752,7 +1752,7 @@ toc_html += '        <h1>Bibliotheque</h1>\n'
 toc_html += '        <div id="continue-reading-slot"></div>\n'
 
 toc_html += render_volume_block(
-    'Livre de Mormon (francais)',
+    'Livre de Mormon (francais)' if SITE_TAHITIEN else 'Livre de Mormon',
     bom_book_data,
     lambda bi, ci, ch: f'chapters-fr/chapter_{bi}_{ci}.html'
 )
