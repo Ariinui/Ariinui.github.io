@@ -15,7 +15,7 @@ _site_base_raw = os.environ.get('SITE_BASE', '').strip('/')
 # - certains shells (Git Bash/MSYS sous Windows) reecrivent silencieusement
 # une valeur d'env commencant par '/' en chemin Windows local.
 SITE_BASE = f'/{_site_base_raw}' if _site_base_raw else ''
-SITE_NAME = os.environ.get('SITE_NAME', 'Buka a Moromona')
+SITE_NAME = os.environ.get('SITE_NAME', 'Etude')
 SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
 SITE_TAHITIEN = os.environ.get('SITE_TAHITIEN', '1') == '1'
 SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')

@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Buka a Moromona",
-  "short_name": "Buka a Moromona",
+  "name": "Etude",
+  "short_name": "Etude",
   "description": "Livre de Mormon en francais et tahitien, avec guides d'etude",
   "start_url": "/index.html",
   "scope": "/",
