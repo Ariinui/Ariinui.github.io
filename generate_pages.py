@@ -19,6 +19,10 @@ SITE_NAME = os.environ.get('SITE_NAME', 'Etude')
 SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
 SITE_TAHITIEN = os.environ.get('SITE_TAHITIEN', '1') == '1'
 SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')
+# "Continuer" compact ('Livre C:V') au lieu de 'Volume : Livre Chapitre C,
+# verset V' - reserve aux sites a un seul volume (ambigu sinon entre
+# francais/tahitien sur le site d'origine qui garde les 2).
+SITE_COMPACT_CONTINUE = os.environ.get('SITE_COMPACT_CONTINUE', '0') == '1'
 
 VERSE_REF_RE = re.compile(r'(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?')
 
@@ -3578,8 +3582,16 @@ document.addEventListener('DOMContentLoaded', function() {
             link.className = 'continue-reading';
             link.href = saved.href;
             var verseMatch = /^v(\\d+)$/.exec(saved.itemId || '');
-            var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
-            link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
+            if (__COMPACT_CONTINUE__ && verseMatch) {
+                // chapterTitle = document.title = 'NomDuLivre Chapitre N'
+                var m = /^(.*) Chapitre (\\d+)$/.exec(saved.chapterTitle || '');
+                link.textContent = m
+                    ? 'Continuer - ' + m[1] + ' ' + m[2] + ':' + verseMatch[1]
+                    : 'Continuer - ' + saved.chapterTitle;
+            } else {
+                var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
+                link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
+            }
             continueSlot.appendChild(link);
         });
     }
@@ -3592,6 +3604,7 @@ if ('serviceWorker' in navigator) {
 }
 '''
 js_content = js_content.replace('__SW_PATH__', SITE_BASE + '/sw.js')
+js_content = js_content.replace('__COMPACT_CONTINUE__', 'true' if SITE_COMPACT_CONTINUE else 'false')
 
 write('script.js', js_content)
 
