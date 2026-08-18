@@ -20,9 +20,10 @@ SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
 SITE_TAHITIEN = os.environ.get('SITE_TAHITIEN', '1') == '1'
 SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')
 # "Continuer" compact ('Livre C:V') au lieu de 'Volume : Livre Chapitre C,
-# verset V' - reserve aux sites a un seul volume (ambigu sinon entre
-# francais/tahitien sur le site d'origine qui garde les 2).
-SITE_COMPACT_CONTINUE = os.environ.get('SITE_COMPACT_CONTINUE', '0') == '1'
+# verset V'. Si le site garde francais ET tahitien (SITE_TAHITIEN), un
+# prefixe FR/TAH est ajoute devant la reference pour lever l'ambiguite
+# entre les 2 lignes "Continuer" possibles sur l'accueil.
+SITE_COMPACT_CONTINUE = os.environ.get('SITE_COMPACT_CONTINUE', '1') == '1'
 
 VERSE_REF_RE = re.compile(r'(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?')
 
@@ -3572,6 +3573,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Continuer vers un volume retire de l'accordeon (guides, etc.)
         // n'a pas de sens ici.
         var HOME_VOLUME_KEYS = ['french', 'tahitian'];
+        var HOME_VOLUME_PREFIX = { french: 'FR', tahitian: 'TAH' };
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
         Object.keys(savedAll).forEach(function(key) {
@@ -3585,9 +3587,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (__COMPACT_CONTINUE__ && verseMatch) {
                 // chapterTitle = document.title = 'NomDuLivre Chapitre N'
                 var m = /^(.*) Chapitre (\\d+)$/.exec(saved.chapterTitle || '');
-                link.textContent = m
-                    ? 'Continuer - ' + m[1] + ' ' + m[2] + ':' + verseMatch[1]
-                    : 'Continuer - ' + saved.chapterTitle;
+                var ref = m ? (m[1] + ' ' + m[2] + ':' + verseMatch[1]) : saved.chapterTitle;
+                var prefix = __COMPACT_LANG_PREFIX__ ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
+                link.textContent = 'Continuer - ' + prefix + ref;
             } else {
                 var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
                 link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
@@ -3605,6 +3607,7 @@ if ('serviceWorker' in navigator) {
 '''
 js_content = js_content.replace('__SW_PATH__', SITE_BASE + '/sw.js')
 js_content = js_content.replace('__COMPACT_CONTINUE__', 'true' if SITE_COMPACT_CONTINUE else 'false')
+js_content = js_content.replace('__COMPACT_LANG_PREFIX__', 'true' if SITE_TAHITIEN else 'false')
 
 write('script.js', js_content)
 

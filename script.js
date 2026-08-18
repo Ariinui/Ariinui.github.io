@@ -580,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Continuer vers un volume retire de l'accordeon (guides, etc.)
         // n'a pas de sens ici.
         var HOME_VOLUME_KEYS = ['french', 'tahitian'];
+        var HOME_VOLUME_PREFIX = { french: 'FR', tahitian: 'TAH' };
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
         Object.keys(savedAll).forEach(function(key) {
@@ -590,12 +591,12 @@ document.addEventListener('DOMContentLoaded', function() {
             link.className = 'continue-reading';
             link.href = saved.href;
             var verseMatch = /^v(\d+)$/.exec(saved.itemId || '');
-            if (false && verseMatch) {
+            if (true && verseMatch) {
                 // chapterTitle = document.title = 'NomDuLivre Chapitre N'
                 var m = /^(.*) Chapitre (\d+)$/.exec(saved.chapterTitle || '');
-                link.textContent = m
-                    ? 'Continuer - ' + m[1] + ' ' + m[2] + ':' + verseMatch[1]
-                    : 'Continuer - ' + saved.chapterTitle;
+                var ref = m ? (m[1] + ' ' + m[2] + ':' + verseMatch[1]) : saved.chapterTitle;
+                var prefix = true ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
+                link.textContent = 'Continuer - ' + prefix + ref;
             } else {
                 var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
                 link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
