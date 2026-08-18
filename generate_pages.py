@@ -7,9 +7,9 @@ import shutil
 
 # Interrupteurs de variante de site, tous a comportement par defaut identique
 # au site d'origine (Ariinui.github.io) - voir le mirroir "Etude"
-# (tematauira.github.io, sa propre organisation/domaine racine, sans cameos)
-# qui les surcharge via variables d'environnement au build. SITE_BASE reste
-# utile si un futur mirroir devait etre servi sous un sous-chemin.
+# (tematauira.github.io, sa propre organisation/domaine racine, sans cameos
+# ni tahitien) qui les surcharge via variables d'environnement au build.
+# SITE_BASE reste utile si un futur mirroir etait servi sous un sous-chemin.
 _site_base_raw = os.environ.get('SITE_BASE', '').strip('/')
 # Accepte la valeur avec ou sans slash de tete (ex. 'tematauira.github.io')
 # - certains shells (Git Bash/MSYS sous Windows) reecrivent silencieusement
@@ -17,6 +17,7 @@ _site_base_raw = os.environ.get('SITE_BASE', '').strip('/')
 SITE_BASE = f'/{_site_base_raw}' if _site_base_raw else ''
 SITE_NAME = os.environ.get('SITE_NAME', 'Buka a Moromona')
 SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
+SITE_TAHITIEN = os.environ.get('SITE_TAHITIEN', '1') == '1'
 SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')
 
 VERSE_REF_RE = re.compile(r'(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?')
@@ -1583,7 +1584,8 @@ for (name, chap_num, verse_num), anchor in guide8_verse_index_by_name.items():
 for d in ('chapters-fr', 'chapters-tah', 'guide', 'guide2', 'guide3', 'guide5', 'guide6', 'guide7', 'guide8'):
     shutil.rmtree(d, ignore_errors=True)
 os.makedirs('chapters-fr', exist_ok=True)
-os.makedirs('chapters-tah', exist_ok=True)
+if SITE_TAHITIEN:
+    os.makedirs('chapters-tah', exist_ok=True)
 os.makedirs('guide/chapters', exist_ok=True)
 os.makedirs('guide2/chapters', exist_ok=True)
 os.makedirs('guide3/chapters', exist_ok=True)
@@ -1751,11 +1753,12 @@ toc_html += render_volume_block(
     lambda bi, ci, ch: f'chapters-fr/chapter_{bi}_{ci}.html'
 )
 
-toc_html += render_volume_block(
-    'Livre de Mormon (tahitien)',
-    bom_book_data,
-    lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
-)
+if SITE_TAHITIEN:
+    toc_html += render_volume_block(
+        'Livre de Mormon (tahitien)',
+        bom_book_data,
+        lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
+    )
 
 if SITE_CAMEOS:
     toc_html += '''
@@ -1830,35 +1833,36 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
 # --- Volume 3 : Livre de Mormon tahitien seul --------------------------------
 
-for book_idx, book in enumerate(bom_book_data, 1):
-    for chap_idx, chapter in enumerate(book['chapters'], 1):
-        verses_html = ''
-        for verse in chapter['verses']:
-            verse_num, verse_text = split_verse_number(verse['tahitien'])
-            verse_text = wrap_tah_words(verse_text)
-            if verse_num is None:
-                verses_html += f'<p class="verse-fr">{verse_text}</p>'
-                continue
-            verses_html += f'<p class="verse-fr" id="v{verse_num}"><sup>{verse_num}</sup>{verse_text}</p>'
+if SITE_TAHITIEN:
+    for book_idx, book in enumerate(bom_book_data, 1):
+        for chap_idx, chapter in enumerate(book['chapters'], 1):
+            verses_html = ''
+            for verse in chapter['verses']:
+                verse_num, verse_text = split_verse_number(verse['tahitien'])
+                verse_text = wrap_tah_words(verse_text)
+                if verse_num is None:
+                    verses_html += f'<p class="verse-fr">{verse_text}</p>'
+                    continue
+                verses_html += f'<p class="verse-fr" id="v{verse_num}"><sup>{verse_num}</sup>{verse_text}</p>'
 
-        introduction_html = ''
-        if chapter['introduction']:
-            intro_text = wrap_tah_words(chapter["introduction"]["tahitien"])
-            introduction_html = f'<p class="verse-fr introduction">{intro_text}</p>'
+            introduction_html = ''
+            if chapter['introduction']:
+                intro_text = wrap_tah_words(chapter["introduction"]["tahitien"])
+                introduction_html = f'<p class="verse-fr introduction">{intro_text}</p>'
 
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
+            prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
+            next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
 
-        display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
-        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
-        html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
-        html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
-        html += verses_html + introduction_html
-        html += '</div>'
-        html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
-        html += PAGE_TAIL
+            display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
+            html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
+            html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
+            html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
+            html += verses_html + introduction_html
+            html += '</div>'
+            html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
+            html += PAGE_TAIL
 
-        write(f'chapters-tah/chapter_{book_idx}_{chap_idx}.html', html)
+            write(f'chapters-tah/chapter_{book_idx}_{chap_idx}.html', html)
 
 def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, content_fn, lang='en'):
     """Genere les pages chapitre d'un volume de commentaire lie au Livre de
