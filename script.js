@@ -590,8 +590,16 @@ document.addEventListener('DOMContentLoaded', function() {
             link.className = 'continue-reading';
             link.href = saved.href;
             var verseMatch = /^v(\d+)$/.exec(saved.itemId || '');
-            var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
-            link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
+            if (false && verseMatch) {
+                // chapterTitle = document.title = 'NomDuLivre Chapitre N'
+                var m = /^(.*) Chapitre (\d+)$/.exec(saved.chapterTitle || '');
+                link.textContent = m
+                    ? 'Continuer - ' + m[1] + ' ' + m[2] + ':' + verseMatch[1]
+                    : 'Continuer - ' + saved.chapterTitle;
+            } else {
+                var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
+                link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
+            }
             continueSlot.appendChild(link);
         });
     }
