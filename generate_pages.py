@@ -6,10 +6,15 @@ import re
 import shutil
 
 # Interrupteurs de variante de site, tous a comportement par defaut identique
-# au site d'origine (Ariinui.github.io, servi a la racine du domaine) - voir
-# le mirroir "Etude" (tematauira.github.io, servi sous un sous-chemin, sans
-# cameos) qui les surcharge via variables d'environnement au build.
-SITE_BASE = os.environ.get('SITE_BASE', '')  # ex. '/tematauira.github.io'
+# au site d'origine (Ariinui.github.io) - voir le mirroir "Etude"
+# (tematauira.github.io, sa propre organisation/domaine racine, sans cameos)
+# qui les surcharge via variables d'environnement au build. SITE_BASE reste
+# utile si un futur mirroir devait etre servi sous un sous-chemin.
+_site_base_raw = os.environ.get('SITE_BASE', '').strip('/')
+# Accepte la valeur avec ou sans slash de tete (ex. 'tematauira.github.io')
+# - certains shells (Git Bash/MSYS sous Windows) reecrivent silencieusement
+# une valeur d'env commencant par '/' en chemin Windows local.
+SITE_BASE = f'/{_site_base_raw}' if _site_base_raw else ''
 SITE_NAME = os.environ.get('SITE_NAME', 'Buka a Moromona')
 SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
 SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')
@@ -1721,6 +1726,12 @@ def write_cameos(source_path):
 
 if SITE_CAMEOS:
     write_cameos('cameos-source/cameos.json')
+else:
+    # Le worktree checkout peut deja contenir cameos/+cameos.html commites -
+    # les retirer explicitement plutot que de compter sur un filtrage en aval.
+    shutil.rmtree('cameos', ignore_errors=True)
+    if os.path.exists('cameos.html'):
+        os.remove('cameos.html')
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -3603,10 +3614,11 @@ for root, dirs, files in os.walk('.'):
 # --- PWA : manifest, service worker, page hors-ligne --------------------
 #
 # GitHub Pages sert ce repo (Ariinui.github.io) directement a la racine du
-# domaine quand SITE_BASE='' (site d'origine) ; le mirroir "Etude" est servi
-# sous un sous-chemin (SITE_BASE='/tematauira.github.io') - tous les chemins
-# absolus sont donc prefixes par SITE_BASE, contrairement a styles.css/
-# script.js qui restent en relatif pour ne rien casser.
+# domaine, et le mirroir "Etude" (tematauira/tematauira.github.io) a la
+# racine de son propre domaine egalement - SITE_BASE='' dans les deux cas.
+# Reste prefixable via SITE_BASE si un futur mirroir etait servi sous un
+# sous-chemin - tous les chemins absolus sont prefixes par SITE_BASE,
+# contrairement a styles.css/script.js qui restent en relatif.
 manifest_content = f'''{{
   "id": "{SITE_BASE}/",
   "name": "{SITE_NAME}",
