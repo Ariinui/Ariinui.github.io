@@ -5,6 +5,15 @@ import os
 import re
 import shutil
 
+# Interrupteurs de variante de site, tous a comportement par defaut identique
+# au site d'origine (Ariinui.github.io, servi a la racine du domaine) - voir
+# le mirroir "Etude" (tematauira.github.io, servi sous un sous-chemin, sans
+# cameos) qui les surcharge via variables d'environnement au build.
+SITE_BASE = os.environ.get('SITE_BASE', '')  # ex. '/tematauira.github.io'
+SITE_NAME = os.environ.get('SITE_NAME', 'Buka a Moromona')
+SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
+SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')
+
 VERSE_REF_RE = re.compile(r'(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?')
 
 SUPERSCRIPT_DIGITS = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
@@ -1293,28 +1302,28 @@ def render_volume_block(title, books, chapter_href):
     return html
 
 
-PAGE_HEAD = '''
+PAGE_HEAD = f'''
 <!DOCTYPE html>
-<html lang="{lang}">
+<html lang="{{lang}}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icons/icon-192.png" type="image/png">
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="{SITE_BASE}/manifest.json">
+    <link rel="icon" href="{SITE_BASE}/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="{SITE_BASE}/icons/apple-touch-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Buka a Moromona">
-    <title>{title}</title>
-    <link rel="stylesheet" href="{styles_href}">
-    <script src="{script_href}"></script>
+    <meta name="apple-mobile-web-app-title" content="{SITE_NAME}">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{{styles_href}}">
+    <script src="{{script_href}}"></script>
 </head>
 <body>
     <div class="page">
         <div class="page-controls">
-            {extra_controls}
+            {{extra_controls}}
             <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
         </div>
 '''
@@ -1710,7 +1719,8 @@ def write_cameos(source_path):
     print(f'Cameos : {total_entries} fiches sur {len(CAMEO_CATEGORIES)} categories.')
 
 
-write_cameos('cameos-source/cameos.json')
+if SITE_CAMEOS:
+    write_cameos('cameos-source/cameos.json')
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -1736,7 +1746,8 @@ toc_html += render_volume_block(
     lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
 )
 
-toc_html += '''
+if SITE_CAMEOS:
+    toc_html += '''
         <a class="cameo-home-button" href="cameos.html">
             <span class="cameo-home-icon" aria-hidden="true">💡</span>
             <span>Book of Mormon Voices</span>
@@ -3557,10 +3568,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').catch(function() {});
+        navigator.serviceWorker.register('__SW_PATH__').catch(function() {});
     });
 }
 '''
+js_content = js_content.replace('__SW_PATH__', SITE_BASE + '/sw.js')
 
 write('script.js', js_content)
 
@@ -3591,33 +3603,35 @@ for root, dirs, files in os.walk('.'):
 # --- PWA : manifest, service worker, page hors-ligne --------------------
 #
 # GitHub Pages sert ce repo (Ariinui.github.io) directement a la racine du
-# domaine (pas de sous-chemin) - tous les chemins ci-dessous peuvent donc
-# etre absolus ("/xxx") sans recalcul de profondeur par page, contrairement
-# a styles.css/script.js qui restent en relatif pour ne rien casser.
-manifest_content = '''{
-  "name": "Buka a Moromona",
-  "short_name": "Buka a Moromona",
+# domaine quand SITE_BASE='' (site d'origine) ; le mirroir "Etude" est servi
+# sous un sous-chemin (SITE_BASE='/tematauira.github.io') - tous les chemins
+# absolus sont donc prefixes par SITE_BASE, contrairement a styles.css/
+# script.js qui restent en relatif pour ne rien casser.
+manifest_content = f'''{{
+  "id": "{SITE_BASE}/",
+  "name": "{SITE_NAME}",
+  "short_name": "{SITE_NAME}",
   "description": "Livre de Mormon en francais et tahitien, avec guides d'etude",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "{SITE_BASE}/index.html",
+  "scope": "{SITE_BASE}/",
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#1b4d89",
   "lang": "fr",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {{ "src": "{SITE_BASE}/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }},
+    {{ "src": "{SITE_BASE}/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }},
+    {{ "src": "{SITE_BASE}/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }}
   ]
-}
+}}
 '''
 write('manifest.json', manifest_content)
 
 offline_html = PAGE_HEAD.format(title='Hors ligne', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls='')
-offline_html += '''
+offline_html += f'''
         <h1>Pas de connexion</h1>
         <p>Cette page n'a pas encore ete visitee hors-ligne. Reconnecte-toi pour la charger une premiere fois, elle restera ensuite disponible hors-ligne.</p>
-        <p><a href="/index.html">Retour a la bibliotheque</a></p>
+        <p><a href="{SITE_BASE}/index.html">Retour a la bibliotheque</a></p>
 '''
 offline_html += PAGE_TAIL
 write('offline.html', offline_html)
@@ -3627,19 +3641,19 @@ write('offline.html', offline_html)
 # le reste passe en network-first, chaque page visitee avec succes est
 # alors mise en cache pour un futur acces hors-ligne (RUNTIME_CACHE).
 shell_assets = [
-    '/',
-    '/index.html',
-    f'/styles.css?v={css_version}',
-    f'/script.js?v={script_version}',
-    '/manifest.json',
-    '/offline.html',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png',
-    '/icons/apple-touch-icon.png',
+    f'{SITE_BASE}/',
+    f'{SITE_BASE}/index.html',
+    f'{SITE_BASE}/styles.css?v={css_version}',
+    f'{SITE_BASE}/script.js?v={script_version}',
+    f'{SITE_BASE}/manifest.json',
+    f'{SITE_BASE}/offline.html',
+    f'{SITE_BASE}/icons/icon-192.png',
+    f'{SITE_BASE}/icons/icon-512.png',
+    f'{SITE_BASE}/icons/apple-touch-icon.png',
 ]
 
-sw_content = '''const SHELL_CACHE = 'bam-shell-v1';
-const RUNTIME_CACHE = 'bam-runtime-v1';
+sw_content = '''const SHELL_CACHE = '__SHELL_CACHE_NAME__';
+const RUNTIME_CACHE = '__RUNTIME_CACHE_NAME__';
 const SHELL_ASSETS = __SHELL_ASSETS__;
 
 self.addEventListener('install', function(event) {
@@ -3677,7 +3691,7 @@ self.addEventListener('fetch', function(event) {
     }).catch(function() {
       return caches.match(request).then(function(cached) {
         if (cached) return cached;
-        if (request.mode === 'navigate') return caches.match('/offline.html');
+        if (request.mode === 'navigate') return caches.match('__OFFLINE_PATH__');
         return undefined;
       });
     })
@@ -3685,6 +3699,9 @@ self.addEventListener('fetch', function(event) {
 });
 '''
 sw_content = sw_content.replace('__SHELL_ASSETS__', json.dumps(shell_assets))
+sw_content = sw_content.replace('__SHELL_CACHE_NAME__', f'{SITE_CACHE}-shell-v1')
+sw_content = sw_content.replace('__RUNTIME_CACHE_NAME__', f'{SITE_CACHE}-runtime-v1')
+sw_content = sw_content.replace('__OFFLINE_PATH__', f'{SITE_BASE}/offline.html')
 write('sw.js', sw_content)
 
 print('PWA : manifest.json, sw.js, offline.html generes.')
