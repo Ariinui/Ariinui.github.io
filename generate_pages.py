@@ -1786,6 +1786,10 @@ CONF_ANALOGY_MONTH_FR = {
 
 
 def slugify(text):
+    # NFKD ne decompose pas les ligatures (Œ/œ, Æ/æ) - remplacees a la main
+    # avant la decomposition des accents, sinon elles disparaissent
+    # silencieusement au lieu de se rabattre sur leurs lettres latines.
+    text = text.replace('Œ', 'OE').replace('œ', 'oe').replace('Æ', 'AE').replace('æ', 'ae')
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii')
     text = re.sub(r'[^a-zA-Z0-9]+', '-', text).strip('-').lower()
     return text or 'x'
@@ -1934,6 +1938,10 @@ conf_analogy_issues = group_conference_analogies_by_issue(conf_analogy_entries)
 conf_analogy_themes = group_conference_analogies_by_theme(conf_analogy_entries)
 
 if conf_analogy_issues:
+    # Purge avant regeneration - un renommage de slug (theme/orateur) ou un
+    # numero retire de la source laisserait sinon une page orpheline, comme
+    # deja gere pour cameos/ ci-dessus.
+    shutil.rmtree('conference-analogies', ignore_errors=True)
     analogy_book_data = []
     analogy_issue_keys = []
     for issue_key, issue in conf_analogy_issues.items():
