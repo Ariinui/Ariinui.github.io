@@ -20,6 +20,7 @@
     --guide7-color: #f76707;
     --guide8-color: #0ca678;
     --cameo-accent: #b8860b;
+    --analogy-accent: #b5541f;
 }
 
 :root[data-text-size="xsmall"] {
@@ -62,6 +63,7 @@
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
     --cameo-accent: #f0c454;
+    --analogy-accent: #e8935c;
     }
 }
 
@@ -89,6 +91,7 @@
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
     --cameo-accent: #f0c454;
+    --analogy-accent: #e8935c;
 }
 
 * {
@@ -500,6 +503,155 @@ h1 {
     border-radius: 0 8px 8px 0;
     font-size: var(--reading-font-size);
     line-height: 1.5;
+}
+
+/* Conference analogie : meme famille visuelle que les cameos (section
+   autonome, pas de signet), identite propre via --analogy-accent. */
+.analogy-home-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.analogy-home-button:hover,
+.analogy-home-button:focus-visible {
+    border-color: var(--analogy-accent);
+    background: var(--hover-bg);
+}
+
+.analogy-home-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.analogy-back {
+    margin-bottom: 1em;
+}
+
+.analogy-back a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.analogy-back a:hover {
+    color: var(--accent);
+}
+
+.analogy-intro {
+    color: var(--text-muted);
+    margin-bottom: 1.6em;
+    max-width: 60ch;
+}
+
+.analogy-section-title {
+    margin-top: 2em;
+}
+
+.analogy-theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    max-width: 100%;
+}
+
+.analogy-theme-tile {
+    display: block;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s;
+}
+
+.analogy-theme-tile:hover,
+.analogy-theme-tile:focus-visible {
+    border-color: var(--analogy-accent);
+}
+
+.analogy-theme-tile h3 {
+    margin: 0 0 4px;
+    color: var(--analogy-accent);
+    font-size: 16px;
+}
+
+.analogy-theme-tile p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.analogy-list {
+    max-width: 68ch;
+}
+
+.analogy-card {
+    margin: 0 0 1.4em;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--analogy-accent);
+    border-radius: 0 10px 10px 0;
+}
+
+.analogy-theme-tag {
+    display: inline-block;
+    margin-bottom: 0.6em;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--intro-bg);
+    color: var(--analogy-accent);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.analogy-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 0.8em;
+}
+
+.analogy-text,
+.analogy-signif {
+    margin: 0.6em 0;
+    line-height: 1.6;
+    font-size: var(--reading-font-size);
+}
+
+.analogy-link {
+    display: inline-block;
+    margin-top: 0.4em;
+    color: var(--analogy-accent);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.analogy-link:hover {
+    text-decoration: underline;
+}
+
+.analogy-talk-title {
+    margin-top: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 500;
 }
 
 .verse-container {

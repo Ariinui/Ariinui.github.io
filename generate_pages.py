@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import unicodedata
 
 # Interrupteurs de variante de site, tous a comportement par defaut identique
 # au site d'origine (Ariinui.github.io) - voir le mirroir "Etude"
@@ -17,6 +18,7 @@ _site_base_raw = os.environ.get('SITE_BASE', '').strip('/')
 SITE_BASE = f'/{_site_base_raw}' if _site_base_raw else ''
 SITE_NAME = os.environ.get('SITE_NAME', 'Etude')
 SITE_CAMEOS = os.environ.get('SITE_CAMEOS', '1') == '1'
+SITE_CONFERENCE_ANALOGIES = os.environ.get('SITE_CONFERENCE_ANALOGIES', '1') == '1'
 SITE_TAHITIEN = os.environ.get('SITE_TAHITIEN', '1') == '1'
 SITE_CACHE = os.environ.get('SITE_CACHE', 'bam')
 # "Continuer" compact ('Livre C:V') au lieu de 'Volume : Livre Chapitre C,
@@ -1740,6 +1742,238 @@ else:
     if os.path.exists('cameos.html'):
         os.remove('cameos.html')
 
+
+# ---------------------------------------------------------------------------
+# "Conference analogie" - bibliotheque d'analogies profanes/personnelles
+# extraites des discours de Conference generale. Source : fichiers .txt
+# deposes dans conference-analogies-source/, produits par un projet Claude
+# web separe (prompt+epub -> texte structure), jamais generes ici. Section
+# autonome comme les cameos - pas de signet, un discours n'est jamais
+# rattache a un verset precis du Livre de Mormon.
+#
+# Format source attendu par bloc (separes par une ligne de tirets/tirets
+# cadratins) :
+#   Conference generale du <date> [(session)]
+#   <Orateur> - <Titre du discours>
+#   Theme : ...
+#   L'analogie : ...
+#   Signification : ...
+#   Lien : <url>
+# Verifie empiriquement sur un fichier reel de 7 numeros (1971-1977, 427
+# entrees) : la ligne Orateur-Titre est parfois absente ou dans le desordre
+# pour des entrees consecutives du meme discours (le dernier orateur/titre
+# vu est alors reporte), et des '**' markdown parasites peuvent entourer les
+# lignes - normalises avant tout parsing plutot que de supposer un format
+# strict. Les champs sont reperes par leur libelle, jamais par leur position
+# de ligne - tout texte hors de ce motif (preambule, "ARRET"/"ARRET
+# PARTIEL" de reprise, cloture) est ignore automatiquement.
+# ---------------------------------------------------------------------------
+
+CONF_ANALOGY_SPLIT_RE = re.compile(r'\n\s*[─\-]{3,}\s*\n')
+CONF_ANALOGY_DATE_RE = re.compile(r'Conf[ée]rence g[ée]n[ée]rale du ([^\n]+)')
+CONF_ANALOGY_THEME_RE = re.compile(r'Th[eè]me\s*:\s*(.+?)\s*(?=\n\s*\n)', re.DOTALL)
+CONF_ANALOGY_TEXT_RE = re.compile(r"L'analogie\s*:\s*(.+?)\s*(?=\n\s*\n)", re.DOTALL)
+CONF_ANALOGY_SIGNIF_RE = re.compile(r'Signification\s*:\s*(.+?)\s*(?=\n\s*\n)', re.DOTALL)
+CONF_ANALOGY_LIEN_RE = re.compile(r'Lien\s*:\s*(\S+)')
+CONF_ANALOGY_DASH_LINE_RE = re.compile(r'^(.+?)\s+[–—‐―-]\s+(.+?)\s*$')
+CONF_ANALOGY_KNOWN_PREFIXES = ('Conf', 'Thème', 'Theme', "L'analogie", 'Signification', 'Lien')
+
+CONF_ANALOGY_MONTH_FR = {
+    'janvier': '01', 'fevrier': '02', 'février': '02', 'mars': '03', 'avril': '04',
+    'mai': '05', 'juin': '06', 'juillet': '07', 'aout': '08', 'août': '08',
+    'septembre': '09', 'octobre': '10', 'novembre': '11', 'decembre': '12', 'décembre': '12',
+}
+
+
+def slugify(text):
+    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii')
+    text = re.sub(r'[^a-zA-Z0-9]+', '-', text).strip('-').lower()
+    return text or 'x'
+
+
+def parse_conference_issue_date(date_raw):
+    """'3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->
+    (issue_key '1971-04', issue_label 'Avril 1971', session_label ou None)."""
+    m = re.match(r'\s*\d+\s+([^\d\s]+)\s+(\d{4})\s*(?:\(([^)]+)\))?', date_raw)
+    if not m:
+        return None, None, None
+    month_word, year, session = m.groups()
+    month_num = CONF_ANALOGY_MONTH_FR.get(month_word.lower())
+    if not month_num:
+        return None, None, None
+    issue_key = f'{year}-{month_num}'
+    issue_label = f'{month_word.capitalize()} {year}'
+    return issue_key, issue_label, session.strip() if session else None
+
+
+def parse_conference_analogies_sources(folder):
+    if not os.path.isdir(folder):
+        return []
+    entries = []
+    for fname in sorted(os.listdir(folder)):
+        if not fname.endswith('.txt'):
+            continue
+        with open(os.path.join(folder, fname), 'r', encoding='utf-8') as file:
+            text = file.read()
+        text = text.replace('\r\n', '\n')
+        text = re.sub(r'\*\*', '', text)  # marqueurs markdown gras parasites
+
+        last_issue_key = last_issue_label = last_session = None
+        last_speaker = last_title = None
+        for block in CONF_ANALOGY_SPLIT_RE.split(text):
+            lien_m = CONF_ANALOGY_LIEN_RE.search(block)
+            if not lien_m:
+                continue  # pas un bloc d'analogie (preambule/ARRET/cloture)
+            theme_m = CONF_ANALOGY_THEME_RE.search(block)
+            analogie_m = CONF_ANALOGY_TEXT_RE.search(block)
+            signif_m = CONF_ANALOGY_SIGNIF_RE.search(block)
+            if not (theme_m and analogie_m and signif_m):
+                continue
+
+            date_m = CONF_ANALOGY_DATE_RE.search(block)
+            if date_m:
+                issue_key, issue_label, session = parse_conference_issue_date(date_m.group(1).strip())
+                if issue_key:
+                    last_issue_key, last_issue_label, last_session = issue_key, issue_label, session
+
+            speaker = title = None
+            for line in block.split('\n'):
+                s = line.strip()
+                if not s or s.startswith(CONF_ANALOGY_KNOWN_PREFIXES):
+                    continue
+                stm = CONF_ANALOGY_DASH_LINE_RE.match(s)
+                if stm:
+                    speaker, title = stm.group(1).strip(), stm.group(2).strip()
+                    break
+            if speaker:
+                last_speaker, last_title = speaker, title
+
+            if not last_issue_key or not last_speaker:
+                continue  # bloc orphelin sans contexte connu - ignore plutot que planter
+
+            entries.append({
+                'issue_key': last_issue_key, 'issue_label': last_issue_label, 'session_label': last_session,
+                'speaker': last_speaker, 'title': last_title,
+                'theme': theme_m.group(1).strip(),
+                'analogie': analogie_m.group(1).strip(),
+                'signification': signif_m.group(1).strip(),
+                'lien': lien_m.group(1).strip(),
+            })
+    return entries
+
+
+def group_conference_analogies_by_issue(entries):
+    issues = {}
+    for e in entries:
+        issue = issues.setdefault(e['issue_key'], {'label': e['issue_label'], 'talks': {}})
+        talk = issue['talks'].setdefault((e['speaker'], e['title']), {
+            'speaker': e['speaker'], 'title': e['title'], 'analogies': []
+        })
+        talk['analogies'].append(e)
+    return dict(sorted(issues.items()))
+
+
+def group_conference_analogies_by_theme(entries):
+    themes = {}
+    for e in entries:
+        themes.setdefault(e['theme'], []).append(e)
+    return dict(sorted(themes.items(), key=lambda kv: kv[0].lower()))
+
+
+def conference_analogy_card_html(entry, show_source):
+    source_html = ''
+    if show_source:
+        session_suffix = f" ({entry['session_label']})" if entry.get('session_label') else ''
+        source_html = (
+            f'<p class="analogy-meta">{html.escape(entry["issue_label"])}{html.escape(session_suffix)}'
+            f' — {html.escape(entry["speaker"])} · {html.escape(entry["title"])}</p>'
+        )
+    return f'''
+        <div class="analogy-card">
+            <span class="analogy-theme-tag">{html.escape(entry['theme'])}</span>
+            {source_html}
+            <p class="analogy-text"><strong>L'analogie :</strong> {html.escape(entry['analogie'])}</p>
+            <p class="analogy-signif"><strong>Signification :</strong> {html.escape(entry['signification'])}</p>
+            <a class="analogy-link" href="{html.escape(entry['lien'])}" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>
+        </div>
+'''
+
+
+def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk):
+    cards = ''.join(conference_analogy_card_html(e, show_source=False) for e in talk['analogies'])
+    page = PAGE_HEAD.format(
+        title=f"{talk['speaker']} – {talk['title']}", styles_href='../../styles.css',
+        script_href='../../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL
+    )
+    page += '    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference analogie</a></p>\n'
+    page += f'    <p class="analogy-meta">{html.escape(issue_label)}</p>\n'
+    page += f'    <h1>{html.escape(talk["speaker"])}</h1>\n'
+    page += f'    <h2 class="analogy-talk-title">{html.escape(talk["title"])}</h2>\n'
+    page += f'    <div class="analogy-list">{cards}</div>\n'
+    page += PAGE_TAIL
+    write(f'conference-analogies/{issue_key}/talk_{talk_idx}.html', page)
+
+
+def write_conference_analogy_theme_page(theme, entries_for_theme):
+    slug = slugify(theme)
+    page = PAGE_HEAD.format(
+        title=theme, styles_href='../styles.css', script_href='../script.js',
+        lang='fr', extra_controls=TEXT_SIZE_CONTROL
+    )
+    page += '    <p class="analogy-back"><a href="../conference-analogies.html">← Conference analogie</a></p>\n'
+    page += f'    <h1>{html.escape(theme)}</h1>\n'
+    cards = ''.join(conference_analogy_card_html(e, show_source=True) for e in entries_for_theme)
+    page += f'    <div class="analogy-list">{cards}</div>\n'
+    page += PAGE_TAIL
+    write(f'conference-analogies/theme/{slug}.html', page)
+    return slug
+
+
+conf_analogy_entries = parse_conference_analogies_sources('conference-analogies-source') if SITE_CONFERENCE_ANALOGIES else []
+conf_analogy_issues = group_conference_analogies_by_issue(conf_analogy_entries)
+conf_analogy_themes = group_conference_analogies_by_theme(conf_analogy_entries)
+
+if conf_analogy_issues:
+    analogy_book_data = []
+    analogy_issue_keys = []
+    for issue_key, issue in conf_analogy_issues.items():
+        analogy_issue_keys.append(issue_key)
+        chapters = []
+        for talk_idx, talk in enumerate(issue['talks'].values(), 1):
+            write_conference_analogy_talk_page(issue_key, issue['label'], talk_idx, talk)
+            chapters.append({'title': f"{talk['speaker']} – {talk['title']}"})
+        analogy_book_data.append({'book_title': issue['label'], 'chapters': chapters})
+
+    def analogy_chapter_href(book_idx, chap_idx, chapter):
+        return f'conference-analogies/{analogy_issue_keys[book_idx - 1]}/talk_{chap_idx}.html'
+
+    analogy_theme_tiles = ''
+    for theme, entries_for_theme in conf_analogy_themes.items():
+        slug = write_conference_analogy_theme_page(theme, entries_for_theme)
+        analogy_theme_tiles += (
+            f'<a class="analogy-theme-tile" href="theme/{slug}.html">'
+            f'<h3>{html.escape(theme)}</h3><p>{len(entries_for_theme)} analogie(s)</p></a>'
+        )
+
+    analogy_landing = PAGE_HEAD.format(
+        title='Conference analogie', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=''
+    )
+    analogy_landing += '    <p class="analogy-back"><a href="index.html">← Bibliothèque</a></p>\n'
+    analogy_landing += '    <h1>Conference analogie</h1>\n'
+    analogy_landing += (
+        '    <p class="analogy-intro">Analogies profanes et personnelles utilisées par les orateurs '
+        'de la Conférence générale.</p>\n'
+    )
+    analogy_landing += render_volume_block('Par numéro de Conférence', analogy_book_data, analogy_chapter_href)
+    analogy_landing += '    <h2 class="analogy-section-title">Par thème</h2>\n'
+    analogy_landing += f'    <div class="analogy-theme-grid">{analogy_theme_tiles}</div>\n'
+    analogy_landing += PAGE_TAIL
+    write('conference-analogies.html', analogy_landing)
+else:
+    shutil.rmtree('conference-analogies', ignore_errors=True)
+    if os.path.exists('conference-analogies.html'):
+        os.remove('conference-analogies.html')
+
 # --- index.html : bibliotheque -----------------------------------------
 #
 # N'affiche que le Livre de Mormon francais et tahitien - les 3 guides
@@ -1770,6 +2004,14 @@ if SITE_CAMEOS:
         <a class="cameo-home-button" href="cameos.html">
             <span class="cameo-home-icon" aria-hidden="true">💡</span>
             <span>Book of Mormon Voices</span>
+        </a>
+'''
+
+if conf_analogy_issues:
+    toc_html += '''
+        <a class="analogy-home-button" href="conference-analogies.html">
+            <span class="analogy-home-icon" aria-hidden="true">📜</span>
+            <span>Conference analogie</span>
         </a>
 '''
 
@@ -2003,6 +2245,7 @@ css_content = '''
     --guide7-color: #f76707;
     --guide8-color: #0ca678;
     --cameo-accent: #b8860b;
+    --analogy-accent: #b5541f;
 }
 
 :root[data-text-size="xsmall"] {
@@ -2045,6 +2288,7 @@ css_content = '''
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
     --cameo-accent: #f0c454;
+    --analogy-accent: #e8935c;
     }
 }
 
@@ -2072,6 +2316,7 @@ css_content = '''
     --guide7-color: #ffa94d;
     --guide8-color: #20c997;
     --cameo-accent: #f0c454;
+    --analogy-accent: #e8935c;
 }
 
 * {
@@ -2483,6 +2728,155 @@ h1 {
     border-radius: 0 8px 8px 0;
     font-size: var(--reading-font-size);
     line-height: 1.5;
+}
+
+/* Conference analogie : meme famille visuelle que les cameos (section
+   autonome, pas de signet), identite propre via --analogy-accent. */
+.analogy-home-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 16px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.analogy-home-button:hover,
+.analogy-home-button:focus-visible {
+    border-color: var(--analogy-accent);
+    background: var(--hover-bg);
+}
+
+.analogy-home-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.analogy-back {
+    margin-bottom: 1em;
+}
+
+.analogy-back a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.analogy-back a:hover {
+    color: var(--accent);
+}
+
+.analogy-intro {
+    color: var(--text-muted);
+    margin-bottom: 1.6em;
+    max-width: 60ch;
+}
+
+.analogy-section-title {
+    margin-top: 2em;
+}
+
+.analogy-theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    max-width: 100%;
+}
+
+.analogy-theme-tile {
+    display: block;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s;
+}
+
+.analogy-theme-tile:hover,
+.analogy-theme-tile:focus-visible {
+    border-color: var(--analogy-accent);
+}
+
+.analogy-theme-tile h3 {
+    margin: 0 0 4px;
+    color: var(--analogy-accent);
+    font-size: 16px;
+}
+
+.analogy-theme-tile p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.analogy-list {
+    max-width: 68ch;
+}
+
+.analogy-card {
+    margin: 0 0 1.4em;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--analogy-accent);
+    border-radius: 0 10px 10px 0;
+}
+
+.analogy-theme-tag {
+    display: inline-block;
+    margin-bottom: 0.6em;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--intro-bg);
+    color: var(--analogy-accent);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.analogy-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 0.8em;
+}
+
+.analogy-text,
+.analogy-signif {
+    margin: 0.6em 0;
+    line-height: 1.6;
+    font-size: var(--reading-font-size);
+}
+
+.analogy-link {
+    display: inline-block;
+    margin-top: 0.4em;
+    color: var(--analogy-accent);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.analogy-link:hover {
+    text-decoration: underline;
+}
+
+.analogy-talk-title {
+    margin-top: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 500;
 }
 
 .verse-container {
