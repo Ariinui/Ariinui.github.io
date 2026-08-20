@@ -1966,7 +1966,7 @@ if conf_analogy_issues:
     for theme, entries_for_theme in conf_analogy_themes.items():
         slug = write_conference_analogy_theme_page(theme, entries_for_theme)
         analogy_theme_tiles += (
-            f'<a class="analogy-theme-tile" href="theme/{slug}.html">'
+            f'<a class="analogy-theme-tile" href="conference-analogies/theme/{slug}.html">'
             f'<h3>{html.escape(theme)}</h3><p>{len(entries_for_theme)} analogie(s)</p></a>'
         )
 
