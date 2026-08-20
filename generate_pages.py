@@ -1913,7 +1913,10 @@ def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk, t
     page += f'    <p class="analogy-meta">{html.escape(issue_label)}</p>\n'
     page += f'    <h1>{html.escape(talk["speaker"])}</h1>\n'
     page += f'    <h2 class="analogy-talk-title">{html.escape(talk["title"])}</h2>\n'
-    page += f'    <div class="analogy-list">{cards}</div>\n'
+    page += (
+        f'    <div class="analogy-list" data-volume-key="conference-analogies" '
+        f'data-volume-title="Conference analogie">{cards}</div>\n'
+    )
     prev_link = f'<a href="talk_{talk_idx - 1}.html">Discours precedent</a> | ' if talk_idx > 1 else ''
     next_link = f'<a href="talk_{talk_idx + 1}.html">Discours suivant</a> | ' if talk_idx < total_talks else ''
     page += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../conference-analogies.html')
@@ -1977,6 +1980,7 @@ if conf_analogy_issues:
         'de la Conférence générale.</p>\n'
     )
     analogy_landing += render_volume_block('Par numéro de Conférence', analogy_book_data, analogy_chapter_href)
+    analogy_landing += '    <div id="continue-analogy-slot"></div>\n'
     analogy_landing += '    <h2 class="analogy-section-title">Par thème</h2>\n'
     analogy_landing += f'    <div class="analogy-theme-grid">{analogy_theme_tiles}</div>\n'
     analogy_landing += PAGE_TAIL
@@ -4002,6 +4006,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             continueSlot.appendChild(link);
         });
+    }
+
+    // Page "Conference analogie" : un seul bouton "Continuer" (pas de
+    // variante FR/TAH ici, un seul volume) vers le dernier discours visite.
+    var continueAnalogySlot = document.getElementById('continue-analogy-slot');
+    if (continueAnalogySlot) {
+        var savedAnalogyAll = {};
+        try { savedAnalogyAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+        var savedAnalogy = savedAnalogyAll['conference-analogies'];
+        if (savedAnalogy && savedAnalogy.href) {
+            var analogyLink = document.createElement('a');
+            analogyLink.className = 'continue-reading';
+            analogyLink.href = savedAnalogy.href;
+            analogyLink.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
+            continueAnalogySlot.appendChild(analogyLink);
+        }
     }
 });
 

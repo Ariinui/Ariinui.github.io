@@ -604,6 +604,22 @@ document.addEventListener('DOMContentLoaded', function() {
             continueSlot.appendChild(link);
         });
     }
+
+    // Page "Conference analogie" : un seul bouton "Continuer" (pas de
+    // variante FR/TAH ici, un seul volume) vers le dernier discours visite.
+    var continueAnalogySlot = document.getElementById('continue-analogy-slot');
+    if (continueAnalogySlot) {
+        var savedAnalogyAll = {};
+        try { savedAnalogyAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+        var savedAnalogy = savedAnalogyAll['conference-analogies'];
+        if (savedAnalogy && savedAnalogy.href) {
+            var analogyLink = document.createElement('a');
+            analogyLink.className = 'continue-reading';
+            analogyLink.href = savedAnalogy.href;
+            analogyLink.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
+            continueAnalogySlot.appendChild(analogyLink);
+        }
+    }
 });
 
 if ('serviceWorker' in navigator) {
