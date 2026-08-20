@@ -1927,10 +1927,10 @@ def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk, t
 def write_conference_analogy_theme_page(theme, entries_for_theme):
     slug = slugify(theme)
     page = PAGE_HEAD.format(
-        title=theme, styles_href='../styles.css', script_href='../script.js',
+        title=theme, styles_href='../../styles.css', script_href='../../script.js',
         lang='fr', extra_controls=TEXT_SIZE_CONTROL
     )
-    page += '    <p class="analogy-back"><a href="../conference-analogies.html">← Conference analogie</a></p>\n'
+    page += '    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference analogie</a></p>\n'
     page += f'    <h1>{html.escape(theme)}</h1>\n'
     cards = ''.join(conference_analogy_card_html(e, show_source=True) for e in entries_for_theme)
     page += f'    <div class="analogy-list">{cards}</div>\n'
