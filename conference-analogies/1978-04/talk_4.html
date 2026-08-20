@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Etude">
+    <title>N. Eldon Tanner – "Ye Shall Know the Truth"</title>
+    <link rel="stylesheet" href="../../styles.css?v=c42c5eb7">
+    <script src="../../script.js?v=ed460174"></script>
+</head>
+<body>
+    <div class="page">
+        <div class="page-controls">
+            
+            <div class="text-size-control">
+                <button class="text-size-toggle" type="button" aria-label="Taille du texte" title="Taille du texte">A</button>
+                <div class="text-size-popover" id="text-size-popover" hidden>
+                    <button type="button" class="text-size-step" data-dir="-1" aria-label="Reduire la taille du texte" title="Reduire">
+                        <span class="ts-glyph ts-small">A</span>
+                    </button>
+                    <button type="button" class="text-size-step" data-dir="1" aria-label="Agrandir la taille du texte" title="Agrandir">
+                        <span class="ts-glyph ts-large">A</span>
+                    </button>
+                </div>
+            </div>
+
+            <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+        </div>
+    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference analogie</a></p>
+    <p class="analogy-meta">Avril 1978</p>
+    <h1>N. Eldon Tanner</h1>
+    <h2 class="analogy-talk-title">&quot;Ye Shall Know the Truth&quot;</h2>
+    <div class="analogy-list" data-volume-key="conference-analogies" data-volume-title="Conference analogie">
+        <div class="analogy-card">
+            <span class="analogy-theme-tag">Foi</span>
+            
+            <p class="analogy-text"><strong>L'analogie :</strong> Certains colons américains, pour tromper des Amérindiens, leur donnèrent de la poudre à canon en leur promettant qu&#x27;ils pourraient en récolter une moisson s&#x27;ils la plantaient. Les Amérindiens plantèrent la poudre de bonne foi, mais ne récoltèrent rien, leur foi reposant sur un mensonge.</p>
+            <p class="analogy-signif"><strong>Signification :</strong> La foi ne vaut que si elle repose sur des principes vrais ; une foi sincère mais fondée sur une prémisse fausse ne produit rien.</p>
+            <a class="analogy-link" href="https://www.churchofjesuschrist.org/study/general-conference/1978/04/ye-shall-know-the-truth" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>
+        </div>
+
+        <div class="analogy-card">
+            <span class="analogy-theme-tag">Obéissance</span>
+            
+            <p class="analogy-text"><strong>L'analogie :</strong> Tanner cite le président David O. McKay racontant l&#x27;histoire d&#x27;un père qui présente à son fils deux routes, l&#x27;une menant au bonheur, l&#x27;autre au malheur, et le laisse choisir librement laquelle emprunter, sachant d&#x27;avance ce qui l&#x27;attend sur chacune.</p>
+            <p class="analogy-signif"><strong>Signification :</strong> Dieu, comme ce père, nous avertit et nous aime malgré nos choix, mais respecte notre libre arbitre et ne porte pas la responsabilité de nos décisions.</p>
+            <a class="analogy-link" href="https://www.churchofjesuschrist.org/study/general-conference/1978/04/ye-shall-know-the-truth" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>
+        </div>
+</div>
+
+    <nav>
+        <a href="talk_3.html">Discours precedent</a> | 
+        <a href="talk_5.html">Discours suivant</a> | 
+    </nav>
+    <script>
+    (function() {
+        if (!window.history || !window.history.pushState) return;
+        // Empeche le navigateur de restaurer nativement le scroll (souvent
+        // remis a 0) quand on revient sur l'entree d'historique ci-dessous -
+        // sinon la sauvegarde de position (pagehide) lit "haut de page" au
+        // moment du swipe-retour et ecrase la vraie position de lecture.
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        history.pushState({backToToc: true}, '', location.href);
+        window.addEventListener('popstate', function() {
+            location.replace('../../conference-analogies.html');
+        });
+    })();
+    </script>
+
+    </div>
+</body>
+</html>

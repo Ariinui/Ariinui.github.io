@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Etude">
+    <title>George P. Lee – Staying Unspotted from the World</title>
+    <link rel="stylesheet" href="../../styles.css?v=c42c5eb7">
+    <script src="../../script.js?v=ed460174"></script>
+</head>
+<body>
+    <div class="page">
+        <div class="page-controls">
+            
+            <div class="text-size-control">
+                <button class="text-size-toggle" type="button" aria-label="Taille du texte" title="Taille du texte">A</button>
+                <div class="text-size-popover" id="text-size-popover" hidden>
+                    <button type="button" class="text-size-step" data-dir="-1" aria-label="Reduire la taille du texte" title="Reduire">
+                        <span class="ts-glyph ts-small">A</span>
+                    </button>
+                    <button type="button" class="text-size-step" data-dir="1" aria-label="Agrandir la taille du texte" title="Agrandir">
+                        <span class="ts-glyph ts-large">A</span>
+                    </button>
+                </div>
+            </div>
+
+            <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+        </div>
+    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference analogie</a></p>
+    <p class="analogy-meta">Avril 1978</p>
+    <h1>George P. Lee</h1>
+    <h2 class="analogy-talk-title">Staying Unspotted from the World</h2>
+    <div class="analogy-list" data-volume-key="conference-analogies" data-volume-title="Conference analogie">
+        <div class="analogy-card">
+            <span class="analogy-theme-tag">Foi</span>
+            
+            <p class="analogy-text"><strong>L'analogie :</strong> On ne peut pas recevoir un témoignage pleinement mûr, tout comme on ne peut pas venir au monde déjà adulte ; le témoignage, comme la croissance physique, commence petit et se développe avec constance.</p>
+            <p class="analogy-signif"><strong>Signification :</strong> Le témoignage spirituel se construit progressivement, avec patience et persévérance, non instantanément.</p>
+            <a class="analogy-link" href="https://www.churchofjesuschrist.org/study/general-conference/1978/04/staying-unspotted-from-the-world" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>
+        </div>
+
+        <div class="analogy-card">
+            <span class="analogy-theme-tag">Foi</span>
+            
+            <p class="analogy-text"><strong>L'analogie :</strong> La foi est comparée à un muscle qu&#x27;il faut exercer jusqu&#x27;à ce qu&#x27;il devienne assez fort pour nous soutenir.</p>
+            <p class="analogy-signif"><strong>Signification :</strong> La foi se renforce par la pratique régulière, comme un muscle se développe par l&#x27;exercice.</p>
+            <a class="analogy-link" href="https://www.churchofjesuschrist.org/study/general-conference/1978/04/staying-unspotted-from-the-world" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>
+        </div>
+</div>
+
+    <nav>
+        <a href="talk_4.html">Discours precedent</a> | 
+        <a href="talk_6.html">Discours suivant</a> | 
+    </nav>
+    <script>
+    (function() {
+        if (!window.history || !window.history.pushState) return;
+        // Empeche le navigateur de restaurer nativement le scroll (souvent
+        // remis a 0) quand on revient sur l'entree d'historique ci-dessous -
+        // sinon la sauvegarde de position (pagehide) lit "haut de page" au
+        // moment du swipe-retour et ecrase la vraie position de lecture.
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        history.pushState({backToToc: true}, '', location.href);
+        window.addEventListener('popstate', function() {
+            location.replace('../../conference-analogies.html');
+        });
+    })();
+    </script>
+
+    </div>
+</body>
+</html>

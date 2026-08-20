@@ -1815,7 +1815,7 @@ def parse_conference_analogies_sources(folder):
         return []
     entries = []
     for fname in sorted(os.listdir(folder)):
-        if not fname.endswith('.txt'):
+        if not fname.lower().endswith('.txt'):
             continue
         with open(os.path.join(folder, fname), 'r', encoding='utf-8') as file:
             text = file.read()
