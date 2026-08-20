@@ -605,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Page "Conference analogie" : un seul bouton "Continuer" (pas de
+    // Page "Conference generale analogie" : un seul bouton "Continuer" (pas de
     // variante FR/TAH ici, un seul volume) vers le dernier discours visite.
     var continueAnalogySlot = document.getElementById('continue-analogy-slot');
     if (continueAnalogySlot) {

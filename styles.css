@@ -505,7 +505,7 @@ h1 {
     line-height: 1.5;
 }
 
-/* Conference analogie : meme famille visuelle que les cameos (section
+/* Conference generale analogie : meme famille visuelle que les cameos (section
    autonome, pas de signet), identite propre via --analogy-accent. */
 .analogy-home-button {
     display: flex;

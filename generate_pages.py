@@ -1744,7 +1744,7 @@ else:
 
 
 # ---------------------------------------------------------------------------
-# "Conference analogie" - bibliotheque d'analogies profanes/personnelles
+# "Conference generale analogie" - bibliotheque d'analogies profanes/personnelles
 # extraites des discours de Conference generale. Source : fichiers .txt
 # deposes dans conference-analogies-source/, produits par un projet Claude
 # web separe (prompt+epub -> texte structure), jamais generes ici. Section
@@ -1922,13 +1922,13 @@ def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk, t
         title=f"{talk['speaker']} – {talk['title']}", styles_href='../../styles.css',
         script_href='../../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL
     )
-    page += '    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference analogie</a></p>\n'
+    page += '    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference generale analogie</a></p>\n'
     page += f'    <p class="analogy-meta">{html.escape(issue_label)}</p>\n'
     page += f'    <h1>{html.escape(talk["speaker"])}</h1>\n'
     page += f'    <h2 class="analogy-talk-title">{html.escape(talk["title"])}</h2>\n'
     page += (
         f'    <div class="analogy-list" data-volume-key="conference-analogies" '
-        f'data-volume-title="Conference analogie">{cards}</div>\n'
+        f'data-volume-title="Conference generale analogie">{cards}</div>\n'
     )
     prev_link = f'<a href="talk_{talk_idx - 1}.html">Discours precedent</a> | ' if talk_idx > 1 else ''
     next_link = f'<a href="talk_{talk_idx + 1}.html">Discours suivant</a> | ' if talk_idx < total_talks else ''
@@ -1943,7 +1943,7 @@ def write_conference_analogy_theme_page(theme, entries_for_theme):
         title=theme, styles_href='../../styles.css', script_href='../../script.js',
         lang='fr', extra_controls=TEXT_SIZE_CONTROL
     )
-    page += '    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference analogie</a></p>\n'
+    page += '    <p class="analogy-back"><a href="../../conference-analogies.html">← Conference generale analogie</a></p>\n'
     page += f'    <h1>{html.escape(theme)}</h1>\n'
     cards = ''.join(conference_analogy_card_html(e, show_source=True) for e in entries_for_theme)
     page += f'    <div class="analogy-list">{cards}</div>\n'
@@ -1984,10 +1984,10 @@ if conf_analogy_issues:
         )
 
     analogy_landing = PAGE_HEAD.format(
-        title='Conference analogie', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=''
+        title='Conference generale analogie', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=''
     )
     analogy_landing += '    <p class="analogy-back"><a href="index.html">← Bibliothèque</a></p>\n'
-    analogy_landing += '    <h1>Conference analogie</h1>\n'
+    analogy_landing += '    <h1>Conference generale analogie</h1>\n'
     analogy_landing += (
         '    <p class="analogy-intro">Analogies profanes et personnelles utilisées par les orateurs '
         'de la Conférence générale.</p>\n'
@@ -2040,7 +2040,7 @@ if conf_analogy_issues:
     toc_html += '''
         <a class="analogy-home-button" href="conference-analogies.html">
             <span class="analogy-home-icon" aria-hidden="true">📜</span>
-            <span>Conference analogie</span>
+            <span>Conference generale analogie</span>
         </a>
 '''
 
@@ -2759,7 +2759,7 @@ h1 {
     line-height: 1.5;
 }
 
-/* Conference analogie : meme famille visuelle que les cameos (section
+/* Conference generale analogie : meme famille visuelle que les cameos (section
    autonome, pas de signet), identite propre via --analogy-accent. */
 .analogy-home-button {
     display: flex;
@@ -4021,7 +4021,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Page "Conference analogie" : un seul bouton "Continuer" (pas de
+    // Page "Conference generale analogie" : un seul bouton "Continuer" (pas de
     // variante FR/TAH ici, un seul volume) vers le dernier discours visite.
     var continueAnalogySlot = document.getElementById('continue-analogy-slot');
     if (continueAnalogySlot) {
