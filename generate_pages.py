@@ -1861,9 +1861,22 @@ def parse_conference_analogies_sources(folder):
                 'theme': theme_m.group(1).strip(),
                 'analogie': analogie_m.group(1).strip(),
                 'signification': signif_m.group(1).strip(),
-                'lien': lien_m.group(1).strip(),
+                'lien': conf_analogy_lien_with_lang(lien_m.group(1).strip()),
             })
     return entries
+
+
+def conf_analogy_lien_with_lang(url):
+    # Sans lang= explicite, churchofjesuschrist.org redirige selon la
+    # langue du navigateur (souvent lang=fra pour un visiteur francophone),
+    # et beaucoup de discours anciens n'ont pas de traduction francaise a
+    # cette URL -> 404. Les liens sources sont toujours l'URL anglaise
+    # (celle utilisee pour l'extraction) donc on force lang=eng, qui
+    # existe garanti pour chaque discours reference.
+    if 'lang=' in url:
+        return url
+    sep = '&' if '?' in url else '?'
+    return f'{url}{sep}lang=eng'
 
 
 def group_conference_analogies_by_issue(entries):
