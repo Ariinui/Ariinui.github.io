@@ -1903,7 +1903,7 @@ def conference_analogy_card_html(entry, show_source):
 '''
 
 
-def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk):
+def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk, total_talks):
     cards = ''.join(conference_analogy_card_html(e, show_source=False) for e in talk['analogies'])
     page = PAGE_HEAD.format(
         title=f"{talk['speaker']} – {talk['title']}", styles_href='../../styles.css',
@@ -1914,6 +1914,9 @@ def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk):
     page += f'    <h1>{html.escape(talk["speaker"])}</h1>\n'
     page += f'    <h2 class="analogy-talk-title">{html.escape(talk["title"])}</h2>\n'
     page += f'    <div class="analogy-list">{cards}</div>\n'
+    prev_link = f'<a href="talk_{talk_idx - 1}.html">Discours precedent</a> | ' if talk_idx > 1 else ''
+    next_link = f'<a href="talk_{talk_idx + 1}.html">Discours suivant</a> | ' if talk_idx < total_talks else ''
+    page += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../conference-analogies.html')
     page += PAGE_TAIL
     write(f'conference-analogies/{issue_key}/talk_{talk_idx}.html', page)
 
@@ -1947,8 +1950,9 @@ if conf_analogy_issues:
     for issue_key, issue in conf_analogy_issues.items():
         analogy_issue_keys.append(issue_key)
         chapters = []
-        for talk_idx, talk in enumerate(issue['talks'].values(), 1):
-            write_conference_analogy_talk_page(issue_key, issue['label'], talk_idx, talk)
+        talks = list(issue['talks'].values())
+        for talk_idx, talk in enumerate(talks, 1):
+            write_conference_analogy_talk_page(issue_key, issue['label'], talk_idx, talk, len(talks))
             chapters.append({'title': f"{talk['speaker']} – {talk['title']}"})
         analogy_book_data.append({'book_title': issue['label'], 'chapters': chapters})
 
