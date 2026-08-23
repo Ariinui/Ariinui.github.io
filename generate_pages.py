@@ -48,6 +48,13 @@ def parse_bom_source(path):
     book_data = []
     current_book = None
     chapter_list = []
+    # Dans la source, le resume d'un chapitre est place juste AVANT son propre
+    # <h1> (comme sur le site officiel) - la fenetre de scan d'un chapitre
+    # (de son h1 au h1 suivant) capture donc en realite le resume du chapitre
+    # SUIVANT. pending_introduction reporte ce resume trouve a l'iteration
+    # precedente vers le chapitre courant, plutot que de l'assigner au
+    # chapitre qui vient de le contenir dans sa fenetre de scan.
+    pending_introduction = None
 
     for chapter in chapters:
         chapter_title = chapter.text.strip()
@@ -59,7 +66,7 @@ def parse_bom_source(path):
             chapter_list = []
 
         verses = []
-        introduction = None
+        introduction_for_next = None
         next_element = chapter.find_next()
         while next_element and (next_element.name != 'h1' or not next_element.get('id', '').startswith('chapitre-')):
             if next_element.name == 'div' and 'verse-container' in next_element.get('class', []):
@@ -70,7 +77,7 @@ def parse_bom_source(path):
                     'francais': francais.text.strip() if francais else ''
                 }
                 if 'introduction' in next_element.get('class', []):
-                    introduction = verse_text
+                    introduction_for_next = verse_text
                 else:
                     verses.append(verse_text)
             next_element = next_element.find_next()
@@ -78,8 +85,9 @@ def parse_bom_source(path):
         chapter_list.append({
             'title': chapter_title,
             'verses': verses,
-            'introduction': introduction
+            'introduction': pending_introduction
         })
+        pending_introduction = introduction_for_next
 
     if current_book and chapter_list:
         book_data.append({'book_title': current_book, 'chapters': chapter_list})
@@ -1441,6 +1449,77 @@ def write(path, content):
 # ---------------------------------------------------------------------------
 
 bom_book_data = parse_bom_source('livre_de_mormon.html')
+
+# Le resume du 1er chapitre de CHAQUE livre n'existe jamais dans la source
+# comme un div.introduction distinct (seul le synopsis du livre entier
+# precede le tout premier h1 d'un livre, sans balise dediee au chapitre 1
+# lui-meme) - impossible a extraire via parse_bom_source. Complete a la main
+# avec le vrai texte officiel (churchofjesuschrist.org, verifie chapitre par
+# chapitre), dans l'ordre des 15 livres du Livre de Mormon.
+FIRST_CHAPTER_SUMMARY = [
+    {
+        'francais': "Néphi commence les annales de son peuple — Léhi voit en vision une colonne de feu et lit dans un livre de prophéties — Il loue Dieu, prédit la venue du Messie et prophétise la destruction de Jérusalem — Il est persécuté par les Juifs. Vers 600 av. J.-C.",
+        'tahitien': "’Ua ha’amata Nephi i te pāpa’a parau o tōna mau ta’ata—’Ua ’ite ’o Lehi i roto i te hō’ē ’ōrama i te hō’ē pou auahi ’e ’ua tai’o ’oia mai roto mai i te hō’ē buka nō te tohu—’Ua ’ārue ’oia i te Atua, ’ua fa’a’ite ātea ’oia i te taera’a mai o te Mesia, ’e ’ua tohu ’oia nō ni’a i te ha’amoura’a o Ierusalema—’Ua hāmani-’ino-hia ’oia e te mau ’āti Iuda. Fātata 600 H.M.",
+    },
+    {
+        'francais': "Léhi prophétise concernant un pays de liberté — Sa postérité sera dispersée et frappée si elle rejette le Saint d’Israël — Il exhorte ses fils à revêtir l’armure de la justice. Vers 588–570 av. J.-C.",
+        'tahitien': "’Ua tohu Lehi nō ni’a i te hō’ē fenua ti’amā—E ha’apurarahia ’e e ha’amouhia tōna hua’ai mai te mea e pāto’i rātou i Tei Mo’a i ’Īserā’ela ra—’Ua a’o ’oia i tāna nā tamaiti ’ia ’ahu i te ha’ana tama’i o te parauti’a. Fātata 588–570 H.M.",
+    },
+    {
+        'francais': "Jacob et Joseph cherchent à persuader les hommes de croire au Christ et de garder ses commandements — Mort de Néphi — La méchanceté règne chez les Néphites. Vers 544–421 av. J.-C.",
+        'tahitien': "’Ua tītau Iakoba ’e Iosepha ’ia fa’aitoito i te mau ta’ata ’ia ti’aturi i te Mesia ’e ’ia ha’apa’o i tāna mau fa’auera’a—’Ua pohe Nephi—’Ua vai tāmau noa te ’ohipa ’ī’ino i rotopū i te mau ’āti Nephi. Fātata 544–421 H.M.",
+    },
+    {
+        'francais': "Énos prie avec ferveur et obtient le pardon de ses péchés — La voix du Seigneur parvient à son esprit, promettant le salut pour les Lamanites à une époque future — Les Néphites cherchent à ramener les Lamanites — Énos se réjouit de son Rédempteur. Vers 420 av. J.-C.",
+        'tahitien': "’Ua pure ’ū’ana Enosa ’e ’ua fāri’i ’oia i te ha’amatarara’a nō tāna ra mau hara—’Ua tae mai ra te reo o te Fatu i roto i tōna ferurira’a, ma te fafau mai i te fa’aorara’a nō te mau ’āti Lamana i te mau mahana i mua nei—’Ua tītau te mau ’āti Nephi ’ia fa’aho’ihia mai te mau ’āti Lamana—’Ua ’oa’oa Enosa i tōna ra Tāra’ehara. Fātata 420 H.M.",
+    },
+    {
+        'francais': "Les Néphites gardent la loi de Moïse, espèrent en la venue du Christ et prospèrent dans le pays — Beaucoup de prophètes travaillent à garder le peuple sur le chemin de la vérité. Vers 399–361 av. J.-C.",
+        'tahitien': "’Ua ha’apa’o te mau ’āti Nephi i te ture a Mose, ’ua tīa’i rātou i te taera’a mai o te Mesia, ’e ’ua manuia rātou i ni’a i te fenua nei—’Ua rave itoito te mau peropheta i te ’ohipa nō te tāpe’a i te mau ta’ata i ni’a i te ’ē’a nō te parau mau. Fātata 399–361 H.M.",
+    },
+    {
+        'francais': "Omni, Amaron, Chémish, Abinadom et Amaléki gardent, tour à tour, les annales — Mosiah découvre le peuple de Zarahemla, qui vint de Jérusalem du temps de Sédécias — Mosiah devient son roi — Les descendants de Mulek à Zarahemla avaient découvert Coriantumr, dernier des Jarédites — Le roi Benjamin succède à Mosiah — Les hommes doivent faire offrande de leur âme au Christ. Vers 323–130 av. J.-C.",
+        'tahitien': "’Ua ha’apa’o tāta’itahi teie mau ta’ata i te mau pāpa’a parau, Omoni, Amarona, Kemisa, Abinadoma, ’e Amaleki—’Ua ’ite Mosia i te mau ta’ata o Zarahemela, ’o tei haere mai mai Ierusalema mai i te ’anotau o Zedekia—’Ua fa’arirohia ’o Mosia ’ei ari’i nō rātou—’Ua ’ite atu te mau hua’ai o Muleka i Zarahemela ia Korianetumera, te ta’ata hope’a nō te mau ’āti Iareda—’Ua mono te ari’i Beniamina ia Mosia—E mea ti’a i te ta’ata ’ia pūpū i tō rātou vārua ’ei ō i te Mesia. Fātata 323–130 H.M.",
+    },
+    {
+        'francais': "Mormon abrège les grandes plaques de Néphi — Il annexe les petites plaques aux autres — Le roi Benjamin fait régner la paix dans le pays. Vers 385 apr. J.-C.",
+        'tahitien': "’Ua ha’apoto Moromona i te mau ’api rahi a Nephi—’Ua tu’u ’oia i te mau ’api hu’a i pīha’i iho i te tahi atu mau ’api—’Ua fa’atupu te ari’i Beniamina i te hau i ni’a i te fenua. Fātata 385 M.M.",
+    },
+    {
+        'francais': "Le roi Benjamin enseigne à ses fils la langue et les prophéties de leurs pères — Leur religion et leur civilisation ont été préservées grâce aux annales tenues sur les diverses plaques — Mosiah est choisi comme roi et reçoit la garde des annales et d’autres choses. Vers 130–124 av. J.-C.",
+        'tahitien': "’Ua ha’api’i te ari’i Beniamina i tāna mau tamari’i tamāroa i te reo ’e te mau tohura’a a tō rātou ra mau metua—’Ua fa’ahereherehia tā rātou ha’apa’ora’a e tā rātou peu maitata’i nō te mea ’ua ha’apa’ohia tā rātou mau pāpa’a parau i ni’a i te mau ’api huru rau—’Ua mā’itihia Mosia ’ei ari’i ’e ’ei ta’ata ha’apa’o nō te mau pāpa’a parau e te tahi atu mau mea. Fātata 130–124 H.M.",
+    },
+    {
+        'francais': "Néhor enseigne une fausse doctrine, fonde une Église, introduit les intrigues de prêtres et tue Gédéon — Il est exécuté pour ses crimes — Les intrigues de prêtres et les persécutions se répandent parmi le peuple — Les prêtres pourvoient à leur entretien personnel, le peuple prend soin des pauvres, et l’Église prospère. Vers 91–88 av. J.-C.",
+        'tahitien': "Tē ha’api’i ra Nehora i te mau ha’api’ira’a hape, tē fa’ati’a ra i te hō’ē ’ēkālesia, tē ha’api’i ra i te mau ’ohipa ha’avare a te mau tahu’a, ’e ’ua taparahi ia Gideona—’Ua ha’apohehia Nehora nō tāna mau hara—’Ua parare te mau ’ohipa ha’avare a te mau tahu’a ’e te mau hāmani-’ino-ra’a i rotopū i te mau ta’ata—’Ua pāturu te mau tahu’a ia rātou iho, ’ua tauturu te mau ta’ata i te feiā veve, ’e ’ua tupu rahi te ’Ēkālesia. Fātata 91–88 H.M.",
+    },
+    {
+        'francais': "Pahoran Ⅱ devient grand juge et est assassiné par Kishkumen — Pacumeni occupe le siège du jugement — Coriantumr conduit les armées lamanites, prend Zarahemla et tue Pacumeni — Moronihah bat les Lamanites, reprend Zarahemla, et Coriantumr est tué. Vers 52–50 av. J.-C.",
+        'tahitien': "’Ua riro Pahorana piti ’ei ha’avā rahi ’e ’ua taparahihia ’oia e Kisakumena—’Ua ti’a atu Pakumeni i ni’a i te pārahira’a ha’avāra’a—’Ua arata’i atu Korianetumera i te mau nu’u fa’ehau ’āti Lamana, ’e ’ua haru ia Zarahemela, ’e ’ua taparahi ia Pakumeni—’Ua ha’avī Moroniha i te mau ’āti Lamana ’e ’ua haru fa’ahou mai ia Zarahemela, ’e ’ua taparahihia o Korianetumera. Fātata 52–50 H.M.",
+    },
+    {
+        'francais': "Néphi, fils d’Hélaman, quitte le pays, et son fils Néphi tient les annales — Bien que les signes et les prodiges abondent, les méchants envisagent de tuer les justes — La nuit de la naissance du Christ arrive — Le signe est donné et une nouvelle étoile se lève — Les mensonges et les tromperies augmentent, et les brigands de Gadianton massacrent beaucoup de gens. Vers 1–4 apr. J.-C.",
+        'tahitien': "’Ua reva atu o Nephi, te tamaiti a Helamana, i rāpae i te fenua, ’e ’ua ha’apa’o tāna tamaiti o Nephi i te mau pāpa’a parau—Noa atu te rahi o te mau tāpa’o ’e te mau ’ohipa ’ūmerehia, ’ua ’ōpua te feiā parauti’a ’ore ’ia taparahi i te feiā parauti’a—’Ua tae mai te pō nō te fānaura’a o te Mesia—’Ua hōro’ahia mai te tāpa’o, ’e ’ua hiti mai te hō’ē feti’a ’āpī—’Ua tupu rahi te mau ha’avare ’e te mau fa’ahemara’a, ’e ’ua taparahi te feiā ’eiā haru o Gadianetona i te mau ta’ata e rave rahi. Fātata 1–4 M.M.",
+    },
+    {
+        'francais': "Les Néphites et les Lamanites sont tous convertis au Seigneur — Ils ont tout en commun, accomplissent des miracles et prospèrent dans le pays — Après deux siècles, des divisions, des abus, de fausses Églises et des persécutions apparaissent — Après trois cents ans, les Néphites et les Lamanites sont, les uns comme les autres, mauvais — Ammaron cache les annales sacrées. Vers 35–321 apr. J.-C.",
+        'tahitien': "’Ua fa’afāriuhia mai te tā’āto’ara’a o te mau ’āti Nephi ’e te mau ’āti Lamana i te Fatu—’Ua ’āmui-tāhō’ē-hia tā rātou mau mea ato’a, ’ua rave rātou i te mau semeio, ’e ’ua manuia rātou i ni’a i te fenua—’ia hope nā tenetere e piti, ’ua tupu ihora te mau ’āmahamahara’a, te mau ’ohipa ’ī’ino, te mau ’ēkālesia ha’avare, ’e te mau hāmani-’ino-ra’a—’ia hope te toru hānere matahiti, ’ua riro te mau ’āti Nephi ’e te mau ’āti Lamana ’ei feiā parauti’a ’ore—’Ua huna Amarona i te mau pāpa’a parau mo’a. Fātata 35–321 M.M.",
+    },
+    {
+        'francais': "Ammaron donne des instructions à Mormon concernant les annales sacrées — La guerre commence entre les Néphites et les Lamanites — Les trois Néphites sont retirés — La méchanceté, l’incrédulité, les sorcelleries et les sortilèges règnent. Vers 321–326 apr. J.-C.",
+        'tahitien': "’Ua ha’api’i Amarona ia Moromona nō ni’a i te mau pāpa’a parau mo’a—’Ua ha’amata te ’arora’a i rotopū i te mau ’āti Nephi ’e te mau ’āti Lamana—’Ua rave-’ē-hia atu nā toru ’āti Nephi—’Ua vai noa te mau ’ohipa ’ī’ino, te ti’aturi ’ore, te mau ’ohipa tahutahu, ’e te ’ohipa diabolo. Fātata 321–326 M.M.",
+    },
+    {
+        'francais': "Moroni abrège les écrits d’Éther — Généalogie d’Éther — La langue des Jarédites n’est pas confondue à la tour de Babel — Le Seigneur promet de les conduire dans un pays de choix et de faire d’eux une grande nation.",
+        'tahitien': "’Ua ha’apoto Moroni i te mau pāpa’ira’a a Etera—’Ua fa’a’itehia mai te tuatāpapara’a tupuna o Etera—’Aita te reo o te mau ’āti Iareda i fa’ahuru-’ē-hia i te Pare i Babela—’Ua fafau te Fatu ’ia arata’i ia rātou i te hō’ē fenua maita’i roa ’e ’ia fa’ariro ia rātou ’ei nūna’a rahi.",
+    },
+    {
+        'francais': "Moroni écrit pour le profit des Lamanites — Les Néphites qui ne veulent pas nier le Christ sont mis à mort. Vers 401–421 apr. J.-C.",
+        'tahitien': "’Ua pāpa’i Moroni nō te maita’i o te mau ’āti Lamana—’Ua taparahihia te mau ’āti Nephi ’o tei ’ore i huna i te Mesia. Fātata 401–421 M.M.",
+    },
+]
+for book_idx_fix, summary in enumerate(FIRST_CHAPTER_SUMMARY):
+    bom_book_data[book_idx_fix]['chapters'][0]['introduction'] = summary
 guide_intro_items, guide_books_by_name, guide_verse_index_by_name = parse_guide_source(
     'The_Book_of_Mormon_Study_Guide/The_Book_of_Mormon_Study_Guide.html'
 )
@@ -2100,7 +2179,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
-        html += verses_html + introduction_html
+        html += introduction_html + verses_html
         html += '</div>'
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
         html += PAGE_TAIL
@@ -2133,7 +2212,7 @@ if SITE_TAHITIEN:
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
             html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
-            html += verses_html + introduction_html
+            html += introduction_html + verses_html
             html += '</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
             html += PAGE_TAIL
