@@ -1156,4 +1156,45 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
         width: 28px;
         height: 28px;
     }
+
+    .bookmark-filter-toggle {
+        width: 44px;
+        height: 44px;
+    }
+
+    .bookmark-filter-toggle svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .bookmark-filter-popover {
+        width: min(240px, calc(100vw - 32px));
+    }
+
+    .bookmark-filter-row {
+        padding: 10px 12px;
+        gap: 10px;
+        font-size: 16px;
+    }
+
+    .bookmark-filter-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .bookmark-filter-switch {
+        width: 40px;
+        height: 22px;
+    }
+
+    .bookmark-filter-switch::after {
+        top: 3px;
+        left: 3px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch::after {
+        transform: translateX(18px);
+    }
 }
