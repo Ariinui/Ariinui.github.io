@@ -3405,6 +3405,11 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
         gap: 8px;
         font-size: 14px;
     }
+
+    .bookmark svg {
+        width: 28px;
+        height: 28px;
+    }
 }
 '''
 
