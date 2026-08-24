@@ -3612,6 +3612,28 @@ js_content = '''
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
+    // DIAGNOSTIC TEMPORAIRE - panneau texte en FLUX NORMAL (pas position:
+    // fixed, ne recouvre/ne bloque plus aucun bouton) tout en bas de la
+    // page, sous tout le reste - a retirer une fois le souci mobile
+    // "Continuer" de guide localise.
+    function debugLog(msg) {
+        var box = document.getElementById('debug-log-box');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'debug-log-box';
+            box.style.cssText = 'display:block;margin-top:24px;background:#000;color:#7CFC00;font-size:11px;font-family:monospace;padding:8px;white-space:pre-wrap;line-height:1.4;border-top:3px solid #7CFC00;';
+            document.body.appendChild(box);
+        }
+        var line = document.createElement('div');
+        var t = new Date();
+        var hh = String(t.getHours()).padStart(2, '0');
+        var mm = String(t.getMinutes()).padStart(2, '0');
+        var ss = String(t.getSeconds()).padStart(2, '0');
+        line.textContent = hh + ':' + mm + ':' + ss + ' ' + msg;
+        box.appendChild(line);
+    }
+    debugLog('page chargee: ' + location.pathname + location.hash);
+
     var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
     var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
     if (bookmarkFilterToggle && bookmarkFilterPopover) {
@@ -3744,13 +3766,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // l'effacer ici.
     var skipGuidePositionSave = false;
     function clearContinueForThisGuide() {
+        debugLog('CLIC sortie de guide detecte');
         skipGuidePositionSave = true;
         var key = guideContent && guideContent.getAttribute('data-volume-key');
-        if (!key) return;
+        debugLog('cle=' + key);
+        if (!key) { debugLog('ARRET pas de cle'); return; }
         var all = {};
         try { all = JSON.parse(localStorage.getItem('bukaAMoromona:reading')) || {}; } catch (e) {}
         delete all[key];
         localStorage.setItem('bukaAMoromona:reading', JSON.stringify(all));
+        debugLog('efface, storage=' + localStorage.getItem('bukaAMoromona:reading'));
     }
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
@@ -4292,8 +4317,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // pageshow avec persisted=true detecte ce cas et force un rechargement
         // frais plutot que de laisser un contenu perime affiche.
         window.addEventListener('pageshow', function(event) {
+            debugLog('pageshow persisted=' + event.persisted);
             if (event.persisted) location.reload();
         });
+        debugLog('accueil charge, storage=' + localStorage.getItem('bukaAMoromona:reading'));
         // Francais/tahitien (accordeon d'accueil) + les 7 guides/signets
         // (GUIDE_LABELS, meme cle que le popover de filtre de signets) -
         // un Continuer par volume/signet ayant une position sauvegardee.
