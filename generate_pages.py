@@ -3733,6 +3733,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // fois, avec Precedent/Suivant pour naviguer entre elles, et
     // Copier/Partager sur l'entree affichee. Un lien "Retour au verset"
     // est ajoute dans la nav du bas pour revenir au verset francais.
+    // Mis a true par les liens "Retour au verset"/Precedent/Suivant d'une
+    // page de guide isolee (plus bas) - lu par saveReadingPosition, bien
+    // plus loin dans ce script, pour effacer plutot que re-sauvegarder la
+    // position au moment de quitter la page (pagehide).
+    var skipGuidePositionSave = false;
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
         var targetId = location.hash.slice(1);
@@ -4043,6 +4048,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 var backLink = document.createElement('a');
                 backLink.href = '../../chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId;
                 backLink.textContent = 'Retour au verset';
+                // "Retour au verset"/Precedent/Suivant = l'utilisateur quitte
+                // deliberement cette entree de guide (pas juste ferme
+                // l'onglet ou navigue ailleurs par accident) - le "Continuer"
+                // de ce signet ne doit plus reapparaitre a l'accueil.
+                // skipGuidePositionSave, lu par saveReadingPosition plus bas
+                // dans ce script, efface la position au lieu de la
+                // re-sauvegarder au moment ou la page se ferme (pagehide).
+                backLink.addEventListener('click', function() { skipGuidePositionSave = true; });
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
@@ -4055,6 +4068,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
                     a.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
+                    a.addEventListener('click', function() { skipGuidePositionSave = true; });
                 });
             }
         }
@@ -4134,6 +4148,18 @@ document.addEventListener('DOMContentLoaded', function() {
         var volumeTitle = readingTrack.getAttribute('data-volume-title');
         var saveTimer = null;
         function saveReadingPosition() {
+            // L'utilisateur a clique "Retour au verset"/Precedent/Suivant
+            // depuis cette page de guide - il quitte deliberement cette
+            // entree, pas juste l'onglet : effacer sa position plutot que la
+            // re-sauvegarder au moment de partir (pagehide), pour que le
+            // "Continuer" de ce signet ne reapparaisse plus a l'accueil.
+            if (skipGuidePositionSave) {
+                var allSkip = {};
+                try { allSkip = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+                delete allSkip[volumeKey];
+                localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(allSkip));
+                return;
+            }
             var items = readingTrack.querySelectorAll('[id]');
             var current = null;
             for (var i = 0; i < items.length; i++) {
