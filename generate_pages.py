@@ -1397,14 +1397,21 @@ def bookmark_filter_row(type_key, label):
             f'</button>')
 
 
-BOOKMARK_FILTER_ROWS = (
-    bookmark_filter_row('guide', "Gospel Doctrine")
-    + bookmark_filter_row('guide2', "Start to Finish")
-    + bookmark_filter_row('guide3', "Verse by Verse")
-    + bookmark_filter_row('guide5', "Manuel de l'élève")
-    + bookmark_filter_row('guide6', "ScripturePlus")
-    + bookmark_filter_row('guide7', "BOM Evidence")
-    + bookmark_filter_row('guide8', "BOM Minute")
+# Labels affiches des 7 signets - source unique reutilisee pour le popover
+# de filtre ET pour le libelle du guide dans "Continuer" (JS, voir
+# GUIDE_LABELS_JSON plus bas) afin de ne jamais desynchroniser les deux.
+GUIDE_BOOKMARK_LABELS = {
+    'guide': "Gospel Doctrine",
+    'guide2': "Start to Finish",
+    'guide3': "Verse by Verse",
+    'guide5': "Manuel de l'élève",
+    'guide6': "ScripturePlus",
+    'guide7': "BOM Evidence",
+    'guide8': "BOM Minute",
+}
+
+BOOKMARK_FILTER_ROWS = ''.join(
+    bookmark_filter_row(key, label) for key, label in GUIDE_BOOKMARK_LABELS.items()
 )
 
 BOOKMARK_FILTER_CONTROL = f'''
@@ -2555,7 +2562,7 @@ h1 {
 
 .continue-reading {
     display: block;
-    margin: 0 0 20px;
+    margin: 0 0 10px;
     padding: 14px 16px;
     background: var(--accent);
     color: #ffffff;
@@ -2563,6 +2570,7 @@ h1 {
     border-radius: 8px;
     font-size: 15px;
     font-weight: 500;
+    overflow-wrap: break-word;
 }
 
 .continue-reading:hover {
@@ -3978,7 +3986,15 @@ document.addEventListener('DOMContentLoaded', function() {
             controls.appendChild(actionsRow);
 
             guideContent.parentNode.insertBefore(controls, guideContent.nextSibling);
-            showEntry(0);
+            // Arrivee via "Continuer" avec une sous-entree precise dans le
+            // hash (ex. #v1-5, 5e entree du verset 1) : afficher directement
+            // celle-ci plutot que de toujours retomber sur la 1ere (bug
+            // corrige - showEntry(0) etait appele sans condition avant).
+            var initialIndex = 0;
+            for (var mi = 0; mi < matches.length; mi++) {
+                if (matches[mi].id === targetId) { initialIndex = mi; break; }
+            }
+            showEntry(initialIndex);
 
             var bookIdx = guideContent.getAttribute('data-book-idx');
             var chapterIdx = guideContent.getAttribute('data-chapter-idx');
@@ -4086,19 +4102,64 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                 }
             }
-            // document.title contient deja "NomDuLivre Chapitre N" (voir
-            // chapter_display_title cote Python) - h2 seul seit juste
-            // "Chapitre N" depuis le retrait du h1 nom de livre en tete de
-            // page, insuffisant pour identifier le livre dans "Continuer".
+            // Fraction de defilement a l'interieur de l'element courant (0 =
+            // son sommet vient d'entrer dans l'ecran, proche de 1 = son bas
+            // approche) - permet a "Continuer" de revenir exactement ou la
+            // lecture a ete arretee, pas juste en haut du verset/de
+            // l'entree. Utile surtout sur les longues entrees de guide (BOM
+            // Evidence...), sans effet notable sur les versets (courts).
+            var scrollFrac = 0;
+            if (current) {
+                var rect = current.getBoundingClientRect();
+                var h = current.offsetHeight || 1;
+                scrollFrac = Math.max(0, Math.min(1, -rect.top / h));
+            }
+            // Un guide arrive via signet isole plusieurs entrees d'un meme
+            // verset (v1, v1-2, v1-3...) avec Precedent/Suivant - on retient
+            // aussi laquelle est affichee (index/total) pour l'afficher dans
+            // "Continuer" (ex. "BOM Evidence 5/15").
+            var entryIndex = null;
+            var entryTotal = null;
+            if (current && current.classList && current.classList.contains('guide-entry')) {
+                var baseId = current.id.split('-')[0];
+                var group = [];
+                var allEntries = readingTrack.querySelectorAll('.guide-entry');
+                for (var gi = 0; gi < allEntries.length; gi++) {
+                    var gid = allEntries[gi].id;
+                    if (gid === baseId || gid.indexOf(baseId + '-') === 0) group.push(allEntries[gi]);
+                }
+                if (group.length > 1) {
+                    for (var pi = 0; pi < group.length; pi++) {
+                        if (group[pi] === current) { entryIndex = pi; entryTotal = group.length; break; }
+                    }
+                }
+            }
+            // document.title contient deja "NomDuLivre Chapitre N" (Livre de
+            // Mormon, voir chapter_display_title cote Python) ou "NomDuLivre
+            // N" (pages de guide) - h2 seul serait insuffisant pour
+            // identifier le livre dans "Continuer".
             var h2 = document.querySelector('h2');
             var h1 = document.querySelector('h1');
+            // Sur une page de guide, le <title>/h2 vient de la source brute
+            // du guide (ex. "1 Nephi 1", sans accent) alors que le <h1> est
+            // deja passe par book_display_title (ex. "1 Néphi", accentue,
+            // meme nom que le reste du site) - utiliser h1+data-chapter-idx
+            // pour "Continuer" plutot que de re-parser un titre non fiable.
+            var guideBook = null;
+            var guideChapter = readingTrack.getAttribute('data-chapter-idx');
+            if (guideChapter) guideBook = h1 ? h1.textContent.trim() : null;
             var all = {};
             try { all = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
             all[volumeKey] = {
                 volumeTitle: volumeTitle,
                 href: location.pathname + (current ? '#' + current.id : ''),
                 chapterTitle: document.title || (h2 ? h2.textContent.trim() : (h1 ? h1.textContent.trim() : '')),
-                itemId: current ? current.id : null
+                itemId: current ? current.id : null,
+                scrollFrac: scrollFrac,
+                entryIndex: entryIndex,
+                entryTotal: entryTotal,
+                guideBook: guideBook,
+                guideChapter: guideChapter
             };
             localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
         }
@@ -4111,36 +4172,84 @@ document.addEventListener('DOMContentLoaded', function() {
         // l'ancre #vN (ex. arrivee via "Continuer la lecture") avant de
         // capturer/ecraser la position - sinon on lit "haut de page" trop tot.
         setTimeout(saveReadingPosition, 150);
+
+        // Retour precis via "Continuer" : une fois l'ancre native (et
+        // l'isolation eventuelle d'une entree de guide, deja executee plus
+        // haut dans ce script) en place, ajuste le defilement fin a la
+        // fraction sauvegardee - pour retomber exactement ou la lecture
+        // avait ete arretee, pas juste en haut du verset/de l'entree. Lu
+        // AVANT le setTimeout ci-dessus pour ne pas etre ecrase par la
+        // re-sauvegarde qu'il declenche des l'arrivee sur la page.
+        if (location.hash) {
+            var hashId = location.hash.slice(1);
+            var savedForFine = null;
+            try {
+                var allFine = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {};
+                savedForFine = allFine[volumeKey];
+            } catch (e) {}
+            if (savedForFine && savedForFine.itemId === hashId && typeof savedForFine.scrollFrac === 'number') {
+                setTimeout(function() {
+                    var el = document.getElementById(hashId);
+                    if (!el) return;
+                    var rect = el.getBoundingClientRect();
+                    var h = el.offsetHeight || 0;
+                    var targetY = window.scrollY + rect.top + savedForFine.scrollFrac * h;
+                    window.scrollTo({ top: Math.max(0, targetY), behavior: 'auto' });
+                }, 300);
+            }
+        }
     }
 
     // Page d'accueil : une ligne "Continuer la lecture" par volume ayant une
     // position enregistree.
     var continueSlot = document.getElementById('continue-reading-slot');
     if (continueSlot) {
-        // Seuls francais/tahitien sont listes sur la page d'accueil - un
-        // Continuer vers un volume retire de l'accordeon (guides, etc.)
-        // n'a pas de sens ici.
+        // Francais/tahitien (accordeon d'accueil) + les 7 guides/signets
+        // (GUIDE_LABELS, meme cle que le popover de filtre de signets) -
+        // un Continuer par volume/signet ayant une position sauvegardee.
         var HOME_VOLUME_KEYS = ['french', 'tahitian'];
         var HOME_VOLUME_PREFIX = { french: 'FR', tahitian: 'TAH' };
+        var GUIDE_LABELS = __GUIDE_LABELS_JSON__;
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+
         Object.keys(savedAll).forEach(function(key) {
-            if (HOME_VOLUME_KEYS.indexOf(key) === -1) return;
             var saved = savedAll[key];
             if (!saved || !saved.href) return;
+            var isGuide = Object.prototype.hasOwnProperty.call(GUIDE_LABELS, key);
+            if (HOME_VOLUME_KEYS.indexOf(key) === -1 && !isGuide) return;
+
             var link = document.createElement('a');
             link.className = 'continue-reading';
             link.href = saved.href;
-            var verseMatch = /^v(\\d+)$/.exec(saved.itemId || '');
-            if (__COMPACT_CONTINUE__ && verseMatch) {
-                // chapterTitle = document.title = 'NomDuLivre Chapitre N'
-                var m = /^(.*) Chapitre (\\d+)$/.exec(saved.chapterTitle || '');
-                var ref = m ? (m[1] + ' ' + m[2] + ':' + verseMatch[1]) : saved.chapterTitle;
-                var prefix = __COMPACT_LANG_PREFIX__ ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
-                link.textContent = 'Continuer - ' + prefix + ref;
+
+            if (isGuide) {
+                var verseMatch = /^v(\\d+)/.exec(saved.itemId || '');
+                // guideBook/guideChapter (h1 + data-chapter-idx, captures a
+                // la sauvegarde) plutot que de re-parser chapterTitle - evite
+                // l'accent manquant du titre brut de page de guide ("1
+                // Nephi" vs le "1 Néphi" du h1, deja passe par
+                // book_display_title comme le reste du site).
+                var ref = (saved.guideBook && saved.guideChapter && verseMatch)
+                    ? (saved.guideBook + ' ' + saved.guideChapter + ':' + verseMatch[1])
+                    : saved.chapterTitle;
+                var prefix = __COMPACT_LANG_PREFIX__ ? 'FR — ' : '';
+                var entrySuffix = (saved.entryTotal && saved.entryTotal > 1)
+                    ? ' ' + (saved.entryIndex + 1) + '/' + saved.entryTotal
+                    : '';
+                link.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
             } else {
-                var suffix = verseMatch ? (', verset ' + verseMatch[1]) : '';
-                link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix;
+                var verseMatch2 = /^v(\\d+)$/.exec(saved.itemId || '');
+                if (__COMPACT_CONTINUE__ && verseMatch2) {
+                    // chapterTitle = document.title = 'NomDuLivre Chapitre N'
+                    var m2 = /^(.*) Chapitre (\\d+)$/.exec(saved.chapterTitle || '');
+                    var ref2 = m2 ? (m2[1] + ' ' + m2[2] + ':' + verseMatch2[1]) : saved.chapterTitle;
+                    var prefix2 = __COMPACT_LANG_PREFIX__ ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
+                    link.textContent = 'Continuer - ' + prefix2 + ref2;
+                } else {
+                    var suffix2 = verseMatch2 ? (', verset ' + verseMatch2[1]) : '';
+                    link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix2;
+                }
             }
             continueSlot.appendChild(link);
         });
@@ -4172,6 +4281,7 @@ if ('serviceWorker' in navigator) {
 js_content = js_content.replace('__SW_PATH__', SITE_BASE + '/sw.js')
 js_content = js_content.replace('__COMPACT_CONTINUE__', 'true' if SITE_COMPACT_CONTINUE else 'false')
 js_content = js_content.replace('__COMPACT_LANG_PREFIX__', 'true' if SITE_TAHITIEN else 'false')
+js_content = js_content.replace('__GUIDE_LABELS_JSON__', json.dumps(GUIDE_BOOKMARK_LABELS, ensure_ascii=False))
 
 write('script.js', js_content)
 
