@@ -396,7 +396,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L900",
       "id": "generate_pages_parse_evidence_scripture_reference",
-      "community": 6,
+      "community": 7,
       "norm_label": "parse_evidence_scripture_reference()"
     },
     {
@@ -405,7 +405,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L950",
       "id": "generate_pages_clean_evidence_body",
-      "community": 6,
+      "community": 7,
       "norm_label": "clean_evidence_body()"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1011",
       "id": "generate_pages_parse_evidence_source",
-      "community": 6,
+      "community": 7,
       "norm_label": "parse_evidence_source()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1448",
       "id": "generate_pages_write",
-      "community": 7,
+      "community": 6,
       "norm_label": "write()"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1874",
       "id": "generate_pages_slugify",
-      "community": 3,
+      "community": 6,
       "norm_label": "slugify()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1986",
       "id": "generate_pages_conference_analogy_card_html",
-      "community": 7,
+      "community": 6,
       "norm_label": "conference_analogy_card_html()"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2005",
       "id": "generate_pages_write_conference_analogy_talk_page",
-      "community": 7,
+      "community": 6,
       "norm_label": "write_conference_analogy_talk_page()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2026",
       "id": "generate_pages_write_conference_analogy_theme_page",
-      "community": 7,
+      "community": 6,
       "norm_label": "write_conference_analogy_theme_page()"
     },
     {
@@ -683,7 +683,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L901",
-      "community": 6,
+      "community": 7,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_901"
     },
@@ -692,7 +692,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L951",
-      "community": 6,
+      "community": 7,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_951"
     },
@@ -907,7 +907,7 @@
       "label": "setupTapToTranslate()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L505",
+      "source_location": "L514",
       "id": "script_setuptaptotranslate",
       "community": 1,
       "norm_label": "setuptaptotranslate()"
@@ -916,7 +916,7 @@
       "label": "saveReadingPosition()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L572",
+      "source_location": "L581",
       "id": "script_savereadingposition",
       "community": 1,
       "norm_label": "savereadingposition()"
@@ -3519,7 +3519,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L505",
+      "source_location": "L514",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_setuptaptotranslate",
@@ -3531,7 +3531,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L572",
+      "source_location": "L581",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_savereadingposition",

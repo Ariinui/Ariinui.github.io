@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-23)
 
 ## Corpus Check
-- 6 files · ~85,977 words
+- 6 files · ~86,077 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -163,8 +163,8 @@ Cohesion: 0.27
 Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.31
-Nodes (10): dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, Returns list of (href, normalized_lexeme) for exact normalized matches     in th, search_exact() (+2 more)
+Cohesion: 0.36
+Nodes (9): dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, Returns list of (href, normalized_lexeme) for exact normalized matches     in th, search_exact() (+1 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.29
@@ -175,12 +175,12 @@ Cohesion: 0.33
 Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML, La description (contrairement au texte d'analyse, deja extrait en     texte pur, Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles, write_cameos()
 
 ### Community 6 - "Community 6"
-Cohesion: 0.4
-Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Cohesion: 0.5
+Nodes (5): conference_analogy_card_html(), slugify(), write(), write_conference_analogy_talk_page(), write_conference_analogy_theme_page()
 
 ### Community 7 - "Community 7"
-Cohesion: 0.67
-Nodes (4): conference_analogy_card_html(), write(), write_conference_analogy_talk_page(), write_conference_analogy_theme_page()
+Cohesion: 0.4
+Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 8 - "Community 8"
 Cohesion: 0.67
@@ -865,8 +865,10 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `slugify()` connect `Community 3` to `Community 0`, `Community 7`?**
+- **Why does `slugify()` connect `Community 6` to `Community 0`, `Community 3`?**
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `normalize()` connect `Community 3` to `Community 6`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "` to the rest of the system?**
   _130 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**

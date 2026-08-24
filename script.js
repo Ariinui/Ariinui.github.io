@@ -486,11 +486,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Suivant doit continuer la LECTURE du Livre de Mormon
                 // francais (chapitre reel +-1), jamais rester dans le guide
                 // en mode "liste complete" du chapitre voisin.
+                // Remplace entierement l'element (au lieu de muter son href
+                // + lui ajouter un listener en place) - identique a backLink
+                // ci-dessus, un <a> fraichement cree, jamais celui rendu
+                // cote serveur qui pourrait deja porter un comportement
+                // natif du navigateur (preview/prefetch mobile) lie a son
+                // href d'origine.
                 [].slice.call(nav.querySelectorAll('a')).forEach(function(a) {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
-                    a.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
-                    a.addEventListener('click', clearContinueForThisGuide);
+                    var fresh = document.createElement('a');
+                    fresh.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
+                    fresh.textContent = a.textContent;
+                    fresh.addEventListener('click', clearContinueForThisGuide);
+                    a.parentNode.replaceChild(fresh, a);
                 });
             }
         }
