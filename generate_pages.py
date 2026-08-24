@@ -3733,11 +3733,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // fois, avec Precedent/Suivant pour naviguer entre elles, et
     // Copier/Partager sur l'entree affichee. Un lien "Retour au verset"
     // est ajoute dans la nav du bas pour revenir au verset francais.
-    // Mis a true par les liens "Retour au verset"/Precedent/Suivant d'une
-    // page de guide isolee (plus bas) - lu par saveReadingPosition, bien
-    // plus loin dans ce script, pour effacer plutot que re-sauvegarder la
-    // position au moment de quitter la page (pagehide).
+    // Efface directement (synchrone, au clic) la position "Continuer" de CE
+    // guide - utilise par "Retour au verset"/Precedent/Suivant plus bas.
+    // Deliberement PAS un simple flag lu plus tard par le pagehide de fin de
+    // page (moins fiable sur mobile/Safari iOS ou pagehide peut ne pas
+    // s'executer a temps sur une navigation vers une nouvelle URL) -
+    // l'effacement doit etre termine AVANT que la navigation ne commence.
+    // skipGuidePositionSave sert seulement a empecher le pagehide (plus loin
+    // dans ce script) de RE-creer l'entree juste apres qu'on vient de
+    // l'effacer ici.
     var skipGuidePositionSave = false;
+    function clearContinueForThisGuide() {
+        skipGuidePositionSave = true;
+        var key = guideContent && guideContent.getAttribute('data-volume-key');
+        if (!key) return;
+        var all = {};
+        try { all = JSON.parse(localStorage.getItem('bukaAMoromona:reading')) || {}; } catch (e) {}
+        delete all[key];
+        localStorage.setItem('bukaAMoromona:reading', JSON.stringify(all));
+    }
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
         var targetId = location.hash.slice(1);
@@ -4052,10 +4066,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // deliberement cette entree de guide (pas juste ferme
                 // l'onglet ou navigue ailleurs par accident) - le "Continuer"
                 // de ce signet ne doit plus reapparaitre a l'accueil.
-                // skipGuidePositionSave, lu par saveReadingPosition plus bas
-                // dans ce script, efface la position au lieu de la
-                // re-sauvegarder au moment ou la page se ferme (pagehide).
-                backLink.addEventListener('click', function() { skipGuidePositionSave = true; });
+                backLink.addEventListener('click', clearContinueForThisGuide);
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
@@ -4068,7 +4079,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
                     a.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
-                    a.addEventListener('click', function() { skipGuidePositionSave = true; });
+                    a.addEventListener('click', clearContinueForThisGuide);
                 });
             }
         }
@@ -4149,17 +4160,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var saveTimer = null;
         function saveReadingPosition() {
             // L'utilisateur a clique "Retour au verset"/Precedent/Suivant
-            // depuis cette page de guide - il quitte deliberement cette
-            // entree, pas juste l'onglet : effacer sa position plutot que la
-            // re-sauvegarder au moment de partir (pagehide), pour que le
-            // "Continuer" de ce signet ne reapparaisse plus a l'accueil.
-            if (skipGuidePositionSave) {
-                var allSkip = {};
-                try { allSkip = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
-                delete allSkip[volumeKey];
-                localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(allSkip));
-                return;
-            }
+            // depuis cette page de guide (deja efface synchroniquement au
+            // clic, cf. clearContinueForThisGuide plus haut) - ne pas
+            // re-creer l'entree ici quand pagehide se declenche en quittant.
+            if (skipGuidePositionSave) return;
             var items = readingTrack.querySelectorAll('[id]');
             var current = null;
             for (var i = 0; i < items.length; i++) {
