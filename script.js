@@ -675,6 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
             link.href = saved.href;
 
             if (isGuide) {
+                link.classList.add('continue-' + key);
                 var verseMatch = /^v(\d+)/.exec(saved.itemId || '');
                 // guideBook/guideChapter (h1 + data-chapter-idx, captures a
                 // la sauvegarde) plutot que de re-parser chapterTitle - evite

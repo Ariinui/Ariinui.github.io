@@ -2361,6 +2361,17 @@ css_content = '''
     --guide8-color: #0ca678;
     --cameo-accent: #b8860b;
     --analogy-accent: #b5541f;
+    /* Couleur de texte lisible sur le fond --guideN-color (bouton
+       "Continuer" par signet) - choisie par contraste WCAG mesure (>= 4.5:1)
+       sur chaque teinte plutot que blanc partout, certaines etant trop
+       claires pour ca (guide1 jaune, guide7 orange...). */
+    --guide1-text: #1c1e21;
+    --guide2-text: #ffffff;
+    --guide3-text: #ffffff;
+    --guide5-text: #1c1e21;
+    --guide6-text: #ffffff;
+    --guide7-text: #1c1e21;
+    --guide8-text: #1c1e21;
 }
 
 :root[data-text-size="xsmall"] {
@@ -2404,6 +2415,16 @@ css_content = '''
     --guide8-color: #20c997;
     --cameo-accent: #f0c454;
     --analogy-accent: #e8935c;
+    /* Toutes ces teintes (mode sombre) sont trop claires pour du texte
+       blanc - texte fonce partout ici, contrairement au mode clair ou
+       c'est mixte (voir :root). */
+    --guide1-text: #1c1e21;
+    --guide2-text: #1c1e21;
+    --guide3-text: #1c1e21;
+    --guide5-text: #1c1e21;
+    --guide6-text: #1c1e21;
+    --guide7-text: #1c1e21;
+    --guide8-text: #1c1e21;
     }
 }
 
@@ -2432,6 +2453,13 @@ css_content = '''
     --guide8-color: #20c997;
     --cameo-accent: #f0c454;
     --analogy-accent: #e8935c;
+    --guide1-text: #1c1e21;
+    --guide2-text: #1c1e21;
+    --guide3-text: #1c1e21;
+    --guide5-text: #1c1e21;
+    --guide6-text: #1c1e21;
+    --guide7-text: #1c1e21;
+    --guide8-text: #1c1e21;
 }
 
 * {
@@ -2574,8 +2602,20 @@ h1 {
 }
 
 .continue-reading:hover {
-    background: var(--accent-hover);
+    filter: brightness(0.92);
 }
+
+/* Un Continuer de guide/signet reprend la couleur de son ruban (memes
+   variables --guideN-color/--guideN-text que .bookmark-guideN) plutot que
+   le bleu generique - le survol (filter, regle ci-dessus) s'applique deja a
+   toute couleur sans avoir besoin d'une regle par guide. */
+.continue-reading.continue-guide { background: var(--guide1-color); color: var(--guide1-text); }
+.continue-reading.continue-guide2 { background: var(--guide2-color); color: var(--guide2-text); }
+.continue-reading.continue-guide3 { background: var(--guide3-color); color: var(--guide3-text); }
+.continue-reading.continue-guide5 { background: var(--guide5-color); color: var(--guide5-text); }
+.continue-reading.continue-guide6 { background: var(--guide6-color); color: var(--guide6-text); }
+.continue-reading.continue-guide7 { background: var(--guide7-color); color: var(--guide7-text); }
+.continue-reading.continue-guide8 { background: var(--guide8-color); color: var(--guide8-text); }
 
 .volume {
     margin-bottom: 14px;
@@ -4224,6 +4264,7 @@ document.addEventListener('DOMContentLoaded', function() {
             link.href = saved.href;
 
             if (isGuide) {
+                link.classList.add('continue-' + key);
                 var verseMatch = /^v(\\d+)/.exec(saved.itemId || '');
                 // guideBook/guideChapter (h1 + data-chapter-idx, captures a
                 // la sauvegarde) plutot que de re-parser chapterTitle - evite
