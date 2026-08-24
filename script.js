@@ -638,6 +638,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var volumeKey = readingTrack.getAttribute('data-volume-key');
         var volumeTitle = readingTrack.getAttribute('data-volume-title');
         var saveTimer = null;
+        // Un simple coup d'oeil (page ouverte puis quittee sans defiler) ne
+        // doit pas creer d'entree "Continuer" - seul un vrai defilement
+        // engage ce volume. Reste false pour l'appel initial (150ms plus
+        // bas), passe a true des le premier evenement scroll.
+        var hasEngaged = false;
         function saveReadingPosition() {
             // L'utilisateur a clique "Retour au verset"/Precedent/Suivant
             // depuis cette page de guide (deja efface synchroniquement au
@@ -700,6 +705,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (guideChapter) guideBook = h1 ? h1.textContent.trim() : null;
             var all = {};
             try { all = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+            // Pas encore engage sur ce volume et aucune entree preexistante
+            // a rafraichir (ex. retour via "Continuer") - ne pas en creer
+            // une juste parce que la page a ete ouverte.
+            if (!hasEngaged && !all[volumeKey]) return;
             all[volumeKey] = {
                 volumeTitle: volumeTitle,
                 href: location.pathname + (current ? '#' + current.id : ''),
@@ -719,6 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
         }
         window.addEventListener('scroll', function() {
+            hasEngaged = true;
             clearTimeout(saveTimer);
             saveTimer = setTimeout(saveReadingPosition, 400);
         });
