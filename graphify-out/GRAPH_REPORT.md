@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-23)
 
 ## Corpus Check
-- 6 files · ~86,811 words
+- 6 files · ~87,055 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -181,11 +181,11 @@ Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_ev
 
 ### Community 7 - "Community 7"
 Cohesion: 0.5
-Nodes (4): parse_bomm_heading_ref(), parse_bomm_source(), parse_bomm_title_book_chapter(), 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (4): conf_analogy_lien_with_lang(), parse_conference_analogies_sources(), parse_conference_issue_date(), 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 8 - "Community 8"
 Cohesion: 0.5
-Nodes (4): conf_analogy_lien_with_lang(), parse_conference_analogies_sources(), parse_conference_issue_date(), 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (4): parse_bomm_heading_ref(), parse_bomm_source(), parse_bomm_title_book_chapter(), 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 9 - "Community 9"
 Cohesion: 0.67

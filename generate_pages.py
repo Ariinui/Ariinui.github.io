@@ -3645,7 +3645,13 @@ js_content = '''
         if (!saved || !saved.href || !saved.savedAt) return;
         if (!best || saved.savedAt > best.savedAt) best = saved;
     });
-    if (best) location.replace(best.href);
+    // location.href (pas .replace()) - garde l'accueil comme entree
+    // d'historique EN DESSOUS de la page de destination. Avec .replace(),
+    // il ne restait plus rien "en dessous" une fois sur la page de lecture
+    // : le bouton retour du telephone fermait l'app au lieu de revenir a
+    // l'accueil (signale par l'utilisateur, confirme absent avec .replace()
+    // - .href pousse une vraie entree, .replace() l'ecrase).
+    if (best) location.href = best.href;
     } catch (e) {}
 })();
 
