@@ -3611,6 +3611,44 @@ js_content = '''
     }
 })();
 
+// Reprise automatique a l'ouverture de l'app (PWA start_url = accueil) :
+// redirige immediatement vers le tout dernier endroit visite, tous volumes
+// confondus (Livre de Mormon ou n'importe quel guide/signet) - determine
+// par le champ savedAt le plus recent (voir saveReadingPosition plus bas).
+// Place ICI, avant DOMContentLoaded (le <script> de <head> bloque le
+// parsing du <body>, donc ce code s'execute avant que l'accueil n'ait eu le
+// temps de s'afficher - pas de flash visible).
+//
+// sessionStorage (efface a la fermeture complete de l'app/onglet, contrairement
+// a localStorage) sert de garde-fou : ne redirige qu'UNE SEULE FOIS par
+// ouverture. Naviguer normalement puis revenir a l'accueil (bouton retour,
+// qui redirige deja vers l'accueil - voir CHAPTER_NAV) affiche alors
+// l'accueil normalement, sans rebond, puisque le flag est deja pose.
+(function() {
+    // Tout enveloppe dans un try/catch : une erreur non rattrapee ici (ex.
+    // sessionStorage bloque en navigation privee stricte) stopperait TOUT
+    // le reste de ce script (dont l'enregistrement du DOMContentLoaded plus
+    // bas), puisque ce code tourne en tete de fichier, hors gestionnaire
+    // d'evenement.
+    try {
+    var SITE_BASE_JS = __SITE_BASE_JS__;
+    var path = location.pathname;
+    var isHome = path === SITE_BASE_JS + '/index.html' || path === SITE_BASE_JS + '/' || path === SITE_BASE_JS;
+    if (!isHome) return;
+    if (sessionStorage.getItem('bukaAMoromona:autoResumed')) return;
+    sessionStorage.setItem('bukaAMoromona:autoResumed', '1');
+    var all = {};
+    try { all = JSON.parse(localStorage.getItem('bukaAMoromona:reading')) || {}; } catch (e) {}
+    var best = null;
+    Object.keys(all).forEach(function(key) {
+        var saved = all[key];
+        if (!saved || !saved.href || !saved.savedAt) return;
+        if (!best || saved.savedAt > best.savedAt) best = saved;
+    });
+    if (best) location.replace(best.href);
+    } catch (e) {}
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
     var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
     var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
@@ -4250,7 +4288,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 entryIndex: entryIndex,
                 entryTotal: entryTotal,
                 guideBook: guideBook,
-                guideChapter: guideChapter
+                guideChapter: guideChapter,
+                // Sert a determiner LE dernier endroit visite tous volumes
+                // confondus, pour la reprise automatique a l'ouverture de
+                // l'app (voir continueSlot plus bas) - independant de
+                // l'ordre d'iteration des cles de l'objet.
+                savedAt: Date.now()
             };
             localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
         }
@@ -4381,6 +4424,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 '''
+js_content = js_content.replace('__SITE_BASE_JS__', json.dumps(SITE_BASE))
 js_content = js_content.replace('__SW_PATH__', SITE_BASE + '/sw.js')
 js_content = js_content.replace('__COMPACT_CONTINUE__', 'true' if SITE_COMPACT_CONTINUE else 'false')
 js_content = js_content.replace('__COMPACT_LANG_PREFIX__', 'true' if SITE_TAHITIEN else 'false')
