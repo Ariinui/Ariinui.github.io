@@ -4274,6 +4274,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // position enregistree.
     var continueSlot = document.getElementById('continue-reading-slot');
     if (continueSlot) {
+        // Le navigateur (surtout Chrome mobile/Android) peut restaurer cette
+        // page depuis le bfcache (retour arriere) sans jamais re-executer ce
+        // script - les boutons "Continuer" affiches restent alors figes tels
+        // qu'ils etaient AVANT une visite de guide, meme si le localStorage
+        // a ete mis a jour entre-temps (ex. Continuer efface via "Chapitre
+        // precedent/suivant" - cf. clearContinueForThisGuide plus haut).
+        // pageshow avec persisted=true detecte ce cas et force un rechargement
+        // frais plutot que de laisser un contenu perime affiche.
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) location.reload();
+        });
         // Francais/tahitien (accordeon d'accueil) + les 7 guides/signets
         // (GUIDE_LABELS, meme cle que le popover de filtre de signets) -
         // un Continuer par volume/signet ayant une position sauvegardee.

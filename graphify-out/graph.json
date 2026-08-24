@@ -540,7 +540,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1874",
       "id": "generate_pages_slugify",
-      "community": 7,
+      "community": 3,
       "norm_label": "slugify()"
     },
     {
