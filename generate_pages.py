@@ -3612,38 +3612,6 @@ js_content = '''
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    // DIAGNOSTIC TEMPORAIRE - a retirer une fois le souci mobile "Continuer"
-    // de guide localise. Chaque appel ecrit dans un historique PERSISTANT en
-    // localStorage (survit a la navigation, contrairement a un panneau
-    // affiche seulement sur la page courante) - relu et affiche en entier
-    // sur l'accueil (voir plus bas), pour voir en une seule capture d'ecran
-    // tout ce qui s'est passe sur TOUTES les pages visitees, y compris
-    // l'instant precis d'un clic juste avant que la page ne change.
-    function debugLog(msg) {
-        var t = new Date();
-        var hh = String(t.getHours()).padStart(2, '0');
-        var mm = String(t.getMinutes()).padStart(2, '0');
-        var ss = String(t.getSeconds()).padStart(2, '0');
-        var entry = hh + ':' + mm + ':' + ss + ' [' + location.pathname + '] ' + msg;
-        var trail = [];
-        try { trail = JSON.parse(localStorage.getItem('bukaAMoromona:debugTrail')) || []; } catch (e) {}
-        trail.push(entry);
-        if (trail.length > 80) trail = trail.slice(trail.length - 80);
-        localStorage.setItem('bukaAMoromona:debugTrail', JSON.stringify(trail));
-
-        var box = document.getElementById('debug-log-box');
-        if (!box) {
-            box = document.createElement('div');
-            box.id = 'debug-log-box';
-            box.style.cssText = 'display:block;margin-top:24px;background:#000;color:#7CFC00;font-size:11px;font-family:monospace;padding:8px;white-space:pre-wrap;line-height:1.4;border-top:3px solid #7CFC00;';
-            document.body.appendChild(box);
-        }
-        var line = document.createElement('div');
-        line.textContent = entry;
-        box.appendChild(line);
-    }
-    debugLog('page chargee: ' + location.hash);
-
     var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
     var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
     if (bookmarkFilterToggle && bookmarkFilterPopover) {
@@ -3776,38 +3744,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // l'effacer ici.
     var skipGuidePositionSave = false;
     function clearContinueForThisGuide() {
-        debugLog('CLIC sortie de guide detecte');
         skipGuidePositionSave = true;
         var key = guideContent && guideContent.getAttribute('data-volume-key');
-        debugLog('cle=' + key);
-        if (!key) { debugLog('ARRET pas de cle'); return; }
+        if (!key) return;
         var all = {};
         try { all = JSON.parse(localStorage.getItem('bukaAMoromona:reading')) || {}; } catch (e) {}
         delete all[key];
         localStorage.setItem('bukaAMoromona:reading', JSON.stringify(all));
-        debugLog('efface, storage=' + localStorage.getItem('bukaAMoromona:reading'));
     }
-    // Bloque la navigation par defaut d'un lien de sortie de guide, efface
-    // la position, PUIS navigue manuellement apres un court delai - certains
-    // navigateurs mobiles peuvent fermer la page avant qu'une ecriture
-    // localStorage faite juste avant un changement de page ne soit
-    // effectivement persistee (confirme sur un appareil reel : le clic
-    // navigue correctement vers la bonne page, mais aucun effet du
-    // gestionnaire de clic n'est visible ensuite - la navigation par defaut
-    // du navigateur va plus vite que l'ecriture). preventDefault() + un
-    // setTimeout avant de naviguer nous-memes laisse le temps a l'ecriture
-    // de se terminer.
-    // Marque un lien comme "sortie de guide" (au lieu de lui attacher son
-    // propre ecouteur de clic) - le clic est capture par delegation depuis
-    // <nav> lui-meme (voir plus bas), un element STABLE jamais recree ni
-    // remplace. Piste alternative testee car les 3 liens de sortie
-    // executent maintenant un code de clic strictement identique (meme
-    // fonction), et pourtant seul "Retour au verset" fonctionne de facon
-    // fiable sur l'appareil mobile concerne - la difference restante ne
-    // peut venir que de l'element lui-meme (les liens Precedent/Suivant
-    // sont recrees via replaceChild, contrairement a backLink qui est
-    // simplement insere) : la delegation elimine cette variable en
-    // n'attachant plus rien du tout aux liens individuels.
+    // Marque un lien comme "sortie de guide" - le clic est capture par
+    // delegation depuis <nav> lui-meme (voir plus bas), un element STABLE
+    // jamais recree, plutot qu'un ecouteur attache individuellement a
+    // chaque lien.
     function markGuideExitLink(link) {
         link.setAttribute('data-guide-exit', '1');
     }
@@ -4117,7 +4065,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var bookIdx = guideContent.getAttribute('data-book-idx');
             var chapterIdx = guideContent.getAttribute('data-chapter-idx');
             var nav = document.querySelector('nav');
-            debugLog('setup nav: bookIdx=' + bookIdx + ' chapterIdx=' + chapterIdx + ' nav=' + !!nav + ' volumeKeyGuide=' + guideContent.getAttribute('data-volume-key'));
             if (bookIdx && chapterIdx && nav) {
                 var backLink = document.createElement('a');
                 backLink.href = '../../chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId;
@@ -4137,16 +4084,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // en mode "liste complete" du chapitre voisin. Mute l'element
                 // EXISTANT (plus de replaceChild) - la delegation depuis nav
                 // ne depend plus de l'identite exacte de l'element clique.
-                var navA = [].slice.call(nav.querySelectorAll('a'));
-                var rewritten = 0;
-                navA.forEach(function(a) {
+                [].slice.call(nav.querySelectorAll('a')).forEach(function(a) {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
-                    rewritten++;
                     a.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
                     markGuideExitLink(a);
                 });
-                debugLog('liens nav: ' + navA.length + ' trouves, ' + rewritten + ' reecrits');
 
                 // Delegation : un seul ecouteur sur <nav> (jamais recree),
                 // plutot qu'un ecouteur par lien individuel - cf. le
@@ -4154,7 +4097,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 nav.addEventListener('click', function(event) {
                     var link = event.target.closest && event.target.closest('a[data-guide-exit]');
                     if (!link) return;
-                    debugLog('delegation: clic capture sur ' + link.textContent);
                     event.preventDefault();
                     var href = link.href;
                     clearContinueForThisGuide();
@@ -4362,31 +4304,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // pageshow avec persisted=true detecte ce cas et force un rechargement
         // frais plutot que de laisser un contenu perime affiche.
         window.addEventListener('pageshow', function(event) {
-            debugLog('pageshow persisted=' + event.persisted);
             if (event.persisted) location.reload();
         });
-        debugLog('accueil charge, storage=' + localStorage.getItem('bukaAMoromona:reading'));
-        // Affiche l'historique COMPLET persistant (toutes les pages visitees
-        // depuis le dernier "page chargee: (vide)" initial) - permet de tout
-        // voir en une seule capture d'ecran sur l'accueil, y compris ce qui
-        // s'est passe sur une page quittee depuis (impossible a capturer
-        // autrement, l'ecran change avant qu'une photo soit possible).
-        (function() {
-            var trail = [];
-            try { trail = JSON.parse(localStorage.getItem('bukaAMoromona:debugTrail')) || []; } catch (e) {}
-            var box = document.getElementById('debug-log-box');
-            if (box && trail.length) {
-                var header = document.createElement('div');
-                header.textContent = '=== HISTORIQUE COMPLET (' + trail.length + ' entrees) ===';
-                header.style.color = '#ffff00';
-                box.insertBefore(header, box.firstChild);
-                trail.forEach(function(entry) {
-                    var line = document.createElement('div');
-                    line.textContent = entry;
-                    box.appendChild(line);
-                });
-            }
-        })();
         // Francais/tahitien (accordeon d'accueil) + les 7 guides/signets
         // (GUIDE_LABELS, meme cle que le popover de filtre de signets) -
         // un Continuer par volume/signet ayant une position sauvegardee.
