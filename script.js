@@ -23,28 +23,6 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    // DIAGNOSTIC TEMPORAIRE - panneau visible en bas d'ecran, a retirer une
-    // fois le souci mobile "Continuer" de guide localise. Pas de console
-    // devtools requise - juste regarder l'ecran du telephone.
-    function debugLog(msg) {
-        var box = document.getElementById('debug-log-box');
-        if (!box) {
-            box = document.createElement('div');
-            box.id = 'debug-log-box';
-            box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:45vh;overflow:auto;background:rgba(0,0,0,0.9);color:#7CFC00;font-size:11px;font-family:monospace;padding:8px;z-index:999999;white-space:pre-wrap;line-height:1.4;';
-            document.body.appendChild(box);
-        }
-        var line = document.createElement('div');
-        var t = new Date();
-        var hh = String(t.getHours()).padStart(2, '0');
-        var mm = String(t.getMinutes()).padStart(2, '0');
-        var ss = String(t.getSeconds()).padStart(2, '0');
-        line.textContent = hh + ':' + mm + ':' + ss + ' ' + msg;
-        box.appendChild(line);
-        box.scrollTop = box.scrollHeight;
-    }
-    debugLog('page chargee: ' + location.pathname + location.hash);
-
     var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
     var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
     if (bookmarkFilterToggle && bookmarkFilterPopover) {
@@ -177,17 +155,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // l'effacer ici.
     var skipGuidePositionSave = false;
     function clearContinueForThisGuide() {
-        debugLog('CLIC detecte sur un lien de sortie de guide');
         skipGuidePositionSave = true;
         var key = guideContent && guideContent.getAttribute('data-volume-key');
-        debugLog('cle du guide = ' + key);
-        if (!key) { debugLog('ARRET: pas de cle, rien efface'); return; }
+        if (!key) return;
         var all = {};
         try { all = JSON.parse(localStorage.getItem('bukaAMoromona:reading')) || {}; } catch (e) {}
-        debugLog('avant effacement: ' + JSON.stringify(all));
         delete all[key];
         localStorage.setItem('bukaAMoromona:reading', JSON.stringify(all));
-        debugLog('apres effacement: ' + localStorage.getItem('bukaAMoromona:reading'));
     }
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
@@ -495,7 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var bookIdx = guideContent.getAttribute('data-book-idx');
             var chapterIdx = guideContent.getAttribute('data-chapter-idx');
             var nav = document.querySelector('nav');
-            debugLog('setup nav guide: bookIdx=' + bookIdx + ' chapterIdx=' + chapterIdx + ' nav_trouve=' + !!nav);
             if (bookIdx && chapterIdx && nav) {
                 var backLink = document.createElement('a');
                 backLink.href = '../../chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId;
@@ -519,20 +492,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // cote serveur qui pourrait deja porter un comportement
                 // natif du navigateur (preview/prefetch mobile) lie a son
                 // href d'origine.
-                var navLinksAll = [].slice.call(nav.querySelectorAll('a'));
-                debugLog('liens trouves dans nav: ' + navLinksAll.length + ' [' + navLinksAll.map(function(a){return a.textContent + '=' + a.getAttribute('href');}).join(' | ') + ']');
-                var rewrittenCount = 0;
-                navLinksAll.forEach(function(a) {
+                [].slice.call(nav.querySelectorAll('a')).forEach(function(a) {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
-                    rewrittenCount++;
                     var fresh = document.createElement('a');
                     fresh.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
                     fresh.textContent = a.textContent;
                     fresh.addEventListener('click', clearContinueForThisGuide);
                     a.parentNode.replaceChild(fresh, a);
                 });
-                debugLog('liens chapitre reecrits: ' + rewrittenCount);
             }
         }
     }
@@ -735,10 +703,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // pageshow avec persisted=true detecte ce cas et force un rechargement
         // frais plutot que de laisser un contenu perime affiche.
         window.addEventListener('pageshow', function(event) {
-            debugLog('pageshow sur accueil, persisted=' + event.persisted);
             if (event.persisted) location.reload();
         });
-        debugLog('accueil - localStorage brut: ' + localStorage.getItem('bukaAMoromona:reading'));
         // Francais/tahitien (accordeon d'accueil) + les 7 guides/signets
         // (GUIDE_LABELS, meme cle que le popover de filtre de signets) -
         // un Continuer par volume/signet ayant une position sauvegardee.
