@@ -198,6 +198,28 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('bukaAMoromona:reading', JSON.stringify(all));
         debugLog('efface, storage=' + localStorage.getItem('bukaAMoromona:reading'));
     }
+    // Bloque la navigation par defaut d'un lien de sortie de guide, efface
+    // la position, PUIS navigue manuellement apres un court delai - certains
+    // navigateurs mobiles peuvent fermer la page avant qu'une ecriture
+    // localStorage faite juste avant un changement de page ne soit
+    // effectivement persistee (confirme sur un appareil reel : le clic
+    // navigue correctement vers la bonne page, mais aucun effet du
+    // gestionnaire de clic n'est visible ensuite - la navigation par defaut
+    // du navigateur va plus vite que l'ecriture). preventDefault() + un
+    // setTimeout avant de naviguer nous-memes laisse le temps a l'ecriture
+    // de se terminer.
+    function wireGuideExitLink(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            var href = link.href;
+            clearContinueForThisGuide();
+            debugLog('navigation manuelle programmee vers ' + href);
+            setTimeout(function() {
+                debugLog('navigation manuelle lancee');
+                window.location.href = href;
+            }, 50);
+        });
+    }
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
         var targetId = location.hash.slice(1);
@@ -513,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // deliberement cette entree de guide (pas juste ferme
                 // l'onglet ou navigue ailleurs par accident) - le "Continuer"
                 // de ce signet ne doit plus reapparaitre a l'accueil.
-                backLink.addEventListener('click', clearContinueForThisGuide);
+                wireGuideExitLink(backLink);
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
@@ -537,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var fresh = document.createElement('a');
                     fresh.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
                     fresh.textContent = a.textContent;
-                    fresh.addEventListener('click', clearContinueForThisGuide);
+                    wireGuideExitLink(fresh);
                     a.parentNode.replaceChild(fresh, a);
                 });
                 debugLog('liens nav: ' + navA.length + ' trouves, ' + rewritten + ' reecrits');
