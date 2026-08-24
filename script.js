@@ -529,7 +529,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // l'onglet ou navigue ailleurs par accident) - le "Continuer"
                 // de ce signet ne doit plus reapparaitre a l'accueil.
                 markGuideExitLink(backLink);
-                nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
                 // "Accueil" (lien statique du template CHAPTER_NAV) = meme

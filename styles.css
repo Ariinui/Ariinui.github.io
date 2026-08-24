@@ -160,6 +160,33 @@ h1 {
     text-align: center;
 }
 
+/* Rangee de boutons (Accueil, Retour au verset, Chapitre precedent/suivant,
+   Discours precedent/suivant, Page precedente/suivante) en bas de page -
+   flex-wrap plutot que du texte separe par des "|" : s'enroule proprement
+   sur 2 lignes si les 4 boutons ne tiennent pas sur une largeur mobile,
+   sans jamais rien couper/masquer, avec des zones de clic confortables. */
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+nav a {
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+nav a:hover {
+    background: var(--hover-bg);
+}
+
 .page-controls {
     position: absolute;
     top: 32px;

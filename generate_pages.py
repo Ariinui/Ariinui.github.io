@@ -1425,7 +1425,7 @@ BOOKMARK_FILTER_CONTROL = f'''
 
 CHAPTER_NAV = '''
     <nav>
-        <a class="chapter-home-link" href="{index_href}">Accueil</a> |
+        <a class="chapter-home-link" href="{index_href}">Accueil</a>
         {prev_link}
         {next_link}
     </nav>
@@ -2017,8 +2017,8 @@ def write_conference_analogy_talk_page(issue_key, issue_label, talk_idx, talk, t
         f'    <div class="analogy-list" data-volume-key="conference-analogies" '
         f'data-volume-title="Conference generale analogie">{cards}</div>\n'
     )
-    prev_link = f'<a href="talk_{talk_idx - 1}.html">Discours precedent</a> | ' if talk_idx > 1 else ''
-    next_link = f'<a href="talk_{talk_idx + 1}.html">Discours suivant</a> | ' if talk_idx < total_talks else ''
+    prev_link = f'<a href="talk_{talk_idx - 1}.html">Discours precedent</a>' if talk_idx > 1 else ''
+    next_link = f'<a href="talk_{talk_idx + 1}.html">Discours suivant</a>' if talk_idx < total_talks else ''
     page += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../conference-analogies.html')
     page += PAGE_TAIL
     write(f'conference-analogies/{issue_key}/talk_{talk_idx}.html', page)
@@ -2180,8 +2180,8 @@ for book_idx, book in enumerate(bom_book_data, 1):
         if chapter['introduction']:
             introduction_html = f'<p class="verse-fr introduction">{chapter["introduction"]["francais"]}</p>'
 
-        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
-        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
+        prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
+        next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
@@ -2213,8 +2213,8 @@ if SITE_TAHITIEN:
                 intro_text = wrap_tah_words(chapter["introduction"]["tahitien"])
                 introduction_html = f'<p class="verse-fr introduction">{intro_text}</p>'
 
-            prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if chap_idx > 1 else ''
-            next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if chap_idx < len(book['chapters']) else ''
+            prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
+            next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
             display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
@@ -2271,8 +2271,8 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
 
             has_prev = chap_idx > 1
             has_next = chap_idx < total_chapters
-            prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a> | ' if has_prev else ''
-            next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a> | ' if has_next else ''
+            prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if has_prev else ''
+            next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if has_next else ''
 
             html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <h1>{book_display_title(bom_book["book_title"])}</h1>\n    <h2>{title}</h2>\n'
@@ -2286,8 +2286,8 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
 
 for n, item in enumerate(guide_intro_items, 1):
     content_html = guide_section_content_html(item['section'])
-    prev_link = f'<a href="intro_{n-1}.html">Page precedente</a> | ' if n > 1 else ''
-    next_link = f'<a href="intro_{n+1}.html">Page suivante</a> | ' if n < len(guide_intro_items) else ''
+    prev_link = f'<a href="intro_{n-1}.html">Page precedente</a>' if n > 1 else ''
+    next_link = f'<a href="intro_{n+1}.html">Page suivante</a>' if n < len(guide_intro_items) else ''
 
     html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
     html += f'    <h1>Introductory Pages</h1>\n    <h2>{item["title"]}</h2>\n'
@@ -2499,6 +2499,33 @@ h1 {
     margin: 52px 0 16px;
     font-size: 22px;
     text-align: center;
+}
+
+/* Rangee de boutons (Accueil, Retour au verset, Chapitre precedent/suivant,
+   Discours precedent/suivant, Page precedente/suivante) en bas de page -
+   flex-wrap plutot que du texte separe par des "|" : s'enroule proprement
+   sur 2 lignes si les 4 boutons ne tiennent pas sur une largeur mobile,
+   sans jamais rien couper/masquer, avec des zones de clic confortables. */
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+nav a {
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+nav a:hover {
+    background: var(--hover-bg);
 }
 
 .page-controls {
@@ -4119,7 +4146,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // l'onglet ou navigue ailleurs par accident) - le "Continuer"
                 // de ce signet ne doit plus reapparaitre a l'accueil.
                 markGuideExitLink(backLink);
-                nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
                 // "Accueil" (lien statique du template CHAPTER_NAV) = meme
