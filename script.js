@@ -23,11 +23,25 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    // DIAGNOSTIC TEMPORAIRE - panneau texte en FLUX NORMAL (pas position:
-    // fixed, ne recouvre/ne bloque plus aucun bouton) tout en bas de la
-    // page, sous tout le reste - a retirer une fois le souci mobile
-    // "Continuer" de guide localise.
+    // DIAGNOSTIC TEMPORAIRE - a retirer une fois le souci mobile "Continuer"
+    // de guide localise. Chaque appel ecrit dans un historique PERSISTANT en
+    // localStorage (survit a la navigation, contrairement a un panneau
+    // affiche seulement sur la page courante) - relu et affiche en entier
+    // sur l'accueil (voir plus bas), pour voir en une seule capture d'ecran
+    // tout ce qui s'est passe sur TOUTES les pages visitees, y compris
+    // l'instant precis d'un clic juste avant que la page ne change.
     function debugLog(msg) {
+        var t = new Date();
+        var hh = String(t.getHours()).padStart(2, '0');
+        var mm = String(t.getMinutes()).padStart(2, '0');
+        var ss = String(t.getSeconds()).padStart(2, '0');
+        var entry = hh + ':' + mm + ':' + ss + ' [' + location.pathname + '] ' + msg;
+        var trail = [];
+        try { trail = JSON.parse(localStorage.getItem('bukaAMoromona:debugTrail')) || []; } catch (e) {}
+        trail.push(entry);
+        if (trail.length > 80) trail = trail.slice(trail.length - 80);
+        localStorage.setItem('bukaAMoromona:debugTrail', JSON.stringify(trail));
+
         var box = document.getElementById('debug-log-box');
         if (!box) {
             box = document.createElement('div');
@@ -36,14 +50,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.appendChild(box);
         }
         var line = document.createElement('div');
-        var t = new Date();
-        var hh = String(t.getHours()).padStart(2, '0');
-        var mm = String(t.getMinutes()).padStart(2, '0');
-        var ss = String(t.getSeconds()).padStart(2, '0');
-        line.textContent = hh + ':' + mm + ':' + ss + ' ' + msg;
+        line.textContent = entry;
         box.appendChild(line);
     }
-    debugLog('page chargee: ' + location.pathname + location.hash);
+    debugLog('page chargee: ' + location.hash);
 
     var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
     var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
@@ -494,6 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var bookIdx = guideContent.getAttribute('data-book-idx');
             var chapterIdx = guideContent.getAttribute('data-chapter-idx');
             var nav = document.querySelector('nav');
+            debugLog('setup nav: bookIdx=' + bookIdx + ' chapterIdx=' + chapterIdx + ' nav=' + !!nav + ' volumeKeyGuide=' + guideContent.getAttribute('data-volume-key'));
             if (bookIdx && chapterIdx && nav) {
                 var backLink = document.createElement('a');
                 backLink.href = '../../chapters-fr/chapter_' + bookIdx + '_' + chapterIdx + '.html#' + baseId;
@@ -517,15 +528,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // cote serveur qui pourrait deja porter un comportement
                 // natif du navigateur (preview/prefetch mobile) lie a son
                 // href d'origine.
-                [].slice.call(nav.querySelectorAll('a')).forEach(function(a) {
+                var navA = [].slice.call(nav.querySelectorAll('a'));
+                var rewritten = 0;
+                navA.forEach(function(a) {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
+                    rewritten++;
                     var fresh = document.createElement('a');
                     fresh.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
                     fresh.textContent = a.textContent;
                     fresh.addEventListener('click', clearContinueForThisGuide);
                     a.parentNode.replaceChild(fresh, a);
                 });
+                debugLog('liens nav: ' + navA.length + ' trouves, ' + rewritten + ' reecrits');
             }
         }
     }
@@ -732,6 +747,27 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.persisted) location.reload();
         });
         debugLog('accueil charge, storage=' + localStorage.getItem('bukaAMoromona:reading'));
+        // Affiche l'historique COMPLET persistant (toutes les pages visitees
+        // depuis le dernier "page chargee: (vide)" initial) - permet de tout
+        // voir en une seule capture d'ecran sur l'accueil, y compris ce qui
+        // s'est passe sur une page quittee depuis (impossible a capturer
+        // autrement, l'ecran change avant qu'une photo soit possible).
+        (function() {
+            var trail = [];
+            try { trail = JSON.parse(localStorage.getItem('bukaAMoromona:debugTrail')) || []; } catch (e) {}
+            var box = document.getElementById('debug-log-box');
+            if (box && trail.length) {
+                var header = document.createElement('div');
+                header.textContent = '=== HISTORIQUE COMPLET (' + trail.length + ' entrees) ===';
+                header.style.color = '#ffff00';
+                box.insertBefore(header, box.firstChild);
+                trail.forEach(function(entry) {
+                    var line = document.createElement('div');
+                    line.textContent = entry;
+                    box.appendChild(line);
+                });
+            }
+        })();
         // Francais/tahitien (accordeon d'accueil) + les 7 guides/signets
         // (GUIDE_LABELS, meme cle que le popover de filtre de signets) -
         // un Continuer par volume/signet ayant une position sauvegardee.
