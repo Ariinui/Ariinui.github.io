@@ -3797,17 +3797,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // du navigateur va plus vite que l'ecriture). preventDefault() + un
     // setTimeout avant de naviguer nous-memes laisse le temps a l'ecriture
     // de se terminer.
-    function wireGuideExitLink(link) {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
-            var href = link.href;
-            clearContinueForThisGuide();
-            debugLog('navigation manuelle programmee vers ' + href);
-            setTimeout(function() {
-                debugLog('navigation manuelle lancee');
-                window.location.href = href;
-            }, 50);
-        });
+    // Marque un lien comme "sortie de guide" (au lieu de lui attacher son
+    // propre ecouteur de clic) - le clic est capture par delegation depuis
+    // <nav> lui-meme (voir plus bas), un element STABLE jamais recree ni
+    // remplace. Piste alternative testee car les 3 liens de sortie
+    // executent maintenant un code de clic strictement identique (meme
+    // fonction), et pourtant seul "Retour au verset" fonctionne de facon
+    // fiable sur l'appareil mobile concerne - la difference restante ne
+    // peut venir que de l'element lui-meme (les liens Precedent/Suivant
+    // sont recrees via replaceChild, contrairement a backLink qui est
+    // simplement insere) : la delegation elimine cette variable en
+    // n'attachant plus rien du tout aux liens individuels.
+    function markGuideExitLink(link) {
+        link.setAttribute('data-guide-exit', '1');
     }
     var guideContent = document.querySelector('.guide-content');
     if (guideContent && location.hash) {
@@ -4124,7 +4126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // deliberement cette entree de guide (pas juste ferme
                 // l'onglet ou navigue ailleurs par accident) - le "Continuer"
                 // de ce signet ne doit plus reapparaitre a l'accueil.
-                wireGuideExitLink(backLink);
+                markGuideExitLink(backLink);
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
@@ -4132,26 +4134,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 // verset, pas un parcours du guide lui-meme : Precedent/
                 // Suivant doit continuer la LECTURE du Livre de Mormon
                 // francais (chapitre reel +-1), jamais rester dans le guide
-                // en mode "liste complete" du chapitre voisin.
-                // Remplace entierement l'element (au lieu de muter son href
-                // + lui ajouter un listener en place) - identique a backLink
-                // ci-dessus, un <a> fraichement cree, jamais celui rendu
-                // cote serveur qui pourrait deja porter un comportement
-                // natif du navigateur (preview/prefetch mobile) lie a son
-                // href d'origine.
+                // en mode "liste complete" du chapitre voisin. Mute l'element
+                // EXISTANT (plus de replaceChild) - la delegation depuis nav
+                // ne depend plus de l'identite exacte de l'element clique.
                 var navA = [].slice.call(nav.querySelectorAll('a'));
                 var rewritten = 0;
                 navA.forEach(function(a) {
                     var m = a.getAttribute('href').match(/^chapter_(\d+)_(\d+)\.html$/);
                     if (!m) return;
                     rewritten++;
-                    var fresh = document.createElement('a');
-                    fresh.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
-                    fresh.textContent = a.textContent;
-                    wireGuideExitLink(fresh);
-                    a.parentNode.replaceChild(fresh, a);
+                    a.href = '../../chapters-fr/chapter_' + m[1] + '_' + m[2] + '.html';
+                    markGuideExitLink(a);
                 });
                 debugLog('liens nav: ' + navA.length + ' trouves, ' + rewritten + ' reecrits');
+
+                // Delegation : un seul ecouteur sur <nav> (jamais recree),
+                // plutot qu'un ecouteur par lien individuel - cf. le
+                // commentaire de markGuideExitLink plus haut.
+                nav.addEventListener('click', function(event) {
+                    var link = event.target.closest && event.target.closest('a[data-guide-exit]');
+                    if (!link) return;
+                    debugLog('delegation: clic capture sur ' + link.textContent);
+                    event.preventDefault();
+                    var href = link.href;
+                    clearContinueForThisGuide();
+                    setTimeout(function() { window.location.href = href; }, 50);
+                });
             }
         }
     }

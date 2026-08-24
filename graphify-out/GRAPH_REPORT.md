@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-08-23)
 
 ## Corpus Check
-- 6 files · ~87,081 words
+- 6 files · ~87,351 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 216 nodes · 147 edges · 121 communities detected
+- 216 nodes · 145 edges · 121 communities detected
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -152,11 +152,11 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.07
-Nodes (18): conf_analogy_lien_with_lang(), guide2_section_content_html(), guide_section_content_html(), parse_bomm_heading_ref(), parse_bomm_source(), parse_bomm_title_book_chapter(), parse_conference_analogies_sources(), parse_conference_issue_date() (+10 more)
+Nodes (18): conf_analogy_lien_with_lang(), conference_analogy_card_html(), guide2_section_content_html(), guide_section_content_html(), parse_conference_analogies_sources(), parse_conference_issue_date(), Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp, 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1 (+10 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.16
-Nodes (14): clearContinueForThisGuide(), debugLog(), entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goToEntry(), refsHidden() (+6 more)
+Cohesion: 0.15
+Nodes (13): clearContinueForThisGuide(), debugLog(), entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goToEntry(), refsHidden() (+5 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.27
@@ -171,16 +171,16 @@ Cohesion: 0.29
 Nodes (8): book_display_title(), chapter_display_title(), books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_, raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que, Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon, render_volume_block(), to_superscript(), write_guide_volume()
 
 ### Community 5 - "Community 5"
-Cohesion: 0.33
-Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML, La description (contrairement au texte d'analyse, deja extrait en     texte pur, Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles, write_cameos()
+Cohesion: 0.29
+Nodes (8): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML, La description (contrairement au texte d'analyse, deja extrait en     texte pur, Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles, write(), write_cameos()
 
 ### Community 6 - "Community 6"
-Cohesion: 0.5
-Nodes (5): conference_analogy_card_html(), slugify(), write(), write_conference_analogy_talk_page(), write_conference_analogy_theme_page()
-
-### Community 7 - "Community 7"
 Cohesion: 0.4
 Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+
+### Community 7 - "Community 7"
+Cohesion: 0.5
+Nodes (4): parse_bomm_heading_ref(), parse_bomm_source(), parse_bomm_title_book_chapter(), 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 8 - "Community 8"
 Cohesion: 0.67
@@ -865,9 +865,9 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `slugify()` connect `Community 6` to `Community 0`, `Community 3`?**
+- **Why does `slugify()` connect `Community 0` to `Community 3`?**
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Why does `normalize()` connect `Community 3` to `Community 6`?**
+- **Why does `normalize()` connect `Community 3` to `Community 0`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "` to the rest of the system?**
   _130 weakly-connected nodes found - possible documentation gaps or missing edges._
