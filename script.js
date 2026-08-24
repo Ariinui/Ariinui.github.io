@@ -532,6 +532,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
 
+                // "Accueil" (lien statique du template CHAPTER_NAV) = meme
+                // raisonnement : quitte deliberement cette entree de guide.
+                var homeLink = nav.querySelector('.chapter-home-link');
+                if (homeLink) markGuideExitLink(homeLink);
+
                 // Arrive via signet = simple consultation ponctuelle d'un
                 // verset, pas un parcours du guide lui-meme : Precedent/
                 // Suivant doit continuer la LECTURE du Livre de Mormon

@@ -1425,6 +1425,7 @@ BOOKMARK_FILTER_CONTROL = f'''
 
 CHAPTER_NAV = '''
     <nav>
+        <a class="chapter-home-link" href="{index_href}">Accueil</a> |
         {prev_link}
         {next_link}
     </nav>
@@ -4120,6 +4121,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 markGuideExitLink(backLink);
                 nav.insertBefore(document.createTextNode(' | '), nav.firstChild);
                 nav.insertBefore(backLink, nav.firstChild);
+
+                // "Accueil" (lien statique du template CHAPTER_NAV) = meme
+                // raisonnement : quitte deliberement cette entree de guide.
+                var homeLink = nav.querySelector('.chapter-home-link');
+                if (homeLink) markGuideExitLink(homeLink);
 
                 // Arrive via signet = simple consultation ponctuelle d'un
                 // verset, pas un parcours du guide lui-meme : Precedent/
