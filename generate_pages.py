@@ -1425,9 +1425,9 @@ BOOKMARK_FILTER_CONTROL = f'''
 
 CHAPTER_NAV = '''
     <nav>
-        <a class="chapter-home-link" href="{index_href}">Accueil</a>
         {prev_link}
         {next_link}
+        <a class="chapter-home-link" href="{index_href}">Accueil</a>
     </nav>
     <script>
     (function() {{
