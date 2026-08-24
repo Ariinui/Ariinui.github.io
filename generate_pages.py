@@ -2514,6 +2514,11 @@ nav {
 }
 
 nav a {
+    /* grow (remplit l'espace restant sur sa ligne, ex. seul sur une 2e
+       ligne = prend toute la largeur) + shrink, base 140px avant
+       redistribution - evite les boutons ecrases a l'etroit ou, a
+       l'inverse, un bouton isole laissant un grand vide a cote de lui. */
+    flex: 1 1 140px;
     padding: 8px 12px;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2521,6 +2526,7 @@ nav a {
     color: var(--text);
     text-decoration: none;
     font-size: 14px;
+    text-align: center;
     white-space: nowrap;
 }
 
