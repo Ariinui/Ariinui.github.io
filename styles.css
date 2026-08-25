@@ -1229,6 +1229,9 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
     }
 
     h1 {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
         padding-right: 58px;
     }
 

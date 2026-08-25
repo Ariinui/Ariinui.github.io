@@ -1347,12 +1347,12 @@ PAGE_HEAD = f'''
             <div class="more-menu">
                 <button class="more-menu-toggle" type="button" aria-label="Options" title="Options" aria-haspopup="true" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
                 <div class="more-menu-popover" id="more-menu-popover" role="menu" hidden>
-                    {{extra_controls}}
                     <button type="button" class="menu-row theme-menu-row" role="menuitemcheckbox" aria-checked="false">
                         <span class="menu-row-icon" aria-hidden="true">\U0001F319</span>
                         <span class="menu-row-label">Mode sombre</span>
                         <span class="menu-row-switch" aria-hidden="true"></span>
                     </button>
+                    {{extra_controls}}
                 </div>
             </div>
         </div>
@@ -3572,6 +3572,9 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
     }
 
     h1 {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
         padding-right: 58px;
     }
 
