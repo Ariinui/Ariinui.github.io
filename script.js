@@ -23,23 +23,23 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
-    var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
-    if (bookmarkFilterToggle && bookmarkFilterPopover) {
-        bookmarkFilterToggle.addEventListener('click', function(event) {
+    var moreMenuToggle = document.querySelector('.more-menu-toggle');
+    var moreMenuPopover = document.getElementById('more-menu-popover');
+    if (moreMenuToggle && moreMenuPopover) {
+        moreMenuToggle.addEventListener('click', function(event) {
             event.stopPropagation();
-            bookmarkFilterPopover.hidden = !bookmarkFilterPopover.hidden;
-            bookmarkFilterToggle.setAttribute('aria-expanded', bookmarkFilterPopover.hidden ? 'false' : 'true');
+            moreMenuPopover.hidden = !moreMenuPopover.hidden;
+            moreMenuToggle.setAttribute('aria-expanded', moreMenuPopover.hidden ? 'false' : 'true');
         });
         document.addEventListener('click', function(event) {
-            if (!bookmarkFilterPopover.hidden && !bookmarkFilterPopover.contains(event.target) && event.target !== bookmarkFilterToggle) {
-                bookmarkFilterPopover.hidden = true;
-                bookmarkFilterToggle.setAttribute('aria-expanded', 'false');
+            if (!moreMenuPopover.hidden && !moreMenuPopover.contains(event.target) && !moreMenuToggle.contains(event.target)) {
+                moreMenuPopover.hidden = true;
+                moreMenuToggle.setAttribute('aria-expanded', 'false');
             }
         });
     }
 
-    [].slice.call(document.querySelectorAll('.bookmark-filter-row')).forEach(function(row) {
+    [].slice.call(document.querySelectorAll('[data-bookmark-key]')).forEach(function(row) {
         var key = row.getAttribute('data-bookmark-key');
         var storageKey = 'bukaAMoromona:hideBookmark:' + key;
         var attr = 'data-hide-bookmark-' + key;
@@ -59,30 +59,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    var themeToggle = document.querySelector('.theme-toggle');
-    if (themeToggle) {
+    var themeRow = document.querySelector('.theme-menu-row');
+    if (themeRow) {
         var currentTheme = function() {
             var stored = localStorage.getItem('bukaAMoromona:theme');
             if (stored === 'light' || stored === 'dark') return stored;
             return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         };
-        var updateIcon = function() {
-            themeToggle.textContent = currentTheme() === 'dark' ? '☀️' : '🌙';
+        var syncTheme = function() {
+            themeRow.setAttribute('aria-checked', currentTheme() === 'dark' ? 'true' : 'false');
         };
-        updateIcon();
-        themeToggle.addEventListener('click', function() {
+        syncTheme();
+        themeRow.addEventListener('click', function() {
             var next = currentTheme() === 'dark' ? 'light' : 'dark';
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
-            updateIcon();
+            syncTheme();
         });
     }
 
-    var textSizeToggle = document.querySelector('.text-size-toggle');
-    var textSizePopover = document.getElementById('text-size-popover');
-    if (textSizeToggle && textSizePopover) {
+    var textSizeRow = document.querySelector('.text-size-row');
+    if (textSizeRow) {
         var sizes = ['xsmall', 'small', 'normal', 'large', 'xlarge', 'xxlarge'];
-        var steps = [].slice.call(textSizePopover.querySelectorAll('.text-size-step'));
+        var steps = [].slice.call(textSizeRow.querySelectorAll('.text-size-step'));
         var shrinkBtn = steps[0];
         var growBtn = steps[1];
 
@@ -108,16 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         updateButtons();
-        textSizeToggle.addEventListener('click', function(event) {
-            event.stopPropagation();
-            updateButtons();
-            textSizePopover.hidden = !textSizePopover.hidden;
-        });
-        document.addEventListener('click', function(event) {
-            if (!textSizePopover.hidden && !textSizePopover.contains(event.target) && event.target !== textSizeToggle) {
-                textSizePopover.hidden = true;
-            }
-        });
         steps.forEach(function(step) {
             step.addEventListener('click', function() {
                 var dir = parseInt(step.getAttribute('data-dir'), 10);

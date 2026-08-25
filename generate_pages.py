@@ -1344,8 +1344,17 @@ PAGE_HEAD = f'''
 <body>
     <div class="page">
         <div class="page-controls">
-            {{extra_controls}}
-            <button class="theme-toggle" type="button" aria-label="Changer de theme"></button>
+            <div class="more-menu">
+                <button class="more-menu-toggle" type="button" aria-label="Options" title="Options" aria-haspopup="true" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
+                <div class="more-menu-popover" id="more-menu-popover" role="menu" hidden>
+                    {{extra_controls}}
+                    <button type="button" class="menu-row theme-menu-row" role="menuitemcheckbox" aria-checked="false">
+                        <span class="menu-row-icon" aria-hidden="true">\U0001F319</span>
+                        <span class="menu-row-label">Mode sombre</span>
+                        <span class="menu-row-switch" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
         </div>
 '''
 
@@ -1356,27 +1365,25 @@ PAGE_TAIL = '''
 '''
 
 TEXT_SIZE_CONTROL = '''
-            <div class="text-size-control">
-                <button class="text-size-toggle" type="button" aria-label="Taille du texte" title="Taille du texte">A</button>
-                <div class="text-size-popover" id="text-size-popover" hidden>
-                    <button type="button" class="text-size-step" data-dir="-1" aria-label="Reduire la taille du texte" title="Reduire">
-                        <span class="ts-glyph ts-small">A</span>
-                    </button>
-                    <button type="button" class="text-size-step" data-dir="1" aria-label="Agrandir la taille du texte" title="Agrandir">
-                        <span class="ts-glyph ts-large">A</span>
-                    </button>
-                </div>
-            </div>
+                    <div class="menu-row text-size-row">
+                        <span class="menu-row-icon" aria-hidden="true">Aa</span>
+                        <span class="menu-row-label">Taille du texte</span>
+                        <div class="text-size-stepper">
+                            <button type="button" class="text-size-step" data-dir="-1" aria-label="Reduire la taille du texte" title="Reduire">&#8722;</button>
+                            <button type="button" class="text-size-step" data-dir="1" aria-label="Agrandir la taille du texte" title="Agrandir">+</button>
+                        </div>
+                    </div>
 '''
 
 # Icone de signet partagee par les liens de signet (colores par type via
 # CSS, cf. .bookmark-guide/.bookmark-guide2) et leur controle
 # activer/desactiver - un futur type de signet (nouveau volume) reutilise
 # ces memes fonctions, juste une nouvelle couleur CSS et une ligne ajoutee a
-# BOOKMARK_FILTER_ROWS ci-dessous. Regroupes derriere UN SEUL bouton
-# d'entete avec un popover (meme mecanisme que .text-size-control) plutot
-# qu'un bouton par couleur affiche en permanence - evite tout chevauchement
-# avec le titre au fil des futurs ajouts, l'entete ne grossit jamais.
+# BOOKMARK_FILTER_ROWS ci-dessous. Regroupes en lignes de menu (.menu-row)
+# dans le popover unique "..." (.more-menu-popover, avec taille du texte et
+# theme) plutot qu'un bouton par couleur affiche en permanence - evite tout
+# chevauchement avec le titre au fil des futurs ajouts, l'entete ne grossit
+# jamais.
 ICON_BOOKMARK = ('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" '
                   'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
                   'stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z">'
@@ -1389,11 +1396,11 @@ def bookmark_link(href, type_key, label):
 
 
 def bookmark_filter_row(type_key, label):
-    return (f'<button type="button" class="bookmark-filter-row" data-bookmark-key="{type_key}" '
+    return (f'<button type="button" class="menu-row" data-bookmark-key="{type_key}" '
             f'role="menuitemcheckbox" aria-checked="true">'
-            f'<span class="bookmark-filter-icon bookmark-{type_key}">{ICON_BOOKMARK}</span>'
-            f'<span class="bookmark-filter-label">{label}</span>'
-            f'<span class="bookmark-filter-switch" aria-hidden="true"></span>'
+            f'<span class="menu-row-icon bookmark-{type_key}">{ICON_BOOKMARK}</span>'
+            f'<span class="menu-row-label">{label}</span>'
+            f'<span class="menu-row-switch" aria-hidden="true"></span>'
             f'</button>')
 
 
@@ -1414,14 +1421,7 @@ BOOKMARK_FILTER_ROWS = ''.join(
     bookmark_filter_row(key, label) for key, label in GUIDE_BOOKMARK_LABELS.items()
 )
 
-BOOKMARK_FILTER_CONTROL = f'''
-            <div class="bookmark-filter-control">
-                <button class="bookmark-filter-toggle" type="button" aria-label="Signets" title="Signets" aria-haspopup="true" aria-expanded="false">{ICON_BOOKMARK}</button>
-                <div class="bookmark-filter-popover" id="bookmark-filter-popover" role="menu" hidden>
-                    {BOOKMARK_FILTER_ROWS}
-                </div>
-            </div>
-'''
+BOOKMARK_FILTER_CONTROL = BOOKMARK_FILTER_ROWS
 
 CHAPTER_NAV = '''
     <nav>
@@ -2185,6 +2185,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
+        html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
         html += introduction_html + verses_html
@@ -2218,6 +2219,7 @@ if SITE_TAHITIEN:
 
             display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
+            html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
             html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
             html += introduction_html + verses_html
@@ -2487,18 +2489,35 @@ h1, h2 {
 
 h1 {
     margin: 0 0 16px;
-    padding-right: 100px;
+    padding-right: 52px;
     font-size: 22px;
 }
 
-/* Centre ("Chapitre N" seul, sans nom de livre) - un texte centre n'est pas
-   protege par le padding-right de h1 (fonctionne seulement pour du texte
-   aligne a gauche), donc une vraie marge haute degage la rangee de boutons
-   .page-controls (position absolute, meme sommet du flux que ce titre). */
 .chapter-title {
-    margin: 52px 0 16px;
+    margin: 16px 0 16px;
     font-size: 22px;
     text-align: center;
+}
+
+/* Nom du livre (ex. "1 Nephi"), affiche uniquement sur les pages de
+   chapitre du Livre de Mormon, en flux normal (premier enfant de .page,
+   meme ligne visuelle que .page-controls qui reste position:absolute a
+   cote). padding-right + overflow:hidden reserve l'espace du bouton "..."
+   (meme technique que h1 ci-dessus) - jamais de chevauchement quelle que
+   soit la largeur d'ecran. clamp() retrecit la taille sur mobile etroit ;
+   au-dela, troncature "..." en dernier recours plutot que de risquer un
+   depassement sous le bouton. */
+.chapter-book-name {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding-right: 52px;
+    font-size: clamp(15px, 5vw, 22px);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Rangee de boutons (Accueil, Retour au verset, Chapitre precedent/suivant,
@@ -2538,12 +2557,20 @@ nav a:hover {
     position: absolute;
     top: 32px;
     right: 20px;
-    display: flex;
-    gap: 8px;
 }
 
-.theme-toggle,
-.text-size-toggle {
+/* Bouton unique "..." (rond, 3 points horizontaux) qui regroupe taille du
+   texte / signets / theme dans un seul popover - remplace les 2-3 boutons
+   separes precedents pour liberer de la place en haut de page (necessaire
+   pour .chapter-book-name a gauche). Zone de tap elargie au-dela du cercle
+   visible (::before) + touch-action:manipulation pour une reactivite
+   tactile maximale. */
+.more-menu {
+    position: relative;
+}
+
+.more-menu-toggle {
+    position: relative;
     width: 36px;
     height: 36px;
     display: flex;
@@ -2551,75 +2578,156 @@ nav a:hover {
     justify-content: center;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 50%;
     color: var(--text);
-    font-size: 16px;
-    font-weight: 600;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
-.theme-toggle:hover,
-.text-size-toggle:hover {
+.more-menu-toggle::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+}
+
+.more-menu-toggle:hover {
     background: var(--hover-bg);
 }
 
-.text-size-control {
-    position: relative;
-}
-
-.text-size-popover {
+.more-menu-popover {
     position: absolute;
     right: 0;
     top: calc(100% + 8px);
     display: flex;
-    align-items: center;
-    gap: 6px;
+    flex-direction: column;
+    width: min(220px, calc(100vw - 32px));
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 6px;
+    padding: 4px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     z-index: 2000;
 }
 
-.text-size-popover[hidden] {
+.more-menu-popover[hidden] {
     display: none;
 }
 
+.menu-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    background: none;
+    border: none;
+    border-radius: 7px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.menu-row:hover {
+    background: var(--hover-bg);
+}
+
+.menu-row-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+}
+
+.menu-row-icon svg {
+    width: 13px;
+    height: 13px;
+}
+
+.menu-row-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-row-switch {
+    position: relative;
+    width: 26px;
+    height: 15px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--border);
+    transition: background 0.15s ease;
+}
+
+.menu-row-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+}
+
+.menu-row[aria-checked="false"] .menu-row-switch {
+    background: var(--border);
+}
+
+.menu-row[aria-checked="true"] .menu-row-switch {
+    background: #22c55e;
+}
+
+.menu-row[aria-checked="true"] .menu-row-switch::after {
+    transform: translateX(11px);
+}
+
+/* Ligne taille du texte : pas un bouton (contenu non-interactif hormis les
+   2 boutons -/+ qu'elle contient), donc pas de curseur pointeur/hover sur
+   toute la ligne comme les autres .menu-row. */
+.text-size-row {
+    cursor: default;
+}
+
+.text-size-row:hover {
+    background: none;
+}
+
+.text-size-stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
 .text-size-step {
-    width: 44px;
-    height: 44px;
+    width: 26px;
+    height: 26px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
+    background: var(--hover-bg);
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
 }
 
 .text-size-step:hover:not(:disabled) {
-    background: var(--hover-bg);
+    background: var(--border);
 }
 
 .text-size-step:disabled {
     opacity: 0.3;
     cursor: default;
-}
-
-.ts-glyph {
-    font-weight: 600;
-    line-height: 1;
-}
-
-.ts-small {
-    font-size: 12px;
-}
-
-.ts-large {
-    font-size: 22px;
 }
 
 .continue-reading {
@@ -3184,121 +3292,6 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
     margin-top: 0.75em;
 }
 
-/* Un seul bouton d'entete pour tous les signets, avec un popover listant un
-   toggle par type - ne grossit jamais dans l'entete quel que soit le nombre
-   de types de signets ajoutes au fil du temps. */
-.bookmark-filter-toggle {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    cursor: pointer;
-}
-
-.bookmark-filter-toggle:hover {
-    background: var(--hover-bg);
-}
-
-
-.bookmark-filter-popover {
-    /* Ancre sur .page-controls (deja position:absolute, donc bloc
-       englobant valide) plutot que sur .bookmark-filter-control lui-meme -
-       ce bouton n'est pas le plus a droite de la rangee (theme-toggle le
-       suit), un ancrage sur lui-meme faisait deborder le popover a gauche
-       de l'ecran sur mobile etroit. */
-    position: absolute;
-    right: 0;
-    top: calc(100% + 8px);
-    display: flex;
-    flex-direction: column;
-    width: min(190px, calc(100vw - 32px));
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 4px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    z-index: 2000;
-}
-
-.bookmark-filter-popover[hidden] {
-    display: none;
-}
-
-.bookmark-filter-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 6px 8px;
-    background: none;
-    border: none;
-    border-radius: 7px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: inherit;
-    text-align: left;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.bookmark-filter-row:hover {
-    background: var(--hover-bg);
-}
-
-.bookmark-filter-icon {
-    display: flex;
-    flex-shrink: 0;
-}
-
-.bookmark-filter-icon svg {
-    width: 13px;
-    height: 13px;
-}
-
-.bookmark-filter-label {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.bookmark-filter-switch {
-    position: relative;
-    width: 26px;
-    height: 15px;
-    flex-shrink: 0;
-    border-radius: 999px;
-    background: var(--border);
-    transition: background 0.15s ease;
-}
-
-.bookmark-filter-switch::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: #fff;
-    transition: transform 0.15s ease;
-}
-
-.bookmark-filter-row[aria-checked="false"] .bookmark-filter-switch {
-    background: var(--border);
-}
-
-.bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch {
-    background: #22c55e;
-}
-
-.bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch::after {
-    transform: translateX(11px);
-}
 
 .guide-content {
     overflow-wrap: break-word;
@@ -3572,45 +3565,66 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
         height: 28px;
     }
 
-    .bookmark-filter-toggle {
+    .chapter-book-name {
+        min-height: 44px;
+        padding-right: 58px;
+        font-size: clamp(14px, 5.5vw, 20px);
+    }
+
+    h1 {
+        padding-right: 58px;
+    }
+
+    .more-menu-toggle {
         width: 44px;
         height: 44px;
     }
 
-    .bookmark-filter-toggle svg {
+    .more-menu-toggle svg {
         width: 22px;
         height: 22px;
     }
 
-    .bookmark-filter-popover {
-        width: min(240px, calc(100vw - 32px));
+    .more-menu-popover {
+        width: min(260px, calc(100vw - 32px));
     }
 
-    .bookmark-filter-row {
+    .menu-row {
         padding: 10px 12px;
         gap: 10px;
         font-size: 16px;
     }
 
-    .bookmark-filter-icon svg {
+    .menu-row-icon svg {
         width: 18px;
         height: 18px;
     }
 
-    .bookmark-filter-switch {
+    .menu-row-icon {
+        font-size: 18px;
+        width: 18px;
+    }
+
+    .menu-row-switch {
         width: 40px;
         height: 22px;
     }
 
-    .bookmark-filter-switch::after {
+    .menu-row-switch::after {
         top: 3px;
         left: 3px;
         width: 16px;
         height: 16px;
     }
 
-    .bookmark-filter-row[aria-checked="true"] .bookmark-filter-switch::after {
+    .menu-row[aria-checked="true"] .menu-row-switch::after {
         transform: translateX(18px);
+    }
+
+    .text-size-step {
+        width: 34px;
+        height: 34px;
+        font-size: 19px;
     }
 }
 '''
@@ -3646,23 +3660,23 @@ js_content = '''
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    var bookmarkFilterToggle = document.querySelector('.bookmark-filter-toggle');
-    var bookmarkFilterPopover = document.getElementById('bookmark-filter-popover');
-    if (bookmarkFilterToggle && bookmarkFilterPopover) {
-        bookmarkFilterToggle.addEventListener('click', function(event) {
+    var moreMenuToggle = document.querySelector('.more-menu-toggle');
+    var moreMenuPopover = document.getElementById('more-menu-popover');
+    if (moreMenuToggle && moreMenuPopover) {
+        moreMenuToggle.addEventListener('click', function(event) {
             event.stopPropagation();
-            bookmarkFilterPopover.hidden = !bookmarkFilterPopover.hidden;
-            bookmarkFilterToggle.setAttribute('aria-expanded', bookmarkFilterPopover.hidden ? 'false' : 'true');
+            moreMenuPopover.hidden = !moreMenuPopover.hidden;
+            moreMenuToggle.setAttribute('aria-expanded', moreMenuPopover.hidden ? 'false' : 'true');
         });
         document.addEventListener('click', function(event) {
-            if (!bookmarkFilterPopover.hidden && !bookmarkFilterPopover.contains(event.target) && event.target !== bookmarkFilterToggle) {
-                bookmarkFilterPopover.hidden = true;
-                bookmarkFilterToggle.setAttribute('aria-expanded', 'false');
+            if (!moreMenuPopover.hidden && !moreMenuPopover.contains(event.target) && !moreMenuToggle.contains(event.target)) {
+                moreMenuPopover.hidden = true;
+                moreMenuToggle.setAttribute('aria-expanded', 'false');
             }
         });
     }
 
-    [].slice.call(document.querySelectorAll('.bookmark-filter-row')).forEach(function(row) {
+    [].slice.call(document.querySelectorAll('[data-bookmark-key]')).forEach(function(row) {
         var key = row.getAttribute('data-bookmark-key');
         var storageKey = 'bukaAMoromona:hideBookmark:' + key;
         var attr = 'data-hide-bookmark-' + key;
@@ -3682,30 +3696,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    var themeToggle = document.querySelector('.theme-toggle');
-    if (themeToggle) {
+    var themeRow = document.querySelector('.theme-menu-row');
+    if (themeRow) {
         var currentTheme = function() {
             var stored = localStorage.getItem('bukaAMoromona:theme');
             if (stored === 'light' || stored === 'dark') return stored;
             return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         };
-        var updateIcon = function() {
-            themeToggle.textContent = currentTheme() === 'dark' ? '☀️' : '\U0001F319';
+        var syncTheme = function() {
+            themeRow.setAttribute('aria-checked', currentTheme() === 'dark' ? 'true' : 'false');
         };
-        updateIcon();
-        themeToggle.addEventListener('click', function() {
+        syncTheme();
+        themeRow.addEventListener('click', function() {
             var next = currentTheme() === 'dark' ? 'light' : 'dark';
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
-            updateIcon();
+            syncTheme();
         });
     }
 
-    var textSizeToggle = document.querySelector('.text-size-toggle');
-    var textSizePopover = document.getElementById('text-size-popover');
-    if (textSizeToggle && textSizePopover) {
+    var textSizeRow = document.querySelector('.text-size-row');
+    if (textSizeRow) {
         var sizes = ['xsmall', 'small', 'normal', 'large', 'xlarge', 'xxlarge'];
-        var steps = [].slice.call(textSizePopover.querySelectorAll('.text-size-step'));
+        var steps = [].slice.call(textSizeRow.querySelectorAll('.text-size-step'));
         var shrinkBtn = steps[0];
         var growBtn = steps[1];
 
@@ -3731,16 +3744,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         updateButtons();
-        textSizeToggle.addEventListener('click', function(event) {
-            event.stopPropagation();
-            updateButtons();
-            textSizePopover.hidden = !textSizePopover.hidden;
-        });
-        document.addEventListener('click', function(event) {
-            if (!textSizePopover.hidden && !textSizePopover.contains(event.target) && event.target !== textSizeToggle) {
-                textSizePopover.hidden = true;
-            }
-        });
         steps.forEach(function(step) {
             step.addEventListener('click', function() {
                 var dir = parseInt(step.getAttribute('data-dir'), 10);
