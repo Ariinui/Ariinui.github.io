@@ -759,7 +759,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 var verseMatch2 = /^v(\d+)$/.exec(saved.itemId || '');
                 if (true && verseMatch2) {
                     // chapterTitle = document.title = 'NomDuLivre Chapitre N'
-                    var m2 = /^(.*) Chapitre (\d+)$/.exec(saved.chapterTitle || '');
+                    // (francais) ou 'NomDuLivre Pene N' (tahitien, chapters-tah).
+                    var m2 = /^(.*) (?:Chapitre|Pene) (\d+)$/.exec(saved.chapterTitle || '');
                     var ref2 = m2 ? (m2[1] + ' ' + m2[2] + ':' + verseMatch2[1]) : saved.chapterTitle;
                     var prefix2 = true ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
                     link.textContent = 'Continuer - ' + prefix2 + ref2;

@@ -216,6 +216,36 @@ def chapter_display_title(book_title, raw_title):
     return raw_title
 
 
+# Noms officiels tahitiens (churchofjesuschrist.org, ?lang=tah - verifie via
+# curl direct sur les entetes de navigation du BdM, pas WebFetch) - les noms
+# propres (Nephi, Alma, Moroni...) restent proches/identiques au francais,
+# mais Enos/Jacob/Jarom/Omni/Mosiah/Helaman/Mormon/Ether ont une
+# orthographe tahitienne distincte (Enosa, Iakoba, Iaroma, Omoni, Mosia,
+# Helamana, Moromona, Etera). Utilise uniquement pour les pages
+# chapters-tah - le francais reste la reference pour chapters-fr.
+BOOK_TITLE_TAH_FULL = {
+    '1 Ne': '1 Nephi', '2 Ne': '2 Nephi', 'Jacob': 'Iakoba', 'Enos': 'Enosa',
+    'Jarom': 'Iaroma', 'Omni': 'Omoni', 'W Of M': 'Mau Parau a Moromona',
+    'Mosiah': 'Mosia', 'Alma': 'Alama', 'Hel': 'Helamana', '3 Ne': '3 Nephi',
+    '4 Ne': '4 Nephi', 'Morm': 'Moromona', 'Ether': 'Etera', 'Moro': 'Moroni',
+}
+
+
+def book_display_title_tah(title):
+    return BOOK_TITLE_TAH_FULL.get(title, title)
+
+
+def chapter_display_title_tah(book_title, raw_title):
+    """Meme logique que chapter_display_title, mais traduit aussi 'Chapitre'
+    en 'Pene' (mot officiel tahitien, confirme sur churchofjesuschrist.org
+    ?lang=tah - l'entete de chapitre y affiche juste 'Pene N')."""
+    full = book_display_title_tah(book_title)
+    prefix = book_title + ' Chapitre'
+    if raw_title.startswith(prefix):
+        return f'{full} Pene{raw_title[len(prefix):]}'
+    return raw_title
+
+
 def parse_guide_source(path):
     with open(path, 'r', encoding='utf-8') as file:
         # html.parser (pas lxml) : sur ce fichier, lxml imbrique a tort chaque
@@ -1285,8 +1315,11 @@ def bomm_section_content_html(section_tag):
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
-def render_volume_block(title, books, chapter_href):
-    """books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_idx, chapter) -> url"""
+def render_volume_block(title, books, chapter_href, book_title_fn=book_display_title, chapter_title_fn=chapter_display_title):
+    """books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_idx, chapter) -> url.
+    book_title_fn/chapter_title_fn permettent au volume tahitien de passer
+    book_display_title_tah/chapter_display_title_tah plutot que les
+    versions francaises par defaut."""
     html = f'''
         <div class="volume">
             <button class="volume-toggle" type="button" aria-expanded="false">
@@ -1301,7 +1334,7 @@ def render_volume_block(title, books, chapter_href):
                     <div class="accordion-item">
                         <button class="accordion-button" type="button" aria-expanded="false">
                             <span class="chevron" aria-hidden="true"></span>
-                            {book_display_title(book["book_title"])}
+                            {book_title_fn(book["book_title"])}
                         </button>
                         <div class="accordion-content">
                             <div class="chapter-grid">
@@ -1309,7 +1342,7 @@ def render_volume_block(title, books, chapter_href):
         for chap_idx, chapter in enumerate(book['chapters'], 1):
             chap_num = chapter.get('chapter_num', chap_idx)
             href = chapter_href(book_idx, chap_num, chapter)
-            html += f'<a class="chapter-link" href="{href}" title="{chapter_display_title(book["book_title"], chapter["title"])}">{chap_num}</a>'
+            html += f'<a class="chapter-link" href="{href}" title="{chapter_title_fn(book["book_title"], chapter["title"])}">{chap_num}</a>'
         html += '''
                             </div>
                         </div>
@@ -2110,9 +2143,11 @@ toc_html += render_volume_block(
 
 if SITE_TAHITIEN:
     toc_html += render_volume_block(
-        'Livre de Mormon (tahitien)',
+        'Te Buka a Moromona',
         bom_book_data,
-        lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html'
+        lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html',
+        book_title_fn=book_display_title_tah,
+        chapter_title_fn=chapter_display_title_tah
     )
 
 if SITE_CAMEOS:
@@ -2217,11 +2252,11 @@ if SITE_TAHITIEN:
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
-            display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
+            display_chapter_title = chapter_display_title_tah(book['book_title'], chapter['title'])
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
-            html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
-            html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
-            html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Livre de Mormon (tahitien)">'
+            html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
+            html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
+            html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona">'
             html += introduction_html + verses_html
             html += '</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
@@ -4399,7 +4434,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 var verseMatch2 = /^v(\\d+)$/.exec(saved.itemId || '');
                 if (__COMPACT_CONTINUE__ && verseMatch2) {
                     // chapterTitle = document.title = 'NomDuLivre Chapitre N'
-                    var m2 = /^(.*) Chapitre (\\d+)$/.exec(saved.chapterTitle || '');
+                    // (francais) ou 'NomDuLivre Pene N' (tahitien, chapters-tah).
+                    var m2 = /^(.*) (?:Chapitre|Pene) (\\d+)$/.exec(saved.chapterTitle || '');
                     var ref2 = m2 ? (m2[1] + ' ' + m2[2] + ':' + verseMatch2[1]) : saved.chapterTitle;
                     var prefix2 = __COMPACT_LANG_PREFIX__ ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
                     link.textContent = 'Continuer - ' + prefix2 + ref2;
