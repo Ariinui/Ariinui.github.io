@@ -1450,6 +1450,15 @@ GUIDE_BOOKMARK_LABELS = {
     'guide8': "BOM Minute",
 }
 
+# Variable CSS --guideN-color de chaque volume (guide -> guide1, les autres
+# correspondent directement a leur numero) - utilisee en style inline sur le
+# <h1> de chaque page de guide (couleur du ruban), JAMAIS via la classe
+# .bookmark-{volume_key} : cette classe sert aussi au filtre de signets
+# (html[data-hide-bookmark-X] .bookmark-X { display:none }) - un <h1>
+# portant cette classe disparaitrait si l'utilisateur desactive CE guide
+# dans le filtre, sur sa propre page.
+GUIDE_COLOR_VAR = {k: ('guide1-color' if k == 'guide' else k + '-color') for k in GUIDE_BOOKMARK_LABELS}
+
 BOOKMARK_FILTER_ROWS = ''.join(
     bookmark_filter_row(key, label) for key, label in GUIDE_BOOKMARK_LABELS.items()
 )
@@ -2312,7 +2321,7 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if has_next else ''
 
             html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL)
-            html += f'    <h1>{book_display_title(bom_book["book_title"])}</h1>\n    <h2>{title}</h2>\n'
+            html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR[volume_key]})">{GUIDE_BOOKMARK_LABELS[volume_key]}</h1>\n    <h2>{title}</h2>\n'
             html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="{volume_key}" data-volume-title="{volume_title}">{content_html}</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
             html += PAGE_TAIL
@@ -2327,7 +2336,7 @@ for n, item in enumerate(guide_intro_items, 1):
     next_link = f'<a href="intro_{n+1}.html">Page suivante</a>' if n < len(guide_intro_items) else ''
 
     html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
-    html += f'    <h1>Introductory Pages</h1>\n    <h2>{item["title"]}</h2>\n'
+    html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR["guide"]})">{GUIDE_BOOKMARK_LABELS["guide"]}</h1>\n    <h2>{item["title"]}</h2>\n'
     html += f'<div class="guide-content" data-volume-key="guide" data-volume-title="Book of Mormon Study Guide">{content_html}</div>'
     html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
     html += PAGE_TAIL
