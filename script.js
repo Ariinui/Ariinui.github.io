@@ -763,10 +763,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatReadingTime(ms) {
         var totalMinutes = Math.floor((ms || 0) / 60000);
         if (totalMinutes < 1) return null;
-        var h = Math.floor(totalMinutes / 60);
+        var totalHours = Math.floor(totalMinutes / 60);
         var m = totalMinutes % 60;
-        if (h > 0) return h + 'h' + (m < 10 ? '0' : '') + m;
-        return m + ' min';
+        if (totalHours < 1) return m + ' min';
+        if (totalHours < 24) return totalHours + 'h' + (m < 10 ? '0' : '') + m;
+        // Au-dela de 24h, granularite jour+heure (pas de minutes) - reste
+        // court et lisible dans le badge, meme sur mobile.
+        var d = Math.floor(totalHours / 24);
+        var h = totalHours % 24;
+        return d + 'j ' + h + 'h';
     }
 
     // Page d'accueil : une ligne "Continuer la lecture" par volume ayant une
