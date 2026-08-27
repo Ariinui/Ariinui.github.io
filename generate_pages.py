@@ -635,17 +635,96 @@ def vv_section_content_html(section_tag):
 # Chaque entree verset est un <section><header><h2>Livre C:V . Titre</h2>
 # </header><ul>...</ul></section> - le <h2> est parfois une citation seule
 # sans titre, ou une citation multiple ("3:19-20 ; 5:11-14") dont seule la
-# premiere est retenue comme ancre. Les sections sans citation reconnue
-# (Introduction, Commentaire, Points a mediter, Idees de taches, preambule
-# de livre) sont ignorees - pas de chapitre BdM unique auquel les rattacher
-# proprement (un chapitre du manuel peut couvrir plusieurs chapitres/livres).
+# premiere est retenue comme ancre. 3 fichiers source (2 Ne 4-8, Enos-Paroles
+# de Mormon, Alma 1-4) utilisent <h3> a la place de <h2> pour ce meme gabarit
+# - sans fallback ces chapitres entiers restaient vides malgre un contenu
+# source bien present (confirme : Enos/Paroles de Mormon 100% absents avant
+# ce fix). Fidelite totale avec la page LDS visee (demande explicite) : les 4
+# sections non liees a un verset unique (Introduction, Points a mediter,
+# Idees de taches, preambule de livre) sont desormais rattachees a la
+# premiere/derniere reference verset trouvee dans la page source, de meme
+# que les titres de synthese couvrant une plage de chapitres ("2 Nephi
+# 17-24 . Apercu et contexte", rattaches au 1er chapitre de la plage).
 # ---------------------------------------------------------------------------
 
 FR_TO_EN_BOOK = {BOOK_TITLE_FR_FULL[k]: v for k, v in BOOK_NAME_MAP.items()}
 STUDENT_MANUAL_BOOK_ALT = '|'.join(re.escape(b) for b in sorted(FR_TO_EN_BOOK, key=len, reverse=True))
+# Le verset (groupes 4-5) exige un ":" explicite - sans lui, une plage de
+# chapitres ("Mosiah 9-22") ou un chapitre nu ("Ether 5") reste valide mais
+# vstart=None (titre de synthese, rattache au 1er chapitre de la plage, pas
+# de signet possible faute de verset precis). .search() (pas .match()) car
+# un seul fichier place la citation APRES le titre, entre parentheses
+# ("Message de Nephi aux Juifs ( 2 Nephi 25:10-20 )").
 STUDENT_MANUAL_CITATION_RE = re.compile(
-    rf'^({STUDENT_MANUAL_BOOK_ALT})\s+(\d+)\s*:\s*(\d+)(?:\s*-\s*(\d+))?'
+    rf'({STUDENT_MANUAL_BOOK_ALT})\s+(\d+)(?:\s*[-–—]\s*(\d+))?(?:\s*:\s*(\d+)(?:\s*[-–—]\s*(\d+))?)?'
 )
+STUDENT_MANUAL_INTRO_RE = re.compile(r'^Introduction\b', re.IGNORECASE)
+STUDENT_MANUAL_COMMENTAIRE_RE = re.compile(r'ommentaire', re.IGNORECASE)
+STUDENT_MANUAL_REFLECT_RE = re.compile(r'm.dit', re.IGNORECASE)
+STUDENT_MANUAL_TASKS_RE = re.compile(r't.ches?', re.IGNORECASE)
+
+
+def student_manual_parse_citation(text):
+    """Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]
+    n'importe ou dans le titre. Retourne (book_name, chap_start, vstart,
+    vend, titre) ou None si aucune reference exploitable. vstart est None
+    pour un titre de synthese (chapitre nu ou plage de chapitres, pas de
+    verset precis)."""
+    m = STUDENT_MANUAL_CITATION_RE.search(text)
+    if not m:
+        return None
+    book_name = FR_TO_EN_BOOK[m.group(1)]
+    chap_start = int(m.group(2))
+    vstart = int(m.group(4)) if m.group(4) else None
+    vend = int(m.group(5)) if m.group(5) else vstart
+    before, after = text[:m.start()].strip(), text[m.end():].strip()
+    if before:
+        title = before.rstrip(' (').strip() or None
+    else:
+        # Une reference secondaire peut s'intercaler avant le vrai titre
+        # ("25:9 ; 30:18 . Le sermon...") - ne garder que ce qui suit le
+        # dernier ". " precedant une majuscule/guillemet, jamais un
+        # fragment de citation residuel.
+        m2 = re.search(r'\.\s+(?=[A-ZÀ-Ý«])', after)
+        title = after[m2.end():].strip() if m2 else None
+    return book_name, chap_start, vstart, vend, title
+
+
+def student_manual_body_nodes(sec, header):
+    """Extrait les enfants directs de sec (hors header). Chaque <li>
+    devient un <p> AU MEME NIVEAU que les autres paragraphes (jamais un
+    <ul> imbrique) - sinon Copier/Partager (qui ne separe que les enfants
+    directs de .guide-entry) fond tous les elements de la liste en un seul
+    bloc de texte. Les illustrations (peintures, photos d'artefacts)
+    restent - hotlink direct vers churchofjesuschrist.org comme le src deja
+    present, meme principe que les images de BOM Evidence (guide7). Seule
+    la legende change de structure : la source l'enveloppe dans
+    <div class="credit"><p>...</p></div> (un <p> imbrique dans le <p> issu
+    du <li> renomme plus haut, HTML invalide) - reecrite en <figcaption>,
+    enfant direct du <figure>, pour reutiliser le style deja defini
+    (.guide-content figcaption) et rester valide."""
+    body_nodes = []
+    for child in list(sec.children):
+        if child is header or not getattr(child, 'name', None):
+            continue
+        node = child.extract()
+        if node.name in ('ul', 'ol'):
+            for li in node.find_all('li', recursive=False):
+                li.name = 'p'
+                body_nodes.append(li)
+        else:
+            body_nodes.append(node)
+    for node in body_nodes:
+        for a in node.find_all('a'):
+            a.unwrap()
+        for credit in node.find_all('div', class_='credit'):
+            cap_p = credit.find('p')
+            if cap_p:
+                cap_p.name = 'figcaption'
+                credit.replace_with(cap_p)
+            else:
+                credit.decompose()
+    return body_nodes
 
 
 def parse_student_manual_source(folder):
@@ -660,6 +739,29 @@ def parse_student_manual_source(folder):
             chapters[chap_num] = {'title': f'{book_name} {chap_num}', 'section': soup_factory.new_tag('div')}
         return chapters[chap_num]['section']
 
+    def make_entry(head_text, body_nodes, book_name=None, chap_num=None, vstart=None, vend=None):
+        wrapper = soup_factory.new_tag('div')
+        wrapper['class'] = 'guide-entry'
+        if head_text:
+            head = soup_factory.new_tag('h4')
+            head['class'] = 'student-manual-head'
+            head.string = head_text
+            wrapper.append(head)
+        for node in body_nodes:
+            wrapper.append(node)
+        if vstart is not None:
+            seen = seen_by_book_chapter.setdefault((book_name, chap_num), {})
+            seen[vstart] = seen.get(vstart, 0) + 1
+            n = seen[vstart]
+            anchor_id = f'v{vstart}' if n == 1 else f'v{vstart}-{n}'
+            wrapper['id'] = anchor_id
+            wrapper['data-verse-start'] = str(vstart)
+            wrapper['data-verse-end'] = str(vend if vend is not None else vstart)
+            idx_key = (book_name, chap_num, vstart)
+            if idx_key not in verse_index_by_name:
+                verse_index_by_name[idx_key] = anchor_id
+        return wrapper
+
     for fname in sorted(os.listdir(folder)):
         if not fname.endswith('.html'):
             continue
@@ -667,82 +769,101 @@ def parse_student_manual_source(folder):
             soup = BeautifulSoup(f, 'html.parser')
         article = soup.find('article') or soup
 
-        for sec in article.find_all('section'):
+        all_secs = article.find_all('section')
+        nested_ids = set()
+        for s in all_secs:
+            for c in s.find_all('section'):
+                nested_ids.add(id(c))
+        top_secs = [s for s in all_secs if id(s) not in nested_ids]
+
+        commentaire_sec = None
+        intro_sec = reflect_sec = tasks_sec = None
+        trailing_extra = []
+        for s in top_secs:
+            header = s.find('header', recursive=False)
+            h = header.find(['h2', 'h3']) if header else None
+            title = h.get_text(' ', strip=True).replace('\xa0', ' ') if h else ''
+            if STUDENT_MANUAL_COMMENTAIRE_RE.search(title):
+                commentaire_sec = s
+            elif STUDENT_MANUAL_INTRO_RE.match(title):
+                intro_sec = s
+            elif STUDENT_MANUAL_REFLECT_RE.search(title):
+                reflect_sec = s
+            elif STUDENT_MANUAL_TASKS_RE.search(title):
+                tasks_sec = s
+            elif not h:
+                # anomalie rare (2/56 fichiers, ex. chapter-19/chapter-52) :
+                # une 5e section top-level sans header du tout, simple suite
+                # du bloc precedent (toujours Idees de taches en pratique).
+                trailing_extra.append(s)
+
+        book_seen_order = []  # (book_name, chap_start) dans l'ordre du document
+        for sec in all_secs:
             header = sec.find('header', recursive=False)
-            if not header:
+            h = header.find(['h2', 'h3']) if header else None
+            if not h:
                 continue
-            h2 = header.find('h2')
-            if not h2:
+            text = h.get_text(' ', strip=True).replace('\xa0', ' ')
+            parsed = student_manual_parse_citation(text)
+            if not parsed:
                 continue
-            text = h2.get_text(' ', strip=True).replace('\xa0', ' ')
-            m = STUDENT_MANUAL_CITATION_RE.match(text)
-            if not m:
+            book_name, chap_start, vstart, vend, title = parsed
+            body_nodes = student_manual_body_nodes(sec, header)
+            entry = make_entry(title, body_nodes, book_name, chap_start, vstart, vend)
+            get_chapter_section(book_name, chap_start).append(entry)
+            book_seen_order.append((book_name, chap_start))
+
+        if not book_seen_order:
+            # ex. chapter-1 "Keystone of Our Religion" : essai general sans
+            # aucune citation de verset - aucun chapitre BdM unique auquel
+            # le rattacher, reste hors perimetre comme avant ce fix.
+            print(f"INFO guide5: aucune reference exploitable dans '{fname}' - ignore.")
+            continue
+
+        first_book, first_chap = book_seen_order[0]
+        last_book, last_chap = book_seen_order[-1]
+
+        lead_blocks = []
+        if commentaire_sec is not None:
+            first_child = commentaire_sec.find('section', recursive=False)
+            if first_child is not None:
+                fc_header = first_child.find('header', recursive=False)
+                fc_h = fc_header.find(['h2', 'h3']) if fc_header else None
+                fc_text = fc_h.get_text(' ', strip=True).replace('\xa0', ' ') if fc_h else ''
+                if fc_h and not student_manual_parse_citation(fc_text):
+                    # preambule de livre ("Le Premier livre de Nephi : Son
+                    # regne et son ministere") - jamais de numero dedans,
+                    # seule sa position (1er enfant direct de Commentaire)
+                    # le distingue d'une vraie entree verset.
+                    body_nodes = student_manual_body_nodes(first_child, fc_header)
+                    lead_blocks.append(make_entry(fc_text or None, body_nodes))
+        if intro_sec is not None:
+            intro_header = intro_sec.find('header', recursive=False)
+            body_nodes = student_manual_body_nodes(intro_sec, intro_header)
+            lead_blocks.insert(0, make_entry('Introduction', body_nodes))
+
+        trail_specs = [(reflect_sec, 'Points à méditer'), (tasks_sec, 'Idées de tâches')]
+        trail_raw = []
+        for sec, label in trail_specs:
+            if sec is None:
                 continue
+            sec_header = sec.find('header', recursive=False)
+            trail_raw.append((student_manual_body_nodes(sec, sec_header), label))
+        if trail_raw and trailing_extra:
+            body_nodes, _ = trail_raw[-1]
+            for extra in trailing_extra:
+                extra_header = extra.find('header', recursive=False)
+                body_nodes.extend(student_manual_body_nodes(extra, extra_header))
+        trail_blocks = [make_entry(label, body_nodes) for body_nodes, label in trail_raw]
 
-            book_name = FR_TO_EN_BOOK[m.group(1)]
-            chap_num = int(m.group(2))
-            v_start = int(m.group(3))
-            v_end = int(m.group(4)) if m.group(4) else v_start
-            remainder = text[m.end():].strip()
-            title = remainder.lstrip('. ').strip() if remainder.startswith('.') else None
-
-            # Chaque <li> devient un <p> AU MEME NIVEAU que les autres
-            # paragraphes (jamais un <ul> imbrique) - sinon Copier/Partager
-            # (qui ne separe que les enfants directs de .guide-entry) fond
-            # tous les elements de la liste en un seul bloc de texte.
-            body_nodes = []
-            for child in list(sec.children):
-                if child is header or not getattr(child, 'name', None):
-                    continue
-                node = child.extract()
-                if node.name in ('ul', 'ol'):
-                    for li in node.find_all('li', recursive=False):
-                        li.name = 'p'
-                        body_nodes.append(li)
-                else:
-                    body_nodes.append(node)
-            for node in body_nodes:
-                for a in node.find_all('a'):
-                    a.unwrap()
-                # Les illustrations (peintures, photos d'artefacts) restent -
-                # hotlink direct vers churchofjesuschrist.org comme le src
-                # deja present, meme principe que les images de BOM Evidence
-                # (guide7). Seule la legende change de structure : la source
-                # l'enveloppe dans <div class="credit"><p>...</p></div> (un
-                # <p> imbrique dans le <p> issu du <li> renomme plus haut,
-                # HTML invalide) - reecrite en <figcaption>, enfant direct du
-                # <figure>, pour reutiliser le style deja defini
-                # (.guide-content figcaption) et rester valide.
-                for credit in node.find_all('div', class_='credit'):
-                    cap_p = credit.find('p')
-                    if cap_p:
-                        cap_p.name = 'figcaption'
-                        credit.replace_with(cap_p)
-                    else:
-                        credit.decompose()
-
-            dst_section = get_chapter_section(book_name, chap_num)
-            key = (book_name, chap_num)
-            seen = seen_by_book_chapter.setdefault(key, {})
-            seen[v_start] = seen.get(v_start, 0) + 1
-            n = seen[v_start]
-            anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
-            wrapper = soup_factory.new_tag('div')
-            wrapper['class'] = 'guide-entry'
-            wrapper['id'] = anchor_id
-            wrapper['data-verse-start'] = str(v_start)
-            wrapper['data-verse-end'] = str(v_end)
-            if title:
-                head = soup_factory.new_tag('h4')
-                head['class'] = 'student-manual-head'
-                head.string = title
-                wrapper.append(head)
-            for node in body_nodes:
-                wrapper.append(node)
-            dst_section.append(wrapper)
-            idx_key = (book_name, chap_num, v_start)
-            if idx_key not in verse_index_by_name:
-                verse_index_by_name[idx_key] = anchor_id
+        if lead_blocks:
+            first_section = get_chapter_section(first_book, first_chap)
+            for block in reversed(lead_blocks):
+                first_section.insert(0, block)
+        if trail_blocks:
+            last_section = get_chapter_section(last_book, last_chap)
+            for block in trail_blocks:
+                last_section.append(block)
 
     return books_by_name, verse_index_by_name
 
