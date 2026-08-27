@@ -648,6 +648,13 @@ document.addEventListener('DOMContentLoaded', function() {
             var guideBook = null;
             var guideChapter = readingTrack.getAttribute('data-chapter-idx');
             if (guideChapter) guideBook = h1 ? h1.textContent.trim() : null;
+            // Position globale (1..BOM_TOTAL_CHAPTERS) posee uniquement sur
+            // les volumes francais/tahitien (data-global-chapter, cf.
+            // BOM_CHAPTER_GLOBAL_INDEX cote Python) - sert au badge de
+            // pourcentage sur le bouton "Continuer" de l'accueil, absent
+            // pour les guides (pas de notion de "total" comparable).
+            var globalChapterAttr = readingTrack.getAttribute('data-global-chapter');
+            var globalChapter = globalChapterAttr ? parseInt(globalChapterAttr, 10) : null;
             var all = {};
             try { all = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
             // Pas encore engage sur ce volume et aucune entree preexistante
@@ -663,7 +670,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 entryIndex: entryIndex,
                 entryTotal: entryTotal,
                 guideBook: guideBook,
-                guideChapter: guideChapter
+                guideChapter: guideChapter,
+                globalChapter: globalChapter
             };
             localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
         }
@@ -754,19 +762,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 var entrySuffix = (saved.entryTotal && saved.entryTotal > 1)
                     ? ' ' + (saved.entryIndex + 1) + '/' + saved.entryTotal
                     : '';
-                link.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
+                var textSpan1 = document.createElement('span');
+                textSpan1.className = 'continue-reading-text';
+                textSpan1.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
+                link.appendChild(textSpan1);
             } else {
                 var verseMatch2 = /^v(\d+)$/.exec(saved.itemId || '');
+                var mainText2;
                 if (true && verseMatch2) {
                     // chapterTitle = document.title = 'NomDuLivre Chapitre N'
                     // (francais) ou 'NomDuLivre Pene N' (tahitien, chapters-tah).
                     var m2 = /^(.*) (?:Chapitre|Pene) (\d+)$/.exec(saved.chapterTitle || '');
                     var ref2 = m2 ? (m2[1] + ' ' + m2[2] + ':' + verseMatch2[1]) : saved.chapterTitle;
                     var prefix2 = true ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
-                    link.textContent = 'Continuer - ' + prefix2 + ref2;
+                    mainText2 = 'Continuer - ' + prefix2 + ref2;
                 } else {
                     var suffix2 = verseMatch2 ? (', verset ' + verseMatch2[1]) : '';
-                    link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix2;
+                    mainText2 = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix2;
+                }
+                var textSpan2 = document.createElement('span');
+                textSpan2.className = 'continue-reading-text';
+                textSpan2.textContent = mainText2;
+                link.appendChild(textSpan2);
+                // Badge de progression (% de BOM_TOTAL_CHAPTERS atteint) -
+                // uniquement quand la position enregistree porte une
+                // position globale (volumes francais/tahitien, pas guides).
+                if (typeof saved.globalChapter === 'number' && saved.globalChapter > 0) {
+                    var pct = Math.round(saved.globalChapter / 239 * 100);
+                    pct = Math.max(1, Math.min(100, pct));
+                    var badge = document.createElement('span');
+                    badge.className = 'continue-reading-badge';
+                    badge.textContent = pct + '%';
+                    link.appendChild(badge);
                 }
             }
             continueSlot.appendChild(link);
@@ -784,7 +811,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var analogyLink = document.createElement('a');
             analogyLink.className = 'continue-reading';
             analogyLink.href = savedAnalogy.href;
-            analogyLink.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
+            var analogyTextSpan = document.createElement('span');
+            analogyTextSpan.className = 'continue-reading-text';
+            analogyTextSpan.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
+            analogyLink.appendChild(analogyTextSpan);
             continueAnalogySlot.appendChild(analogyLink);
         }
     }

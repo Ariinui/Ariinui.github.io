@@ -2178,6 +2178,18 @@ if conf_analogy_issues:
 toc_html += PAGE_TAIL
 write('index.html', toc_html)
 
+# Position globale (1..total) de chaque chapitre toutes livres confondus -
+# identique en francais/tahitien (meme structure de livres/chapitres) - sert
+# uniquement a calculer le pourcentage de progression affiche sur le bouton
+# "Continuer la lecture" de l'accueil (badge cote client, cf. script.js).
+BOM_CHAPTER_GLOBAL_INDEX = {}
+_bom_running_chapter = 0
+for _book_idx_g, _book_g in enumerate(bom_book_data, 1):
+    for _chap_idx_g in range(1, len(_book_g['chapters']) + 1):
+        _bom_running_chapter += 1
+        BOM_CHAPTER_GLOBAL_INDEX[(_book_idx_g, _chap_idx_g)] = _bom_running_chapter
+BOM_TOTAL_CHAPTERS = _bom_running_chapter
+
 # --- Volume 2 : Livre de Mormon francais seul, avec signets vers le guide ---
 
 for book_idx, book in enumerate(bom_book_data, 1):
@@ -2231,7 +2243,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
         html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
-        html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
+        html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
         html += introduction_html + verses_html
         html += '</div>'
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
@@ -2265,7 +2277,7 @@ if SITE_TAHITIEN:
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
-            html += f'<div class="verses-tah" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona">'
+            html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona">'
             html += introduction_html + verses_html
             html += '</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
@@ -2775,7 +2787,9 @@ nav a:hover {
 }
 
 .continue-reading {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin: 0 0 10px;
     padding: 14px 16px;
     background: var(--accent);
@@ -2784,11 +2798,34 @@ nav a:hover {
     border-radius: 8px;
     font-size: 15px;
     font-weight: 500;
-    overflow-wrap: break-word;
 }
 
 .continue-reading:hover {
     filter: brightness(0.92);
+}
+
+.continue-reading-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
+/* Badge de progression (%) - rond bien visible a droite du bouton
+   "Continuer", uniquement sur les volumes francais/tahitien (pas les
+   guides, pas de notion de total comparable la). */
+.continue-reading-badge {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 /* Un Continuer de guide/signet reprend la couleur de son ruban (memes
@@ -3609,6 +3646,12 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
         height: 28px;
     }
 
+    .continue-reading-badge {
+        min-width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
     .chapter-book-name {
         min-height: 44px;
         padding-right: 58px;
@@ -4332,6 +4375,13 @@ document.addEventListener('DOMContentLoaded', function() {
             var guideBook = null;
             var guideChapter = readingTrack.getAttribute('data-chapter-idx');
             if (guideChapter) guideBook = h1 ? h1.textContent.trim() : null;
+            // Position globale (1..BOM_TOTAL_CHAPTERS) posee uniquement sur
+            // les volumes francais/tahitien (data-global-chapter, cf.
+            // BOM_CHAPTER_GLOBAL_INDEX cote Python) - sert au badge de
+            // pourcentage sur le bouton "Continuer" de l'accueil, absent
+            // pour les guides (pas de notion de "total" comparable).
+            var globalChapterAttr = readingTrack.getAttribute('data-global-chapter');
+            var globalChapter = globalChapterAttr ? parseInt(globalChapterAttr, 10) : null;
             var all = {};
             try { all = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
             // Pas encore engage sur ce volume et aucune entree preexistante
@@ -4347,7 +4397,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 entryIndex: entryIndex,
                 entryTotal: entryTotal,
                 guideBook: guideBook,
-                guideChapter: guideChapter
+                guideChapter: guideChapter,
+                globalChapter: globalChapter
             };
             localStorage.setItem(READING_STORAGE_KEY, JSON.stringify(all));
         }
@@ -4438,19 +4489,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 var entrySuffix = (saved.entryTotal && saved.entryTotal > 1)
                     ? ' ' + (saved.entryIndex + 1) + '/' + saved.entryTotal
                     : '';
-                link.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
+                var textSpan1 = document.createElement('span');
+                textSpan1.className = 'continue-reading-text';
+                textSpan1.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
+                link.appendChild(textSpan1);
             } else {
                 var verseMatch2 = /^v(\\d+)$/.exec(saved.itemId || '');
+                var mainText2;
                 if (__COMPACT_CONTINUE__ && verseMatch2) {
                     // chapterTitle = document.title = 'NomDuLivre Chapitre N'
                     // (francais) ou 'NomDuLivre Pene N' (tahitien, chapters-tah).
                     var m2 = /^(.*) (?:Chapitre|Pene) (\\d+)$/.exec(saved.chapterTitle || '');
                     var ref2 = m2 ? (m2[1] + ' ' + m2[2] + ':' + verseMatch2[1]) : saved.chapterTitle;
                     var prefix2 = __COMPACT_LANG_PREFIX__ ? (HOME_VOLUME_PREFIX[key] + ' — ') : '';
-                    link.textContent = 'Continuer - ' + prefix2 + ref2;
+                    mainText2 = 'Continuer - ' + prefix2 + ref2;
                 } else {
                     var suffix2 = verseMatch2 ? (', verset ' + verseMatch2[1]) : '';
-                    link.textContent = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix2;
+                    mainText2 = 'Continuer — ' + saved.volumeTitle + ' : ' + saved.chapterTitle + suffix2;
+                }
+                var textSpan2 = document.createElement('span');
+                textSpan2.className = 'continue-reading-text';
+                textSpan2.textContent = mainText2;
+                link.appendChild(textSpan2);
+                // Badge de progression (% de BOM_TOTAL_CHAPTERS atteint) -
+                // uniquement quand la position enregistree porte une
+                // position globale (volumes francais/tahitien, pas guides).
+                if (typeof saved.globalChapter === 'number' && saved.globalChapter > 0) {
+                    var pct = Math.round(saved.globalChapter / __BOM_TOTAL_CHAPTERS__ * 100);
+                    pct = Math.max(1, Math.min(100, pct));
+                    var badge = document.createElement('span');
+                    badge.className = 'continue-reading-badge';
+                    badge.textContent = pct + '%';
+                    link.appendChild(badge);
                 }
             }
             continueSlot.appendChild(link);
@@ -4468,7 +4538,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var analogyLink = document.createElement('a');
             analogyLink.className = 'continue-reading';
             analogyLink.href = savedAnalogy.href;
-            analogyLink.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
+            var analogyTextSpan = document.createElement('span');
+            analogyTextSpan.className = 'continue-reading-text';
+            analogyTextSpan.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
+            analogyLink.appendChild(analogyTextSpan);
             continueAnalogySlot.appendChild(analogyLink);
         }
     }
@@ -4484,6 +4557,7 @@ js_content = js_content.replace('__SW_PATH__', SITE_BASE + '/sw.js')
 js_content = js_content.replace('__COMPACT_CONTINUE__', 'true' if SITE_COMPACT_CONTINUE else 'false')
 js_content = js_content.replace('__COMPACT_LANG_PREFIX__', 'true' if SITE_TAHITIEN else 'false')
 js_content = js_content.replace('__GUIDE_LABELS_JSON__', json.dumps(GUIDE_BOOKMARK_LABELS, ensure_ascii=False))
+js_content = js_content.replace('__BOM_TOTAL_CHAPTERS__', str(BOM_TOTAL_CHAPTERS))
 
 write('script.js', js_content)
 
