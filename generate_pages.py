@@ -4505,6 +4505,39 @@ document.addEventListener('DOMContentLoaded', function() {
             // pendant que ce script isole l'entree (les autres passent en
             // display:none) - resultat : l'ouverture atterrit en plein
             // milieu du texte, h1/h2 (titre du guide + chapitre) restes
+            // au-dessus, hors ecran. Corrige uniquement pour une entree
+            // JAMAIS OUVERTE (par page+ancre precise, pas par guide entier -
+            // un guide deja visite via une AUTRE entree doit quand meme
+            // ouvrir en haut ses propres entrees encore inedites) ; une
+            // entree deja ouverte au moins une fois (Continuer y compris)
+            // garde le comportement actuel inchange, sur demande explicite.
+            var VISITED_GUIDE_ENTRIES_KEY = 'bukaAMoromona:visitedGuideEntries';
+            var visitedEntryKey = location.pathname + '#' + targetId;
+            var visitedGuideEntries = {};
+            try { visitedGuideEntries = JSON.parse(localStorage.getItem(VISITED_GUIDE_ENTRIES_KEY)) || {}; } catch (e) {}
+            if (!visitedGuideEntries[visitedEntryKey]) {
+                // Une seule tentative (rAF, ou meme rAF+"load") ne suffit
+                // pas de façon fiable : le navigateur peut rejouer son
+                // propre scroll natif vers l'ancre a plusieurs reprises
+                // pendant que la mise en page se stabilise (images qui se
+                // chargent...), y compris APRES l'evenement "load" - mesure
+                // empiriquement sur ce site (BOM Evidence notamment).
+                // Reforce donc a plusieurs echeances etalees sur 1.5s -
+                // seule methode fiable trouvee pour gagner cette course
+                // contre un re-scroll natif dont le timing exact varie.
+                var forceScrollTop = function() { window.scrollTo(0, 0); };
+                requestAnimationFrame(forceScrollTop);
+                window.addEventListener('load', forceScrollTop);
+                [50, 150, 300, 600, 1000, 1500].forEach(function(delay) {
+                    setTimeout(forceScrollTop, delay);
+                });
+                visitedGuideEntries[visitedEntryKey] = 1;
+                try { localStorage.setItem(VISITED_GUIDE_ENTRIES_KEY, JSON.stringify(visitedGuideEntries)); } catch (e) {}
+            }
+            // Le navigateur scrolle nativement vers l'ancre (#v3) AVANT/
+            // pendant que ce script isole l'entree (les autres passent en
+            // display:none) - resultat : l'ouverture atterrit en plein
+            // milieu du texte, h1/h2 (titre du guide + chapitre) restes
             // au-dessus, hors ecran. Corrige UNIQUEMENT pour un guide
             // jamais visite (aucune entree encore sauvegardee dans
             // bukaAMoromona:reading pour ce volume) - un guide deja visite
