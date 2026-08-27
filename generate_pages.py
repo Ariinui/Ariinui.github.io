@@ -1465,6 +1465,25 @@ BOOKMARK_FILTER_ROWS = ''.join(
 
 BOOKMARK_FILTER_CONTROL = BOOKMARK_FILTER_ROWS
 
+# Boutons d'accueil uniquement (popover "..." de la page d'accueil) - un
+# bouton par volume PORTANT le badge %/temps (francais - qui inclut deja le
+# temps des guides, meme bucket - et tahitien), pas de bouton pour les
+# guides individuels ni Conference generale analogie (pas de % chez eux, sur
+# demande explicite : "seul c'est deux sont suivi"). Efface UNIQUEMENT le
+# temps de lecture cumule (bukaAMoromona:readingTime) du bucket concerne,
+# jamais la position/% (bukaAMoromona:reading). Libelle court (FR/TAH,
+# memes abreviations que le prefixe deja affiche sur "Continuer") pour
+# tenir sans troncature dans le popover de 220px - suffixe uniquement si
+# les deux boutons coexistent (SITE_TAHITIEN), sinon ambigu sur un site a
+# un seul volume comme tematauira.
+def reset_time_row(volume_key, label):
+    return f'''
+                    <button type="button" class="menu-row reset-time-row" data-reset-volume="{volume_key}" role="menuitem">
+                        <span class="menu-row-icon" aria-hidden="true">🔄</span>
+                        <span class="menu-row-label">{label}</span>
+                    </button>
+'''
+
 CHAPTER_NAV = '''
     <nav>
         {prev_link}
@@ -2140,7 +2159,10 @@ else:
 # a ete retiree sur demande explicite. Le bilingue/l'anglais/la Conference
 # ont ete supprimes completement (plus de generation du tout, voir plus bas).
 
-toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls='')
+toc_reset_controls = reset_time_row('french', 'Réinitialiser (FR)' if SITE_TAHITIEN else 'Réinitialiser')
+if SITE_TAHITIEN:
+    toc_reset_controls += reset_time_row('tahitian', 'Réinitialiser (TAH)')
+toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=toc_reset_controls)
 toc_html += '        <h1>Bibliotheque</h1>\n'
 toc_html += '        <div id="continue-reading-slot"></div>\n'
 
@@ -3842,6 +3864,28 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Popover "..." de l'accueil uniquement (reset_time_row cote Python) -
+    // un bouton par volume porteur du badge %/temps (francais, qui inclut deja
+    // le temps des guides via le meme bucket ; tahitien). Efface seulement
+    // le temps de lecture (bukaAMoromona:readingTime) de CE bucket, jamais
+    // la position/% (bukaAMoromona:reading) ni l'autre volume - confirmation
+    // requise, action irreversible. Recharge la page pour faire disparaitre
+    // les badges de temps deja affiches.
+    var RESET_VOLUME_LABELS = { french: 'Livre de Mormon (et ses guides)', tahitian: 'Te Buka a Moromona' };
+    [].slice.call(document.querySelectorAll('.reset-time-row')).forEach(function(row) {
+        var vol = row.getAttribute('data-reset-volume');
+        row.addEventListener('click', function() {
+            var label = RESET_VOLUME_LABELS[vol] || vol;
+            var ok = window.confirm('Réinitialiser le temps de lecture cumulé pour ' + label + ' ? Ta position de lecture et ton % de progression ne seront pas touchés.');
+            if (!ok) return;
+            var timesAll = {};
+            try { timesAll = JSON.parse(localStorage.getItem('bukaAMoromona:readingTime')) || {}; } catch (e) {}
+            delete timesAll[vol];
+            localStorage.setItem('bukaAMoromona:readingTime', JSON.stringify(timesAll));
+            location.reload();
+        });
+    });
 
     function wireToggle(button, content) {
         button.addEventListener('click', function() {

@@ -116,6 +116,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Popover "..." de l'accueil uniquement (reset_time_row cote Python) -
+    // un bouton par volume porteur du badge %/temps (francais, qui inclut deja
+    // le temps des guides via le meme bucket ; tahitien). Efface seulement
+    // le temps de lecture (bukaAMoromona:readingTime) de CE bucket, jamais
+    // la position/% (bukaAMoromona:reading) ni l'autre volume - confirmation
+    // requise, action irreversible. Recharge la page pour faire disparaitre
+    // les badges de temps deja affiches.
+    var RESET_VOLUME_LABELS = { french: 'Livre de Mormon (et ses guides)', tahitian: 'Te Buka a Moromona' };
+    [].slice.call(document.querySelectorAll('.reset-time-row')).forEach(function(row) {
+        var vol = row.getAttribute('data-reset-volume');
+        row.addEventListener('click', function() {
+            var label = RESET_VOLUME_LABELS[vol] || vol;
+            var ok = window.confirm('Réinitialiser le temps de lecture cumulé pour ' + label + ' ? Ta position de lecture et ton % de progression ne seront pas touchés.');
+            if (!ok) return;
+            var timesAll = {};
+            try { timesAll = JSON.parse(localStorage.getItem('bukaAMoromona:readingTime')) || {}; } catch (e) {}
+            delete timesAll[vol];
+            localStorage.setItem('bukaAMoromona:readingTime', JSON.stringify(timesAll));
+            location.reload();
+        });
+    });
+
     function wireToggle(button, content) {
         button.addEventListener('click', function() {
             const isOpen = content.classList.toggle('show');
