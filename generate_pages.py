@@ -4434,6 +4434,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (matches[mi].id === targetId) { initialIndex = mi; break; }
             }
             showEntry(initialIndex);
+            // Le navigateur scrolle nativement vers l'ancre (#v3) AVANT/
+            // pendant que ce script isole l'entree (les autres passent en
+            // display:none) - resultat : l'ouverture atterrit en plein
+            // milieu du texte, h1/h2 (titre du guide + chapitre) restes
+            // au-dessus, hors ecran. Corrige UNIQUEMENT pour un guide
+            // jamais visite (aucune entree encore sauvegardee dans
+            // bukaAMoromona:reading pour ce volume) - un guide deja visite
+            // (arrivee via "Continuer" ou tout autre signet du meme guide)
+            // garde le comportement actuel inchange, sur demande explicite.
+            var volKeyForScroll = guideContent.getAttribute('data-volume-key');
+            var guideAlreadyVisited = false;
+            if (volKeyForScroll) {
+                try {
+                    var savedReadingForScroll = JSON.parse(localStorage.getItem('bukaAMoromona:reading')) || {};
+                    guideAlreadyVisited = !!savedReadingForScroll[volKeyForScroll];
+                } catch (e) {}
+            }
+            if (!guideAlreadyVisited) {
+                // rAF pour executer apres que le navigateur ait fini son
+                // propre scroll natif vers l'ancre, sinon il peut regagner.
+                requestAnimationFrame(function() { window.scrollTo(0, 0); });
+            }
 
             var bookIdx = guideContent.getAttribute('data-book-idx');
             var chapterIdx = guideContent.getAttribute('data-chapter-idx');
