@@ -4315,6 +4315,40 @@ document.addEventListener('DOMContentLoaded', function() {
         // engage ce volume. Reste false pour l'appel initial (150ms plus
         // bas), passe a true des le premier evenement scroll.
         var hasEngaged = false;
+
+        // Temps de lecture cumule, uniquement francais/tahitien (meme
+        // perimetre que le badge de progression - pas les guides). Ne
+        // compte que le temps ou l'onglet est reellement visible
+        // (visibilitychange) - un onglet laisse ouvert en arriere-plan
+        // n'incremente rien. Chaque commit ajoute le delta depuis le
+        // dernier commit puis remet a zero la fenetre en cours, donc les
+        // appels multiples (visibilitychange + pagehide) ne comptent
+        // jamais deux fois le meme intervalle.
+        var READING_TIME_KEY = 'bukaAMoromona:readingTime';
+        var timeTrackVolume = (volumeKey === 'french' || volumeKey === 'tahitian') ? volumeKey : null;
+        if (timeTrackVolume) {
+            var activeSince = (document.visibilityState === 'visible') ? Date.now() : null;
+            var commitReadingTime = function() {
+                if (activeSince === null) return;
+                var deltaMs = Date.now() - activeSince;
+                activeSince = Date.now();
+                if (deltaMs <= 0) return;
+                var timesAll = {};
+                try { timesAll = JSON.parse(localStorage.getItem(READING_TIME_KEY)) || {}; } catch (e) {}
+                timesAll[timeTrackVolume] = (timesAll[timeTrackVolume] || 0) + deltaMs;
+                localStorage.setItem(READING_TIME_KEY, JSON.stringify(timesAll));
+            };
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    commitReadingTime();
+                    activeSince = null;
+                } else {
+                    activeSince = Date.now();
+                }
+            });
+            window.addEventListener('pagehide', commitReadingTime);
+        }
+
         function saveReadingPosition() {
             // L'utilisateur a clique "Retour au verset"/Precedent/Suivant
             // depuis cette page de guide (deja efface synchroniquement au
@@ -4463,6 +4497,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var GUIDE_LABELS = __GUIDE_LABELS_JSON__;
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
+        var readingTimesAll = {};
+        try { readingTimesAll = JSON.parse(localStorage.getItem('bukaAMoromona:readingTime')) || {}; } catch (e) {}
+        function formatReadingTime(ms) {
+            var totalMinutes = Math.floor((ms || 0) / 60000);
+            if (totalMinutes < 1) return null;
+            var h = Math.floor(totalMinutes / 60);
+            var m = totalMinutes % 60;
+            if (h > 0) return h + 'h' + (m < 10 ? '0' : '') + m;
+            return m + ' min';
+        }
 
         Object.keys(savedAll).forEach(function(key) {
             var saved = savedAll[key];
@@ -4517,9 +4561,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof saved.globalChapter === 'number' && saved.globalChapter > 0) {
                     var pct = Math.round(saved.globalChapter / __BOM_TOTAL_CHAPTERS__ * 100);
                     pct = Math.max(1, Math.min(100, pct));
+                    var timeLabel = formatReadingTime(readingTimesAll[key]);
                     var badge = document.createElement('span');
                     badge.className = 'continue-reading-badge';
-                    badge.textContent = pct + '%';
+                    badge.textContent = timeLabel ? (pct + '% · ' + timeLabel) : (pct + '%');
                     link.appendChild(badge);
                 }
             }
