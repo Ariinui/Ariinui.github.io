@@ -4316,8 +4316,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // bas), passe a true des le premier evenement scroll.
         var hasEngaged = false;
 
-        // Temps de lecture cumule, uniquement francais/tahitien (meme
-        // perimetre que le badge de progression - pas les guides). Ne
+        // Temps de lecture cumule, pour tout volume (francais/tahitien,
+        // les 7 guides, Conference generale analogie - generique via
+        // data-volume-key, meme principe que saveReadingPosition). Ne
         // compte que le temps ou l'onglet est reellement visible
         // (visibilitychange) - un onglet laisse ouvert en arriere-plan
         // n'incremente rien. Chaque commit ajoute le delta depuis le
@@ -4325,8 +4326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // appels multiples (visibilitychange + pagehide) ne comptent
         // jamais deux fois le meme intervalle.
         var READING_TIME_KEY = 'bukaAMoromona:readingTime';
-        var timeTrackVolume = (volumeKey === 'french' || volumeKey === 'tahitian') ? volumeKey : null;
-        if (timeTrackVolume) {
+        {
             var activeSince = (document.visibilityState === 'visible') ? Date.now() : null;
             var commitReadingTime = function() {
                 if (activeSince === null) return;
@@ -4335,7 +4335,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (deltaMs <= 0) return;
                 var timesAll = {};
                 try { timesAll = JSON.parse(localStorage.getItem(READING_TIME_KEY)) || {}; } catch (e) {}
-                timesAll[timeTrackVolume] = (timesAll[timeTrackVolume] || 0) + deltaMs;
+                timesAll[volumeKey] = (timesAll[volumeKey] || 0) + deltaMs;
                 localStorage.setItem(READING_TIME_KEY, JSON.stringify(timesAll));
             };
             document.addEventListener('visibilitychange', function() {
@@ -4474,6 +4474,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Temps de lecture cumule (tous volumes, cf. commitReadingTime plus
+    // haut) - charge une fois ici, partage entre le bloc francais/tahitien/
+    // guides (continueSlot) et le bloc Conference generale analogie
+    // (continueAnalogySlot, page distincte) plus bas.
+    var readingTimesAll = {};
+    try { readingTimesAll = JSON.parse(localStorage.getItem('bukaAMoromona:readingTime')) || {}; } catch (e) {}
+    function formatReadingTime(ms) {
+        var totalMinutes = Math.floor((ms || 0) / 60000);
+        if (totalMinutes < 1) return null;
+        var h = Math.floor(totalMinutes / 60);
+        var m = totalMinutes % 60;
+        if (h > 0) return h + 'h' + (m < 10 ? '0' : '') + m;
+        return m + ' min';
+    }
+
     // Page d'accueil : une ligne "Continuer la lecture" par volume ayant une
     // position enregistree.
     var continueSlot = document.getElementById('continue-reading-slot');
@@ -4497,16 +4512,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var GUIDE_LABELS = __GUIDE_LABELS_JSON__;
         var savedAll = {};
         try { savedAll = JSON.parse(localStorage.getItem(READING_STORAGE_KEY)) || {}; } catch (e) {}
-        var readingTimesAll = {};
-        try { readingTimesAll = JSON.parse(localStorage.getItem('bukaAMoromona:readingTime')) || {}; } catch (e) {}
-        function formatReadingTime(ms) {
-            var totalMinutes = Math.floor((ms || 0) / 60000);
-            if (totalMinutes < 1) return null;
-            var h = Math.floor(totalMinutes / 60);
-            var m = totalMinutes % 60;
-            if (h > 0) return h + 'h' + (m < 10 ? '0' : '') + m;
-            return m + ' min';
-        }
 
         Object.keys(savedAll).forEach(function(key) {
             var saved = savedAll[key];
@@ -4537,6 +4542,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 textSpan1.className = 'continue-reading-text';
                 textSpan1.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
                 link.appendChild(textSpan1);
+                // Temps de lecture cumule sur ce guide - pas de %
+                // (pas de notion de progression comparable au Livre de
+                // Mormon ici, juste le temps passe).
+                var guideTimeLabel = formatReadingTime(readingTimesAll[key]);
+                if (guideTimeLabel) {
+                    var guideBadge = document.createElement('span');
+                    guideBadge.className = 'continue-reading-badge';
+                    guideBadge.textContent = guideTimeLabel;
+                    link.appendChild(guideBadge);
+                }
             } else {
                 var verseMatch2 = /^v(\\d+)$/.exec(saved.itemId || '');
                 var mainText2;
@@ -4587,6 +4602,13 @@ document.addEventListener('DOMContentLoaded', function() {
             analogyTextSpan.className = 'continue-reading-text';
             analogyTextSpan.textContent = 'Continuer — ' + savedAnalogy.chapterTitle;
             analogyLink.appendChild(analogyTextSpan);
+            var analogyTimeLabel = formatReadingTime(readingTimesAll['conference-analogies']);
+            if (analogyTimeLabel) {
+                var analogyBadge = document.createElement('span');
+                analogyBadge.className = 'continue-reading-badge';
+                analogyBadge.textContent = analogyTimeLabel;
+                analogyLink.appendChild(analogyBadge);
+            }
             continueAnalogySlot.appendChild(analogyLink);
         }
     }
