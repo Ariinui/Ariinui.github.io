@@ -1038,13 +1038,39 @@ def parse_jww_source(path):
         if state['current_entry'] is None:
             continue
         body_text = JWW_WHITESPACE_RE.sub(' ', p.get_text(' ', strip=True)).strip()
-        if not body_text or JWW_NOISE_RE.match(body_text):
+        has_img = bool(p.find('img'))
+        # Un <p> image seule n'a pas de texte - JWW_NOISE_RE matcherait '^$'
+        # comme du bruit et JWW_TERMINAL_RE ne trouverait jamais de
+        # ponctuation terminale, donc traitee a part : bufferisation
+        # court-circuitee, ajoutee comme son propre <p> plutot que fondue
+        # dans le flux de texte courant (rendu plus net, meme principe que
+        # Verse by Verse/Manuel de l'eleve). Legende ("Figure 5 ...") gardee
+        # telle quelle, simple paragraphe suivant - deja bufferisee/fusionnee
+        # normalement comme n'importe quel texte de corps.
+        if not body_text and not has_img:
+            continue
+        if body_text and JWW_NOISE_RE.match(body_text):
             continue
         node = p.extract()
         for a in node.find_all('a'):
             a.unwrap()
-        for img in node.find_all('img'):
-            img.decompose()
+        if has_img:
+            flush_buffer()
+            for img in node.find_all('img'):
+                # Hotlink impossible (source PDF/Calibre locale) - fichiers
+                # redimensionnes/recompresses (poids original ~125 Ko/image,
+                # PDF haute resolution jamais affichee a cette taille sur le
+                # site) et copies dans jww-notes/images/, toujours en .jpg
+                # (PNG source converti au redimensionnement).
+                src = img.get('src')
+                if src:
+                    new_name = os.path.splitext(os.path.basename(src))[0] + '.jpg'
+                    img['src'] = f'../../jww-notes/images/{new_name}'
+                for attr in ('class', 'alt'):
+                    if img.has_attr(attr):
+                        del img[attr]
+            state['current_entry'].append(node)
+            continue
         if state['buffer'] is None:
             state['buffer'] = soup.new_tag('p')
         else:
