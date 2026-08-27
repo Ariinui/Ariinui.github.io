@@ -704,8 +704,22 @@ def parse_student_manual_source(folder):
             for node in body_nodes:
                 for a in node.find_all('a'):
                     a.unwrap()
-                for img in node.find_all('img'):
-                    img.decompose()
+                # Les illustrations (peintures, photos d'artefacts) restent -
+                # hotlink direct vers churchofjesuschrist.org comme le src
+                # deja present, meme principe que les images de BOM Evidence
+                # (guide7). Seule la legende change de structure : la source
+                # l'enveloppe dans <div class="credit"><p>...</p></div> (un
+                # <p> imbrique dans le <p> issu du <li> renomme plus haut,
+                # HTML invalide) - reecrite en <figcaption>, enfant direct du
+                # <figure>, pour reutiliser le style deja defini
+                # (.guide-content figcaption) et rester valide.
+                for credit in node.find_all('div', class_='credit'):
+                    cap_p = credit.find('p')
+                    if cap_p:
+                        cap_p.name = 'figcaption'
+                        credit.replace_with(cap_p)
+                    else:
+                        credit.decompose()
 
             dst_section = get_chapter_section(book_name, chap_num)
             key = (book_name, chap_num)
