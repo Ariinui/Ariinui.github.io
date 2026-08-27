@@ -372,9 +372,57 @@ def guide_section_content_html(section_tag):
 # plutot que via des <h4> comme le volume 3. Source deja nettoyee des <img>
 # avant d'etre commitee (fichier source brut = 18 Mo d'images en base64,
 # exigence utilisateur "sans les images").
+#
+# Illustrations reintegrees a part (GUIDE2_CHART_IMAGES ci-dessous) plutot
+# que directement dans le flux du parseur ci-dessus : la copie disponible en
+# Bibliotheque Calibre pour recuperer les images (meme livre, meme contenu)
+# utilise une casse de classes differente de la source deja commitee
+# (ex. "chapter-number" au lieu de "Chapter-Number") - probablement une
+# reconversion Calibre posterieure a l'import initial - donc pas fiable pour
+# retoucher le parseur existant deja verifie (811 versets). Sur les 1469
+# <img> de cette copie, 1437 sont le meme fleuron decoratif repete
+# ("leaf2.jpg", equivalent du "Dingbat"/frame-3 deja exclu ici) - les 32
+# images UNIQUES restantes sont de vraies planches ("Charting the Book of
+# Mormon" notamment), localisees une par une (fichier, livre/chapitre,
+# legende si credit photo reconnu) par script sur cette copie puis
+# redimensionnees/recompressees (800px, qualite 80) et copiees dans
+# book-of-mormon-study-guide-2/images/ - 5 d'entre elles sont dans un
+# apercu general en annexe (editions du Livre de Mormon, guide de
+# prononciation) sans chapitre BdM unique auquel les rattacher, exclues
+# comme le reste du contenu hors-perimetre de ce volume.
 # ---------------------------------------------------------------------------
 
 GUIDE2_DASH_RE = re.compile('[‐-―]')
+
+GUIDE2_CHART_IMAGES = [
+    ('000001.jpg', '1 Nephi', 1, None),
+    ('000022.jpg', '1 Nephi', 2, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000027.jpg', '1 Nephi', 10, 'filk47/Thinkstock'),
+    ('000026.jpg', '1 Nephi', 16, 'Warren Aston. Used by permission.'),
+    ('000017.jpg', '1 Nephi', 20, None),
+    ('000003.jpg', '2 Nephi', 27, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000012.jpg', '2 Nephi', 28, 'David Frazier Photography. Used by permission.'),
+    ('000033.jpg', '2 Nephi', 30, 'Clint Clearly/Shutterstock.'),
+    ('000020.jpg', '2 Nephi', 33, None),
+    ('000006.jpg', 'Words of Mormon', 1, None),
+    ('000010.jpg', 'Mosiah', 7, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000025.jpg', 'Mosiah', 15, None),
+    ('000016.jpg', 'Alma', 5, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000023.jpg', 'Alma', 14, 'Eldon Keith Linschoten, © Intellectual Reserve, Inc. Used by permission.'),
+    ('000029.jpg', 'Alma', 60, 'Public domain.'),
+    ('000002.jpg', 'Helaman', 7, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000011.jpg', 'Helaman', 11, None),
+    ('000015.jpg', '3 Nephi', 1, None),
+    ('000032.jpg', '3 Nephi', 5, 'Tom Lovell, © Intellectual Reserve, Inc. Used by permission.'),
+    ('000004.jpg', '3 Nephi', 18, None),
+    ('000007.jpg', '3 Nephi', 27, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000008.jpg', '4 Nephi', 1, 'Intellectual Reserve, Inc. Used by permission.'),
+    ('000014.jpg', 'Mormon', 5, 'Public domain.'),
+    ('000018.jpg', 'Ether', 7, 'Welch and Welch (expanded from the work of Lee Prince), Charting the Book of Mormon, chart 31; used by permission.'),
+    ('000034.jpg', 'Ether', 12, None),
+    ('000021.jpg', 'Moroni', 10, 'Public domain.'),
+    ('000030.jpg', 'Moroni', 10, 'Courtesy Intellectual Reserve, Inc.'),
+]
 
 
 def parse_guide2_source(path):
@@ -444,6 +492,25 @@ def parse_guide2_source(path):
                 key = (book_name, chap_num, v_start)
                 if key not in verse_index_by_name:
                     verse_index_by_name[key] = anchor_id
+
+    # Planches ("Charting the Book of Mormon" et autres) - voir
+    # GUIDE2_CHART_IMAGES plus haut. Ajoutees en fin de chapitre, sans
+    # signet (pas de verset precis auquel les rattacher) - meme principe
+    # que les survols de chapitre/plage de Verse by Verse (guide3).
+    for fname, book_name, chap_num, credit in GUIDE2_CHART_IMAGES:
+        chapter = books_by_name.get(book_name, {}).get(chap_num)
+        if chapter is None:
+            continue
+        wrapper = soup.new_tag('div')
+        wrapper['class'] = 'guide-entry'
+        img = soup.new_tag('img')
+        img['src'] = f'../../book-of-mormon-study-guide-2/images/{fname}'
+        wrapper.append(img)
+        if credit:
+            cap = soup.new_tag('figcaption')
+            cap.string = credit
+            wrapper.append(cap)
+        chapter['section'].append(wrapper)
 
     return books_by_name, verse_index_by_name
 
