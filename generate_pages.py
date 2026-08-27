@@ -4327,6 +4327,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // jamais deux fois le meme intervalle.
         var READING_TIME_KEY = 'bukaAMoromona:readingTime';
         {
+            // Livre de Mormon francais + les 7 guides partagent UN SEUL
+            // compteur ("french") - passer de la lecture au commentaire
+            // d'un guide ne coupe pas le temps, ca reste le meme total
+            // (sur demande explicite). Tahitien (pas de guide lie) et
+            // Conference generale analogie restent des compteurs a part.
+            var GUIDE_KEYS_FOR_TIME = Object.keys(__GUIDE_LABELS_JSON__);
+            var readingTimeBucket = (volumeKey === 'french' || GUIDE_KEYS_FOR_TIME.indexOf(volumeKey) !== -1) ? 'french' : volumeKey;
             var activeSince = (document.visibilityState === 'visible') ? Date.now() : null;
             var commitReadingTime = function() {
                 if (activeSince === null) return;
@@ -4335,7 +4342,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (deltaMs <= 0) return;
                 var timesAll = {};
                 try { timesAll = JSON.parse(localStorage.getItem(READING_TIME_KEY)) || {}; } catch (e) {}
-                timesAll[volumeKey] = (timesAll[volumeKey] || 0) + deltaMs;
+                timesAll[readingTimeBucket] = (timesAll[readingTimeBucket] || 0) + deltaMs;
                 localStorage.setItem(READING_TIME_KEY, JSON.stringify(timesAll));
             };
             document.addEventListener('visibilitychange', function() {
@@ -4542,10 +4549,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 textSpan1.className = 'continue-reading-text';
                 textSpan1.textContent = 'Continuer - ' + prefix + ref + ' · ' + GUIDE_LABELS[key] + entrySuffix;
                 link.appendChild(textSpan1);
-                // Temps de lecture cumule sur ce guide - pas de %
-                // (pas de notion de progression comparable au Livre de
-                // Mormon ici, juste le temps passe).
-                var guideTimeLabel = formatReadingTime(readingTimesAll[key]);
+                // Temps de lecture cumule - partage avec le Livre de
+                // Mormon francais (meme bucket "french", cf.
+                // readingTimeBucket plus haut) - pas de % ici (pas de
+                // notion de progression comparable au Livre de Mormon).
+                var guideTimeLabel = formatReadingTime(readingTimesAll['french']);
                 if (guideTimeLabel) {
                     var guideBadge = document.createElement('span');
                     guideBadge.className = 'continue-reading-badge';
