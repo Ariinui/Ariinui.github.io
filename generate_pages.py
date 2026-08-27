@@ -552,8 +552,22 @@ def parse_vv_source(path):
                 continue  # doublon du titre de livre, deja notre <h1>
             m = VV_BOOK_PREFIX_RE.match(text)
             if not m:
-                state['current_entry'] = None
-                continue  # legende d'image, "Introduction to Isaiah"... ignore
+                # meme classe calibre_10 reutilisee par la source pour les
+                # legendes de carte juste apres une <img> (ex. "Possible
+                # route of Lehi's journey") - si on reinitialisait
+                # bêtement l'entree ici, le paragraphe de corps SUIVANT
+                # (parfois substantiel) etait perdu (bug trouve sur
+                # 1 Nephi 2:4-5 : tout un 2e paragraphe disparaissait).
+                last = state['current_entry'].contents[-1] if (
+                    state['current_entry'] is not None and state['current_entry'].contents
+                ) else None
+                if last is not None and last.find('img'):
+                    caption = soup.new_tag('figcaption')
+                    caption.string = text
+                    state['current_entry'].append(caption)
+                else:
+                    state['current_entry'] = None
+                continue  # "Introduction to Isaiah"... ignore (hors perimetre)
             book_name, remainder = m.group(1), m.group(2)
             pm = VV_TRAILING_PAREN_RE.search(remainder)
             ref_extra = None
@@ -617,8 +631,19 @@ def parse_vv_source(path):
         node = p.extract()
         for a in node.find_all('a'):
             a.unwrap()
+        # Les cartes/illustrations restent - hotlink impossible (source
+        # locale Calibre, pas un site public) donc les fichiers sont
+        # copies tels quels dans verse-by-verse-book-of-mormon/images/ (11
+        # images de contenu reelles sur 13 - le logo editeur et la
+        # couverture, jamais rattaches a une entree, restent exclus sans
+        # code dedie : leur <p> tombe hors de tout current_entry valide).
         for img in node.find_all('img'):
-            img.decompose()
+            src = img.get('src')
+            if src:
+                img['src'] = f'../../verse-by-verse-book-of-mormon/images/{os.path.basename(src)}'
+            for attr in ('class', 'alt'):
+                if img.has_attr(attr):
+                    del img[attr]
         state['current_entry'].append(node)
 
     return books_by_name, verse_index_by_name
