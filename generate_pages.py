@@ -516,20 +516,22 @@ def parse_guide2_source(path):
 
 
 def guide2_section_content_html(section_tag):
-    """HTML interne d'une section guide2 : uniquement les paires
-    question/reponse (une par <div class="guide-entry">, deja decoupees par
-    parse_guide2_source), meme principe editorial que le guide Gospel
-    Doctrine - jamais de texte de verset duplique (deja affiche cote Livre
-    de Mormon), jamais de resume de chapitre ni de sous-titre de plage de
-    versets, jamais de citation etendue (Extended_Content_1). Le numero de
-    chapitre est aussi retire, deja rendu par notre propre <h1>/<h2> de
-    page."""
+    """HTML interne d'une section guide2 : les paires question/reponse (une
+    par <div class="guide-entry">, deja decoupees par parse_guide2_source),
+    y compris les citations etendues qu'elles contiennent (Extended_Content_1
+    - 850 blocs sur 857 sont deja englobes dans un guide-entry par le
+    sibling-walk de parse_guide2_source, simplement retires ici avant ce
+    fix ; les 7 restants, hors de toute entree, restent exclus comme le
+    reste du contenu sans verset auquel se rattacher). Jamais de texte de
+    verset duplique (deja affiche cote Livre de Mormon), jamais de resume de
+    chapitre ni de sous-titre de plage de versets. Le numero de chapitre est
+    aussi retire, deja rendu par notre propre <h1>/<h2> de page."""
     chap_p = section_tag.find('p', class_='Chapter-Number')
     if chap_p:
         chap_p.decompose()
     for tag in section_tag.find_all(
         ['p', 'div'],
-        class_=['verse', 'studySummary', 'Extended_Content_1', 'frame-3', 'commentary-subhead']
+        class_=['verse', 'studySummary', 'frame-3', 'commentary-subhead']
     ):
         tag.decompose()
     # Paragraphes de question/reponse restes orphelins (hors de tout
