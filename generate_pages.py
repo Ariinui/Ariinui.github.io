@@ -3439,6 +3439,22 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
     font-style: italic;
 }
 
+/* Source BOM Evidence (scripturecentral.org) : beaucoup de citations ont
+   une couleur de texte figee en inline style (souvent noir/#000000, copie
+   depuis Word/Google Docs) - illisible en mode sombre bien que correcte en
+   mode clair. Neutralise uniquement en mode sombre (inherit = couleur du
+   theme), jamais touche au mode clair qui affiche deja ces citations
+   correctement. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .guide-content[data-volume-key="guide7"] [style*="color"] {
+        color: inherit !important;
+    }
+}
+
+:root[data-theme="dark"] .guide-content[data-volume-key="guide7"] [style*="color"] {
+    color: inherit !important;
+}
+
 .guide-content figure {
     margin: 1em 0;
 }
