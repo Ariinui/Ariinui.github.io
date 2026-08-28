@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-27)
 
 ## Corpus Check
-- 6 files · ~330,125 words
+- 6 files · ~330,885 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -236,7 +236,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
-Nodes (22): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), guide2_section_content_html(), guide_section_content_html(), parse_bomm_heading_ref(), parse_bomm_source() (+14 more)
+Nodes (22): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), guide2_section_content_html(), guide_section_content_html(), parse_conference_analogies_sources() (+14 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.14
@@ -260,15 +260,15 @@ Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(),
 
 ### Community 6 - "Community 6"
 Cohesion: 0.4
-Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
 
 ### Community 7 - "Community 7"
 Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
+Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 8 - "Community 8"
 Cohesion: 0.5
-Nodes (4): conf_analogy_lien_with_lang(), parse_conference_analogies_sources(), parse_conference_issue_date(), 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (4): parse_bomm_heading_ref(), parse_bomm_source(), parse_bomm_title_book_chapter(), 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 9 - "Community 9"
 Cohesion: 0.67
