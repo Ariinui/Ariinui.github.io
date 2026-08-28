@@ -516,22 +516,29 @@ def parse_guide2_source(path):
 
 
 def guide2_section_content_html(section_tag):
-    """HTML interne d'une section guide2 : uniquement les paires
-    question/reponse (une par <div class="guide-entry">, deja decoupees par
-    parse_guide2_source), meme principe editorial que le guide Gospel
-    Doctrine - jamais de texte de verset duplique (deja affiche cote Livre
-    de Mormon), jamais de resume de chapitre ni de sous-titre de plage de
-    versets, jamais de citation etendue (Extended_Content_1). Le numero de
-    chapitre est aussi retire, deja rendu par notre propre <h1>/<h2> de
-    page."""
+    """HTML interne d'une section guide2 : les paires question/reponse (une
+    par <div class="guide-entry">, deja decoupees par parse_guide2_source),
+    y compris les citations etendues qu'elles contiennent (Extended_Content_1
+    - 850 blocs sur 857 sont deja englobes dans un guide-entry par le
+    sibling-walk de parse_guide2_source, simplement retires ici avant ce
+    fix ; les 7 restants, hors de toute entree, restent exclus comme le
+    reste du contenu sans verset auquel se rattacher). Jamais de texte de
+    verset duplique (deja affiche cote Livre de Mormon), jamais de resume de
+    chapitre ni de sous-titre de plage de versets. Le numero de chapitre est
+    aussi retire, deja rendu par notre propre <h1>/<h2> de page."""
     chap_p = section_tag.find('p', class_='Chapter-Number')
     if chap_p:
         chap_p.decompose()
     for tag in section_tag.find_all(
         ['p', 'div'],
-        class_=['verse', 'studySummary', 'Extended_Content_1', 'frame-3', 'commentary-subhead']
+        class_=['verse', 'studySummary', 'frame-3', 'commentary-subhead']
     ):
         tag.decompose()
+    # Cadre "BOOKSHELF EXTENDED CONTENT" de la source (bordure/fond
+    # turquoise, voir regle CSS .guide2-extended) - classe ajoutee plutot
+    # que substituee, la source garde son nom d'origine sans consequence.
+    for ext in section_tag.find_all('div', class_='Extended_Content_1'):
+        ext['class'] = ext.get('class', []) + ['guide2-extended']
     # Paragraphes de question/reponse restes orphelins (hors de tout
     # guide-entry) : le texte d'introduction avant la toute premiere
     # question d'un chapitre, ou une question dont la citation verset n'a
@@ -3710,6 +3717,37 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
     color: var(--text-muted);
     text-align: center;
     margin-top: 0.4em;
+}
+
+/* Citations etendues de Start to Finish (guide2, Extended_Content_1) -
+   reproduit le cadre "BOOKSHELF EXTENDED CONTENT" de la source (bordure +
+   fond teinte turquoise/rgb(92,195,176), bandeau texte plutot que l'image
+   source 2800px, trop large pour un rendu net a toute largeur d'ecran). */
+.guide2-extended {
+    position: relative;
+    display: block;
+    margin: 15px 0 20px;
+    padding: 34px 20px 20px;
+    border: 2px solid rgb(92, 195, 176);
+    border-radius: 10px;
+    background-color: rgba(92, 195, 176, 0.1);
+}
+
+.guide2-extended::before {
+    content: "Bookshelf Extended Content";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgb(92, 195, 176);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 4px 0;
+    border-radius: 7px 7px 0 0;
 }
 
 .guide-content ul.footnotes {
