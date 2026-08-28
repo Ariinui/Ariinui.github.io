@@ -553,10 +553,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 markGuideExitLink(backLink);
                 nav.insertBefore(backLink, nav.firstChild);
 
-                // "Accueil" (lien statique du template CHAPTER_NAV) = meme
-                // raisonnement : quitte deliberement cette entree de guide.
-                var homeLink = nav.querySelector('.chapter-home-link');
-                if (homeLink) markGuideExitLink(homeLink);
+                // "Accueil" (lien statique du template CHAPTER_NAV) - sur
+                // demande explicite, NE compte PAS comme une sortie
+                // volontaire de cette entree (contrairement a Retour au
+                // verset/Precedent/Suivant juste en dessous) : navigation
+                // normale, non interceptee par la delegation nav ci-dessous,
+                // donc le pagehide sauvegarde la position comme le ferait
+                // un retour par geste natif du telephone.
 
                 // Arrive via signet = simple consultation ponctuelle d'un
                 // verset, pas un parcours du guide lui-meme : Precedent/
