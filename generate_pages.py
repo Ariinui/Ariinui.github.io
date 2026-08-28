@@ -3602,6 +3602,34 @@ nav a:hover {
     line-height: 1.4;
     color: var(--text);
     z-index: 3000;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.tah-popup-text {
+    flex: 1;
+}
+
+.tah-popup-audio-btn {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.tah-popup-audio-btn:active {
+    opacity: 0.6;
 }
 
 .bookmark {
@@ -4652,10 +4680,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // la generation - au tap, on charge le glossaire une seule fois (fetch +
     // cache memoire) et on affiche la glose dans une bulle sous le mot.
     // Meme mecanique pour les deux glossaires, juste selecteur/URL differents.
-    function setupTapToTranslate(selector, dictUrl) {
+    function setupTapToTranslate(selector, dictUrl, audioUrl) {
         var words = document.querySelectorAll(selector);
         if (!words.length) return;
         var dictPromise = null;
+        var audioDictPromise = null;
         var popup = null;
         var activeWord = null;
 
@@ -4666,18 +4695,41 @@ document.addEventListener('DOMContentLoaded', function() {
             return dictPromise;
         }
 
+        function loadAudioDict() {
+            if (!audioUrl) return Promise.resolve({});
+            if (!audioDictPromise) {
+                audioDictPromise = fetch(audioUrl).then(function(r) { return r.json(); }).catch(function() { return {}; });
+            }
+            return audioDictPromise;
+        }
+
         function closePopup() {
             if (popup) { popup.remove(); popup = null; }
             if (activeWord) { activeWord.classList.remove('active'); activeWord = null; }
         }
 
-        function showPopup(el, gloss) {
+        function showPopup(el, gloss, audioSrc) {
             closePopup();
             activeWord = el;
             el.classList.add('active');
             popup = document.createElement('div');
             popup.className = 'tah-popup';
-            popup.textContent = gloss;
+            var textEl = document.createElement('div');
+            textEl.className = 'tah-popup-text';
+            textEl.textContent = gloss;
+            popup.appendChild(textEl);
+            if (audioSrc) {
+                var btn = document.createElement('button');
+                btn.className = 'tah-popup-audio-btn';
+                btn.type = 'button';
+                btn.setAttribute('aria-label', 'Écouter la prononciation');
+                btn.textContent = '🔊';
+                btn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    new Audio(audioSrc).play().catch(function() {});
+                });
+                popup.appendChild(btn);
+            }
             popup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
             document.body.appendChild(popup);
             var wordRect = el.getBoundingClientRect();
@@ -4695,9 +4747,10 @@ document.addEventListener('DOMContentLoaded', function() {
             el.addEventListener('click', function(event) {
                 event.stopPropagation();
                 if (activeWord === el) { closePopup(); return; }
-                loadDict().then(function(dict) {
-                    var gloss = dict[el.getAttribute('data-w')];
-                    if (gloss) showPopup(el, gloss);
+                Promise.all([loadDict(), loadAudioDict()]).then(function(results) {
+                    var gloss = results[0][el.getAttribute('data-w')];
+                    var audioSrc = results[1][el.getAttribute('data-w')];
+                    if (gloss) showPopup(el, gloss, audioSrc);
                 });
             });
         });
@@ -4705,7 +4758,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('scroll', closePopup);
     }
 
-    setupTapToTranslate('.tah-word', '../tah_dict.json');
+    setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json');
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
