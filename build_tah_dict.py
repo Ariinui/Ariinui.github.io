@@ -118,8 +118,11 @@ for key in used_keys:
 
     # pas de match direct (ou entree existante mais sans glose fr, ex.
     # entree "coquille vide"/gloss anglais seul) : tente les formes
-    # flechies, garde la premiere racine reelle trouvee dans le dictionnaire
-    for cand in strip_candidates(key):
+    # flechies, garde la premiere racine reelle trouvee dans le dictionnaire.
+    # strip_candidates() renvoie un set (ordre non deterministe d'un run a
+    # l'autre selon le hash randomise des chaines) - trie avant d'iterer
+    # pour que "la premiere racine trouvee" soit reproductible.
+    for cand in sorted(strip_candidates(key)):
         cand_ids = ty_ids_by_norm_all.get(cand)
         if not cand_ids:
             continue
@@ -187,6 +190,21 @@ if os.path.exists('embark_phrases.json'):
         result.setdefault(key, gloss)
     print(f'{len(embark_phrases)} groupes de 2 mots ajoutes depuis Embark.')
 
+# Dictionnaire en ligne de l'Academie Tahitienne - Fare Vana'a
+# (fetch_farevanaa_supplement.py) : dernier recours, ne comble que les trous
+# encore ouverts apres SQLite/reo.pf/Embark - jamais prioritaire sur une
+# source deja verifiee.
+farevanaa_supplement = {}
+if os.path.exists('farevanaa_supplement.json'):
+    with open('farevanaa_supplement.json', encoding='utf-8') as f:
+        farevanaa_supplement = json.load(f)
+    added = 0
+    for key, gloss in farevanaa_supplement.items():
+        if key in used_keys and key not in result:
+            result[key] = gloss
+            added += 1
+    print(f'{added} mots ajoutes depuis le supplement Fare Vana\'a.')
+
 # 2e passe de formes flechies : une racine peut etre une coquille vide
 # dans le dump SQLite (comme "tāpuni", derive de "tāpunira'a" - Mosiah
 # 20:5) mais avoir une vraie traduction recuperee via reo.pf/Embark. La
@@ -199,12 +217,14 @@ if os.path.exists('reo_pf_supplement.json'):
 if os.path.exists('embark_supplement.json'):
     for k, v in embark_supplement.items():
         combined_root_glosses.setdefault(k, v)
+for k, v in farevanaa_supplement.items():
+    combined_root_glosses.setdefault(k, v)
 
 second_pass_count = 0
 for key in list(used_keys):
     if key in result:
         continue
-    for cand in strip_candidates(key):
+    for cand in sorted(strip_candidates(key)):
         if cand in combined_root_glosses:
             result[key] = combined_root_glosses[cand] + f' (dérivé de « {cand} »)'
             second_pass_count += 1
@@ -384,7 +404,7 @@ for key in list(result.keys()):
     # correct mais pas assez souvent atteste litteralement dans le
     # francais aligne pour passer le seuil ci-dessus) - une source
     # verifiee prime toujours sur une simple deduction de frequence.
-    if attested or n < 5 or key in reo_pf_supplement or key in embark_supplement:
+    if attested or n < 5 or key in reo_pf_supplement or key in embark_supplement or key in farevanaa_supplement:
         continue
     best_stem, best_score = None, 0
     for st, local_c in local_stem_counts.items():
@@ -400,6 +420,29 @@ for key in list(result.keys()):
         contextualized_count += 1
 
 print(f'{reordered_count} mots reordonnes selon le contexte francais, {contextualized_count} mots enrichis avec un mot deduit du contexte.')
+
+# Fige tout mot deja glose dans la version committee (HEAD) a sa valeur
+# exacte de HEAD - meme apres le tri deterministe ajoute plus haut a
+# strip_candidates(), un changement de gloss pour un mot deja en ligne doit
+# rester une decision explicite d'une session dediee au mot en question,
+# jamais un effet de bord d'une regeneration faite pour une tout autre
+# raison (ici : ajout du supplement Fare Vana'a). Seuls les mots absents de
+# HEAD (nouveaux dans used_keys, ou juste resolus par ce run) recoivent la
+# valeur fraichement calculee ci-dessus. Decision utilisateur du 2026-08-27.
+import subprocess
+try:
+    head_json = subprocess.run(
+        ['git', 'show', 'HEAD:tah_dict.json'], capture_output=True, text=True,
+        encoding='utf-8', check=True).stdout
+    committed = json.loads(head_json)
+    pinned = 0
+    for key, gloss in committed.items():
+        if key in result and result[key] != gloss:
+            result[key] = gloss
+            pinned += 1
+    print(f'{pinned} mots refiges sur leur valeur deja committee (HEAD) - regeneration sans effet de bord sur l\'existant.')
+except Exception as e:
+    print(f'Avertissement : impossible de figer contre HEAD ({e}) - aucun pin applique.')
 
 with open('tah_dict.json', 'w', encoding='utf-8') as f:
     json.dump(result, f, ensure_ascii=False, separators=(',', ':'))
