@@ -3615,6 +3615,7 @@ nav a:hover {
 
 .tah-popup-text {
     flex: 1;
+    white-space: pre-line;
 }
 
 .tah-popup-audio-btn,
