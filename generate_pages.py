@@ -3647,10 +3647,8 @@ nav a:hover {
     line-height: 1.4;
 }
 
-.tah-popup-definition-cat {
-    font-style: italic;
-    opacity: 0.7;
-    margin-right: 4px;
+.tah-popup-definition-text {
+    white-space: pre-line;
 }
 
 .tah-popup-definition-source {
@@ -4772,16 +4770,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             var defEl = null;
-            if (def && def.def) {
+            if (def && def.text) {
                 defEl = document.createElement('div');
                 defEl.className = 'tah-popup-definition';
                 defEl.style.display = 'none';
-                var catSpan = document.createElement('span');
-                catSpan.className = 'tah-popup-definition-cat';
-                catSpan.textContent = def.cat || '';
-                var defText = document.createElement('span');
-                defText.textContent = def.def;
-                defEl.appendChild(catSpan);
+                var defText = document.createElement('div');
+                defText.className = 'tah-popup-definition-text';
+                defText.textContent = def.text;
                 defEl.appendChild(defText);
                 var sourceEl = document.createElement('span');
                 sourceEl.className = 'tah-popup-definition-source';

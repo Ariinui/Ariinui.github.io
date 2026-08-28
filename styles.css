@@ -966,10 +966,8 @@ nav a:hover {
     line-height: 1.4;
 }
 
-.tah-popup-definition-cat {
-    font-style: italic;
-    opacity: 0.7;
-    margin-right: 4px;
+.tah-popup-definition-text {
+    white-space: pre-line;
 }
 
 .tah-popup-definition-source {
