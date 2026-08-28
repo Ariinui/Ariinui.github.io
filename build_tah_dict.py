@@ -205,6 +205,20 @@ if os.path.exists('farevanaa_supplement.json'):
             added += 1
     print(f'{added} mots ajoutes depuis le supplement Fare Vana\'a.')
 
+# Locutions Fare Vana'a (fetch_farevanaa_phrases.py) : expressions de 2 a 5
+# mots trouvees dans les pages de dictionnaire de TOUS les mots utilises
+# (pas seulement les trous), gardees seulement si la sequence apparait
+# reellement, mot pour mot et adjacente, dans le texte - meme logique que
+# embark_phrases.json ci-dessus (cles avec espace, jamais en conflit avec
+# une entree mot-a-mot, non filtrees par used_keys puisqu'elles n'y
+# figurent jamais de toute facon).
+if os.path.exists('farevanaa_phrases.json'):
+    with open('farevanaa_phrases.json', encoding='utf-8') as f:
+        farevanaa_phrases = json.load(f)
+    for key, gloss in farevanaa_phrases.items():
+        result.setdefault(key, gloss)
+    print(f'{len(farevanaa_phrases)} locutions ajoutees depuis Fare Vana\'a.')
+
 # 2e passe de formes flechies : une racine peut etre une coquille vide
 # dans le dump SQLite (comme "tāpuni", derive de "tāpunira'a" - Mosiah
 # 20:5) mais avoir une vraie traduction recuperee via reo.pf/Embark. La
