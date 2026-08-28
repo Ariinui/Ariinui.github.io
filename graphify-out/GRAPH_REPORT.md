@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-08-27)
 
 ## Corpus Check
-- 6 files · ~330,885 words
+- 7 files · ~332,269 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 307 nodes · 152 edges · 205 communities detected
+- 319 nodes · 170 edges · 205 communities detected
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -217,16 +217,16 @@
 - [[_COMMUNITY_Community 204|Community 204]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `main()` - 6 edges
-2. `entryBlocks()` - 6 edges
-3. `write()` - 5 edges
-4. `cameo_render_entry()` - 5 edges
-5. `normalize()` - 4 edges
-6. `search_exact()` - 4 edges
-7. `cameo_clean_field()` - 4 edges
-8. `write_cameos()` - 4 edges
-9. `write_conference_analogy_theme_page()` - 4 edges
-10. `write_guide_volume()` - 4 edges
+1. `glosses_for_word()` - 6 edges
+2. `main()` - 6 edges
+3. `entryBlocks()` - 6 edges
+4. `write()` - 5 edges
+5. `cameo_render_entry()` - 5 edges
+6. `main()` - 4 edges
+7. `normalize()` - 4 edges
+8. `search_exact()` - 4 edges
+9. `cameo_clean_field()` - 4 edges
+10. `write_cameos()` - 4 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `normalize()` --calls--> `slugify()`  [INFERRED]
@@ -236,7 +236,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
-Nodes (22): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), guide2_section_content_html(), guide_section_content_html(), parse_conference_analogies_sources() (+14 more)
+Nodes (26): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), guide2_section_content_html(), guide_section_content_html(), parse_bomm_heading_ref() (+18 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.14
@@ -244,31 +244,31 @@ Nodes (11): entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goTo
 
 ### Community 2 - "Community 2"
 Cohesion: 0.27
-Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
+Nodes (11): dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, Raw HTML slice covering only the Tahitian-entries section of a     result page (, List of (word_text, definitions[]) for every headword found in this     HTML win (+3 more)
 
 ### Community 3 - "Community 3"
+Cohesion: 0.27
+Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
+
+### Community 4 - "Community 4"
 Cohesion: 0.36
 Nodes (9): dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, Returns list of (href, normalized_lexeme) for exact normalized matches     in th, search_exact() (+1 more)
 
-### Community 4 - "Community 4"
+### Community 5 - "Community 5"
 Cohesion: 0.29
 Nodes (8): conference_analogy_card_html(), Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon, slugify(), to_superscript(), write(), write_conference_analogy_talk_page(), write_conference_analogy_theme_page(), write_guide_volume()
 
-### Community 5 - "Community 5"
+### Community 6 - "Community 6"
 Cohesion: 0.33
 Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML, La description (contrairement au texte d'analyse, deja extrait en     texte pur, Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles, write_cameos()
-
-### Community 6 - "Community 6"
-Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
 
 ### Community 7 - "Community 7"
 Cohesion: 0.4
 Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 8 - "Community 8"
-Cohesion: 0.5
-Nodes (4): parse_bomm_heading_ref(), parse_bomm_source(), parse_bomm_title_book_chapter(), 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Cohesion: 0.4
+Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
 
 ### Community 9 - "Community 9"
 Cohesion: 0.67
@@ -1055,7 +1055,7 @@ Cohesion: 1.0
 Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ## Knowledge Gaps
-- **216 isolated node(s):** `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "`, `One-off: for every Tahitian word in the Livre de Mormon text still without a Fre`, `Returns list of (href, normalized_lexeme) for exact normalized matches     in th` (+211 more)
+- **220 isolated node(s):** `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "`, `One-off: for every Tahitian word in the Livre de Mormon text still without a Fre`, `Raw HTML slice covering only the Tahitian-entries section of a     result page (` (+215 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 10`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1451,12 +1451,12 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `slugify()` connect `Community 4` to `Community 0`, `Community 3`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `normalize()` connect `Community 3` to `Community 4`?**
+- **Why does `slugify()` connect `Community 5` to `Community 0`, `Community 4`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `normalize()` connect `Community 4` to `Community 5`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **What connects `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "` to the rest of the system?**
-  _216 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _220 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.06 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**

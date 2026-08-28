@@ -36,7 +36,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
       "id": "build_tah_dict_py",
-      "community": 2,
+      "community": 3,
       "norm_label": "build_tah_dict.py"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L20",
       "id": "build_tah_dict_normalize",
-      "community": 2,
+      "community": 3,
       "norm_label": "normalize()"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L37",
       "id": "build_tah_dict_dereduplicate_candidates",
-      "community": 2,
+      "community": 3,
       "norm_label": "dereduplicate_candidates()"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L52",
       "id": "build_tah_dict_strip_candidates",
-      "community": 2,
+      "community": 3,
       "norm_label": "strip_candidates()"
     },
     {
@@ -72,43 +72,43 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L97",
       "id": "build_tah_dict_glosses_for",
-      "community": 2,
+      "community": 3,
       "norm_label": "glosses_for()"
     },
     {
       "label": "strip_accents()",
       "file_type": "code",
       "source_file": "build_tah_dict.py",
-      "source_location": "L260",
+      "source_location": "L280",
       "id": "build_tah_dict_strip_accents",
-      "community": 2,
+      "community": 3,
       "norm_label": "strip_accents()"
     },
     {
       "label": "fr_words()",
       "file_type": "code",
       "source_file": "build_tah_dict.py",
-      "source_location": "L265",
+      "source_location": "L285",
       "id": "build_tah_dict_fr_words",
-      "community": 2,
+      "community": 3,
       "norm_label": "fr_words()"
     },
     {
       "label": "content_stem()",
       "file_type": "code",
       "source_file": "build_tah_dict.py",
-      "source_location": "L269",
+      "source_location": "L289",
       "id": "build_tah_dict_content_stem",
-      "community": 2,
+      "community": 3,
       "norm_label": "content_stem()"
     },
     {
       "label": "part_stem()",
       "file_type": "code",
       "source_file": "build_tah_dict.py",
-      "source_location": "L277",
+      "source_location": "L297",
       "id": "build_tah_dict_part_stem",
-      "community": 2,
+      "community": 3,
       "norm_label": "part_stem()"
     },
     {
@@ -116,7 +116,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 3,
       "norm_label": "one-off extraction: builds tah_dict.json (word -> short french gloss) from the r",
       "id": "build_tah_dict_rationale_1"
     },
@@ -125,9 +125,117 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L38",
-      "community": 2,
+      "community": 3,
       "norm_label": "un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     \"maitatai\" = \"",
       "id": "build_tah_dict_rationale_38"
+    },
+    {
+      "label": "fetch_farevanaa_supplement.py",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L1",
+      "id": "fetch_farevanaa_supplement_py",
+      "community": 2,
+      "norm_label": "fetch_farevanaa_supplement.py"
+    },
+    {
+      "label": "normalize()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L48",
+      "id": "fetch_farevanaa_supplement_normalize",
+      "community": 2,
+      "norm_label": "normalize()"
+    },
+    {
+      "label": "dereduplicate_candidates()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L54",
+      "id": "fetch_farevanaa_supplement_dereduplicate_candidates",
+      "community": 2,
+      "norm_label": "dereduplicate_candidates()"
+    },
+    {
+      "label": "strip_candidates()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L63",
+      "id": "fetch_farevanaa_supplement_strip_candidates",
+      "community": 2,
+      "norm_label": "strip_candidates()"
+    },
+    {
+      "label": "tahitien_window()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L105",
+      "id": "fetch_farevanaa_supplement_tahitien_window",
+      "community": 2,
+      "norm_label": "tahitien_window()"
+    },
+    {
+      "label": "entries_in_window()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L127",
+      "id": "fetch_farevanaa_supplement_entries_in_window",
+      "community": 2,
+      "norm_label": "entries_in_window()"
+    },
+    {
+      "label": "glosses_for_word()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L151",
+      "id": "fetch_farevanaa_supplement_glosses_for_word",
+      "community": 2,
+      "norm_label": "glosses_for_word()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L194",
+      "id": "fetch_farevanaa_supplement_main",
+      "community": 2,
+      "norm_label": "main()"
+    },
+    {
+      "label": "One-off: for every Tahitian word in the Livre de Mormon text still without a Fre",
+      "file_type": "rationale",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L1",
+      "id": "fetch_farevanaa_supplement_rationale_1",
+      "community": 2,
+      "norm_label": "one-off: for every tahitian word in the livre de mormon text still without a fre"
+    },
+    {
+      "label": "Raw HTML slice covering only the Tahitian-entries section of a     result page (",
+      "file_type": "rationale",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L106",
+      "id": "fetch_farevanaa_supplement_rationale_106",
+      "community": 2,
+      "norm_label": "raw html slice covering only the tahitian-entries section of a     result page ("
+    },
+    {
+      "label": "List of (word_text, definitions[]) for every headword found in this     HTML win",
+      "file_type": "rationale",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L128",
+      "id": "fetch_farevanaa_supplement_rationale_128",
+      "community": 2,
+      "norm_label": "list of (word_text, definitions[]) for every headword found in this     html win"
+    },
+    {
+      "label": "Queries the dictionary for `word` (already normalized) and returns     a merged,",
+      "file_type": "rationale",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L152",
+      "id": "fetch_farevanaa_supplement_rationale_152",
+      "community": 2,
+      "norm_label": "queries the dictionary for `word` (already normalized) and returns     a merged,"
     },
     {
       "label": "fetch_reo_pf_supplement.py",
@@ -135,7 +243,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L1",
       "id": "fetch_reo_pf_supplement_py",
-      "community": 3,
+      "community": 4,
       "norm_label": "fetch_reo_pf_supplement.py"
     },
     {
@@ -144,7 +252,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L36",
       "id": "fetch_reo_pf_supplement_normalize",
-      "community": 3,
+      "community": 4,
       "norm_label": "normalize()"
     },
     {
@@ -153,7 +261,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L42",
       "id": "fetch_reo_pf_supplement_dereduplicate_candidates",
-      "community": 3,
+      "community": 4,
       "norm_label": "dereduplicate_candidates()"
     },
     {
@@ -162,7 +270,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L51",
       "id": "fetch_reo_pf_supplement_strip_candidates",
-      "community": 3,
+      "community": 4,
       "norm_label": "strip_candidates()"
     },
     {
@@ -171,7 +279,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L81",
       "id": "fetch_reo_pf_supplement_get_token",
-      "community": 3,
+      "community": 4,
       "norm_label": "get_token()"
     },
     {
@@ -180,7 +288,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L87",
       "id": "fetch_reo_pf_supplement_search_exact",
-      "community": 3,
+      "community": 4,
       "norm_label": "search_exact()"
     },
     {
@@ -189,7 +297,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L104",
       "id": "fetch_reo_pf_supplement_glosses_from_lexeme_page",
-      "community": 3,
+      "community": 4,
       "norm_label": "glosses_from_lexeme_page()"
     },
     {
@@ -198,7 +306,7 @@
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L127",
       "id": "fetch_reo_pf_supplement_main",
-      "community": 3,
+      "community": 4,
       "norm_label": "main()"
     },
     {
@@ -206,7 +314,7 @@
       "file_type": "rationale",
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L1",
-      "community": 3,
+      "community": 4,
       "norm_label": "one-off: for every tahitian word in the livre de mormon text still without a fre",
       "id": "fetch_reo_pf_supplement_rationale_1"
     },
@@ -215,7 +323,7 @@
       "file_type": "rationale",
       "source_file": "fetch_reo_pf_supplement.py",
       "source_location": "L88",
-      "community": 3,
+      "community": 4,
       "norm_label": "returns list of (href, normalized_lexeme) for exact normalized matches     in th",
       "id": "fetch_reo_pf_supplement_rationale_88"
     },
@@ -234,7 +342,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L35",
       "id": "generate_pages_to_superscript",
-      "community": 4,
+      "community": 5,
       "norm_label": "to_superscript()"
     },
     {
@@ -378,7 +486,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L766",
       "id": "generate_pages_student_manual_parse_citation",
-      "community": 6,
+      "community": 8,
       "norm_label": "student_manual_parse_citation()"
     },
     {
@@ -387,7 +495,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L792",
       "id": "generate_pages_student_manual_body_nodes",
-      "community": 6,
+      "community": 8,
       "norm_label": "student_manual_body_nodes()"
     },
     {
@@ -396,7 +504,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L829",
       "id": "generate_pages_parse_student_manual_source",
-      "community": 6,
+      "community": 8,
       "norm_label": "parse_student_manual_source()"
     },
     {
@@ -468,7 +576,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1434",
       "id": "generate_pages_parse_bomm_title_book_chapter",
-      "community": 8,
+      "community": 0,
       "norm_label": "parse_bomm_title_book_chapter()"
     },
     {
@@ -477,7 +585,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1447",
       "id": "generate_pages_parse_bomm_heading_ref",
-      "community": 8,
+      "community": 0,
       "norm_label": "parse_bomm_heading_ref()"
     },
     {
@@ -486,7 +594,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1467",
       "id": "generate_pages_parse_bomm_source",
-      "community": 8,
+      "community": 0,
       "norm_label": "parse_bomm_source()"
     },
     {
@@ -540,7 +648,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1770",
       "id": "generate_pages_write",
-      "community": 4,
+      "community": 5,
       "norm_label": "write()"
     },
     {
@@ -549,7 +657,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2031",
       "id": "generate_pages_cameo_clean_field",
-      "community": 5,
+      "community": 6,
       "norm_label": "cameo_clean_field()"
     },
     {
@@ -558,7 +666,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2043",
       "id": "generate_pages_cameo_render_paragraphs",
-      "community": 5,
+      "community": 6,
       "norm_label": "cameo_render_paragraphs()"
     },
     {
@@ -567,7 +675,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2064",
       "id": "generate_pages_cameo_render_entry",
-      "community": 5,
+      "community": 6,
       "norm_label": "cameo_render_entry()"
     },
     {
@@ -576,7 +684,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2094",
       "id": "generate_pages_write_cameos",
-      "community": 5,
+      "community": 6,
       "norm_label": "write_cameos()"
     },
     {
@@ -585,7 +693,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2196",
       "id": "generate_pages_slugify",
-      "community": 4,
+      "community": 5,
       "norm_label": "slugify()"
     },
     {
@@ -639,7 +747,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2308",
       "id": "generate_pages_conference_analogy_card_html",
-      "community": 4,
+      "community": 5,
       "norm_label": "conference_analogy_card_html()"
     },
     {
@@ -648,7 +756,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2327",
       "id": "generate_pages_write_conference_analogy_talk_page",
-      "community": 4,
+      "community": 5,
       "norm_label": "write_conference_analogy_talk_page()"
     },
     {
@@ -657,7 +765,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2348",
       "id": "generate_pages_write_conference_analogy_theme_page",
-      "community": 4,
+      "community": 5,
       "norm_label": "write_conference_analogy_theme_page()"
     },
     {
@@ -675,7 +783,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2570",
       "id": "generate_pages_write_guide_volume",
-      "community": 4,
+      "community": 5,
       "norm_label": "write_guide_volume()"
     },
     {
@@ -737,7 +845,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L767",
-      "community": 6,
+      "community": 8,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_767"
     },
@@ -746,7 +854,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L793",
-      "community": 6,
+      "community": 8,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_793"
     },
@@ -773,7 +881,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1435",
-      "community": 8,
+      "community": 0,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1435"
     },
@@ -791,7 +899,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2032",
-      "community": 5,
+      "community": 6,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2032"
     },
@@ -800,7 +908,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2044",
-      "community": 5,
+      "community": 6,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2044"
     },
@@ -809,7 +917,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2065",
-      "community": 5,
+      "community": 6,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2065"
     },
@@ -827,7 +935,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2571",
-      "community": 4,
+      "community": 5,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2571"
     },
@@ -2844,7 +2952,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L260",
+      "source_location": "L280",
       "weight": 1.0,
       "_src": "build_tah_dict_py",
       "_tgt": "build_tah_dict_strip_accents",
@@ -2856,7 +2964,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L265",
+      "source_location": "L285",
       "weight": 1.0,
       "_src": "build_tah_dict_py",
       "_tgt": "build_tah_dict_fr_words",
@@ -2868,7 +2976,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L269",
+      "source_location": "L289",
       "weight": 1.0,
       "_src": "build_tah_dict_py",
       "_tgt": "build_tah_dict_content_stem",
@@ -2880,7 +2988,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L277",
+      "source_location": "L297",
       "weight": 1.0,
       "_src": "build_tah_dict_py",
       "_tgt": "build_tah_dict_part_stem",
@@ -2904,7 +3012,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L262",
+      "source_location": "L282",
       "weight": 1.0,
       "_src": "build_tah_dict_strip_accents",
       "_tgt": "build_tah_dict_normalize",
@@ -2940,7 +3048,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L270",
+      "source_location": "L290",
       "weight": 1.0,
       "_src": "build_tah_dict_content_stem",
       "_tgt": "build_tah_dict_strip_accents",
@@ -2952,7 +3060,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L278",
+      "source_location": "L298",
       "weight": 1.0,
       "_src": "build_tah_dict_part_stem",
       "_tgt": "build_tah_dict_fr_words",
@@ -2964,12 +3072,228 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "build_tah_dict.py",
-      "source_location": "L279",
+      "source_location": "L299",
       "weight": 1.0,
       "_src": "build_tah_dict_part_stem",
       "_tgt": "build_tah_dict_content_stem",
       "source": "build_tah_dict_content_stem",
       "target": "build_tah_dict_part_stem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_normalize",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_normalize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_dereduplicate_candidates",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_dereduplicate_candidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L63",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_strip_candidates",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_strip_candidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L105",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_tahitien_window",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_tahitien_window",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L127",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_entries_in_window",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_entries_in_window",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L151",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_glosses_for_word",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_glosses_for_word",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L194",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_py",
+      "_tgt": "fetch_farevanaa_supplement_main",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_rationale_1",
+      "_tgt": "fetch_farevanaa_supplement_py",
+      "source": "fetch_farevanaa_supplement_py",
+      "target": "fetch_farevanaa_supplement_rationale_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L178",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_glosses_for_word",
+      "_tgt": "fetch_farevanaa_supplement_normalize",
+      "source": "fetch_farevanaa_supplement_normalize",
+      "target": "fetch_farevanaa_supplement_glosses_for_word",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L202",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_main",
+      "_tgt": "fetch_farevanaa_supplement_normalize",
+      "source": "fetch_farevanaa_supplement_normalize",
+      "target": "fetch_farevanaa_supplement_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L83",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_strip_candidates",
+      "_tgt": "fetch_farevanaa_supplement_dereduplicate_candidates",
+      "source": "fetch_farevanaa_supplement_dereduplicate_candidates",
+      "target": "fetch_farevanaa_supplement_strip_candidates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L207",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_main",
+      "_tgt": "fetch_farevanaa_supplement_strip_candidates",
+      "source": "fetch_farevanaa_supplement_strip_candidates",
+      "target": "fetch_farevanaa_supplement_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L159",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_glosses_for_word",
+      "_tgt": "fetch_farevanaa_supplement_tahitien_window",
+      "source": "fetch_farevanaa_supplement_tahitien_window",
+      "target": "fetch_farevanaa_supplement_glosses_for_word",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_rationale_106",
+      "_tgt": "fetch_farevanaa_supplement_tahitien_window",
+      "source": "fetch_farevanaa_supplement_tahitien_window",
+      "target": "fetch_farevanaa_supplement_rationale_106",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L177",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_glosses_for_word",
+      "_tgt": "fetch_farevanaa_supplement_entries_in_window",
+      "source": "fetch_farevanaa_supplement_entries_in_window",
+      "target": "fetch_farevanaa_supplement_glosses_for_word",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L128",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_rationale_128",
+      "_tgt": "fetch_farevanaa_supplement_entries_in_window",
+      "source": "fetch_farevanaa_supplement_entries_in_window",
+      "target": "fetch_farevanaa_supplement_rationale_128",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L223",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_main",
+      "_tgt": "fetch_farevanaa_supplement_glosses_for_word",
+      "source": "fetch_farevanaa_supplement_glosses_for_word",
+      "target": "fetch_farevanaa_supplement_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_supplement.py",
+      "source_location": "L152",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_supplement_rationale_152",
+      "_tgt": "fetch_farevanaa_supplement_glosses_for_word",
+      "source": "fetch_farevanaa_supplement_glosses_for_word",
+      "target": "fetch_farevanaa_supplement_rationale_152",
       "confidence_score": 1.0
     },
     {
