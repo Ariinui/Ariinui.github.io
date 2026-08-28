@@ -24,6 +24,7 @@ already-vetted glossary pipeline decided are worth tapping, never a new
 source of what counts as tappable.
 """
 import json
+import os
 import re
 
 SOURCE_PATH = r'C:/Users/ariin/Downloads/embark_ty_fr_audio.json'
@@ -68,6 +69,20 @@ for bucket in (data['vocabConcepts'], data['phraseConcepts']):
         candidates.setdefault(key, media['webUrl'])
 
 result = {k: url for k, url in candidates.items() if k in tah_dict}
+embark_count = len(result)
+
+# Fare Vana'a (fetch_farevanaa_audio.py) : ne comble que les mots mono-mot
+# encore sans audio apres Embark - jamais prioritaire, Embark reste la
+# source de reference deja en place.
+if os.path.exists('farevanaa_audio.json'):
+    with open('farevanaa_audio.json', encoding='utf-8') as f:
+        farevanaa_audio = json.load(f)
+    added = 0
+    for key, url in farevanaa_audio.items():
+        if key in tah_dict and key not in result:
+            result[key] = url
+            added += 1
+    print(f'{added} mots ajoutes depuis Fare Vana\'a (sur {embark_count} deja via Embark).')
 
 with open('tah_audio.json', 'w', encoding='utf-8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1, sort_keys=True)
