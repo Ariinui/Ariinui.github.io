@@ -1,12 +1,12 @@
 # Graph Report - .  (2026-08-28)
 
 ## Corpus Check
-- 9 files · ~333,934 words
+- 10 files · ~334,581 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 331 nodes · 186 edges · 207 communities detected
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
+- 335 nodes · 191 edges · 207 communities detected
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -224,11 +224,11 @@
 3. `main()` - 6 edges
 4. `entryBlocks()` - 6 edges
 5. `locutions_for_word()` - 5 edges
-6. `write()` - 5 edges
-7. `cameo_render_entry()` - 5 edges
-8. `build_real_ngrams()` - 4 edges
-9. `main()` - 4 edges
-10. `tahitien_window()` - 4 edges
+6. `tahitien_window()` - 5 edges
+7. `write()` - 5 edges
+8. `cameo_render_entry()` - 5 edges
+9. `build_real_ngrams()` - 4 edges
+10. `main()` - 4 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `locutions_for_word()` --calls--> `tahitien_window()`  [INFERRED]
@@ -239,6 +239,8 @@
   fetch_farevanaa_phrases.py → fetch_reo_pf_supplement.py
 - `normalize()` --calls--> `slugify()`  [INFERRED]
   fetch_reo_pf_supplement.py → generate_pages.py
+- `audio_url_for_word()` --calls--> `tahitien_window()`  [INFERRED]
+  fetch_farevanaa_audio.py → fetch_farevanaa_supplement.py
 
 ## Communities
 
@@ -251,8 +253,8 @@ Cohesion: 0.14
 Nodes (11): entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goToEntry(), refsHidden(), showEntry(), splitLongBlock() (+3 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.27
-Nodes (11): dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, Raw HTML slice covering only the Tahitian-entries section of a     result page (, List of (word_text, definitions[]) for every headword found in this     HTML win (+3 more)
+Cohesion: 0.19
+Nodes (14): audio_url_for_word(), main(), One-off: harvests Tahitian word pronunciation (mp3) URLs from the Academie Tahit, dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize() (+6 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.27
@@ -276,11 +278,11 @@ Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(),
 
 ### Community 8 - "Community 8"
 Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
+Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 9 - "Community 9"
 Cohesion: 0.4
-Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
 
 ### Community 10 - "Community 10"
 Cohesion: 0.67
@@ -1071,7 +1073,7 @@ Cohesion: 1.0
 Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ## Knowledge Gaps
-- **225 isolated node(s):** `One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a`, `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "`, `One-off: harvests Tahitian multi-word expressions (locutions) from the Académie` (+220 more)
+- **226 isolated node(s):** `One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a`, `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R`, `Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = "`, `One-off: harvests Tahitian word pronunciation (mp3) URLs from the Academie Tahit` (+221 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 12`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1468,15 +1470,15 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `normalize()` connect `Community 4` to `Community 5`, `Community 6`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **Why does `slugify()` connect `Community 6` to `Community 0`, `Community 4`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Why does `main()` connect `Community 5` to `Community 4`?**
-  _High betweenness centrality (0.024) - this node is a cross-community bridge._
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `normalize()` (e.g. with `build_real_ngrams()` and `main()`) actually correct?**
   _`normalize()` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a`, `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `One-off extraction: builds tah_dict.json (word -> short French gloss) from the R` to the rest of the system?**
-  _225 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _226 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.06 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**

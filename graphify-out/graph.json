@@ -16,7 +16,7 @@
       "label": "normalize()",
       "file_type": "code",
       "source_file": "build_embark_audio.py",
-      "source_location": "L37",
+      "source_location": "L38",
       "id": "build_embark_audio_normalize",
       "community": 10,
       "norm_label": "normalize()"
@@ -26,9 +26,9 @@
       "file_type": "rationale",
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
-      "id": "build_embark_audio_rationale_1",
       "community": 10,
-      "norm_label": "one-off: extracts tah_audio.json (word/locution -> pronunciation mp3 url) from a"
+      "norm_label": "one-off: extracts tah_audio.json (word/locution -> pronunciation mp3 url) from a",
+      "id": "build_embark_audio_rationale_1"
     },
     {
       "label": "build_embark_supplement.py",
@@ -155,6 +155,42 @@
       "community": 3,
       "norm_label": "un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     \"maitatai\" = \"",
       "id": "build_tah_dict_rationale_38"
+    },
+    {
+      "label": "fetch_farevanaa_audio.py",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L1",
+      "id": "fetch_farevanaa_audio_py",
+      "community": 2,
+      "norm_label": "fetch_farevanaa_audio.py"
+    },
+    {
+      "label": "audio_url_for_word()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L33",
+      "id": "fetch_farevanaa_audio_audio_url_for_word",
+      "community": 2,
+      "norm_label": "audio_url_for_word()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L67",
+      "id": "fetch_farevanaa_audio_main",
+      "community": 2,
+      "norm_label": "main()"
+    },
+    {
+      "label": "One-off: harvests Tahitian word pronunciation (mp3) URLs from the Academie Tahit",
+      "file_type": "rationale",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L1",
+      "id": "fetch_farevanaa_audio_rationale_1",
+      "community": 2,
+      "norm_label": "one-off: harvests tahitian word pronunciation (mp3) urls from the academie tahit"
     },
     {
       "label": "fetch_farevanaa_phrases.py",
@@ -594,7 +630,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L766",
       "id": "generate_pages_student_manual_parse_citation",
-      "community": 8,
+      "community": 9,
       "norm_label": "student_manual_parse_citation()"
     },
     {
@@ -603,7 +639,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L792",
       "id": "generate_pages_student_manual_body_nodes",
-      "community": 8,
+      "community": 9,
       "norm_label": "student_manual_body_nodes()"
     },
     {
@@ -612,7 +648,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L829",
       "id": "generate_pages_parse_student_manual_source",
-      "community": 8,
+      "community": 9,
       "norm_label": "parse_student_manual_source()"
     },
     {
@@ -648,7 +684,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1190",
       "id": "generate_pages_parse_evidence_scripture_reference",
-      "community": 9,
+      "community": 8,
       "norm_label": "parse_evidence_scripture_reference()"
     },
     {
@@ -657,7 +693,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1240",
       "id": "generate_pages_clean_evidence_body",
-      "community": 9,
+      "community": 8,
       "norm_label": "clean_evidence_body()"
     },
     {
@@ -666,7 +702,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1301",
       "id": "generate_pages_parse_evidence_source",
-      "community": 9,
+      "community": 8,
       "norm_label": "parse_evidence_source()"
     },
     {
@@ -953,7 +989,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L767",
-      "community": 8,
+      "community": 9,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_767"
     },
@@ -962,7 +998,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L793",
-      "community": 8,
+      "community": 9,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_793"
     },
@@ -971,7 +1007,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1191",
-      "community": 9,
+      "community": 8,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1191"
     },
@@ -980,7 +1016,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1241",
-      "community": 9,
+      "community": 8,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1241"
     },
@@ -2988,7 +3024,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "build_embark_audio.py",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "_src": "build_embark_audio_py",
       "_tgt": "build_embark_audio_normalize",
@@ -3211,6 +3247,66 @@
       "source": "build_tah_dict_content_stem",
       "target": "build_tah_dict_part_stem",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_audio_py",
+      "_tgt": "fetch_farevanaa_audio_audio_url_for_word",
+      "source": "fetch_farevanaa_audio_py",
+      "target": "fetch_farevanaa_audio_audio_url_for_word",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L67",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_audio_py",
+      "_tgt": "fetch_farevanaa_audio_main",
+      "source": "fetch_farevanaa_audio_py",
+      "target": "fetch_farevanaa_audio_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_audio_rationale_1",
+      "_tgt": "fetch_farevanaa_audio_py",
+      "source": "fetch_farevanaa_audio_py",
+      "target": "fetch_farevanaa_audio_rationale_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_audio_main",
+      "_tgt": "fetch_farevanaa_audio_audio_url_for_word",
+      "source": "fetch_farevanaa_audio_audio_url_for_word",
+      "target": "fetch_farevanaa_audio_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "fetch_farevanaa_audio.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "fetch_farevanaa_audio_audio_url_for_word",
+      "_tgt": "fetch_farevanaa_supplement_tahitien_window",
+      "source": "fetch_farevanaa_audio_audio_url_for_word",
+      "target": "fetch_farevanaa_supplement_tahitien_window"
     },
     {
       "relation": "contains",
