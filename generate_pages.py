@@ -3591,43 +3591,60 @@ nav a:hover {
 }
 
 .tah-popup {
+    --tah-accent: #4dabff;
     position: fixed;
-    max-width: 280px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    font-size: 14px;
-    line-height: 1.4;
-    color: var(--text);
+    min-width: 220px;
+    max-width: 320px;
+    background: #0b0b0f;
+    border-radius: 18px;
+    padding: 16px 18px 14px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+    font-size: 15px;
+    line-height: 1.5;
+    color: #f0f0f4;
     z-index: 3000;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
 }
 
-.tah-popup-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
+.tah-popup-arrow {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #0b0b0f;
+    transform: rotate(45deg);
+    border-radius: 2px;
 }
 
-.tah-popup-text {
-    flex: 1;
-    white-space: pre-line;
+.tah-popup-header {
+    position: relative;
+    padding: 0 30px;
+    margin-bottom: 4px;
+}
+
+.tah-popup-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #ffffff;
+}
+
+.tah-popup-icons {
+    position: absolute;
+    top: 0;
+    right: -6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .tah-popup-audio-btn,
 .tah-popup-info-btn {
     flex-shrink: 0;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 13px;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    color: var(--tah-accent);
+    font-size: 17px;
     line-height: 1;
     cursor: pointer;
     display: flex;
@@ -3638,14 +3655,27 @@ nav a:hover {
 
 .tah-popup-audio-btn:active,
 .tah-popup-info-btn:active {
-    opacity: 0.6;
+    opacity: 0.55;
+}
+
+.tah-popup-text {
+    text-align: left;
+    white-space: pre-line;
+}
+
+.tah-popup-cat {
+    color: var(--tah-accent);
+    font-style: italic;
+    font-weight: 600;
 }
 
 .tah-popup-definition {
-    border-top: 1px solid var(--border);
-    padding-top: 6px;
-    font-size: 12.5px;
-    line-height: 1.4;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 10px;
+    padding-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #c7c7d1;
 }
 
 .tah-popup-definition-text {
@@ -3654,8 +3684,9 @@ nav a:hover {
 
 .tah-popup-definition-source {
     display: block;
-    margin-top: 4px;
+    margin-top: 6px;
     font-size: 11px;
+    font-style: italic;
     opacity: 0.55;
 }
 
@@ -4744,6 +4775,38 @@ document.addEventListener('DOMContentLoaded', function() {
             if (activeWord) { activeWord.classList.remove('active'); activeWord = null; }
         }
 
+        // Reconstruit le style categorie grammaticale (bleu, italique) a partir
+        // du texte brut, sans donnee structuree separee - 2 formats connus car
+        // generes par nos propres scripts de scraping : "vt: battre, ..." (reo.pf,
+        // categorie+deux-points) et "n.c. recit, ..." / "v.t." seul (Fare Vana'a,
+        // categorie en abreviations a points, jamais suivie de deux-points).
+        var CAT_COLON_RE = /^([a-zàâäéèêëïîôöùûüç]{1,6}):\s*/i;
+        var CAT_DOT_RE = /^((?:[a-zàâäéèêëïîôöùûüç]{1,4}\.){1,3})\s*/i;
+
+        function appendStyledLine(container, line) {
+            if (!line) return;
+            var lineEl = document.createElement('div');
+            var m = line.match(CAT_COLON_RE) || line.match(CAT_DOT_RE);
+            if (m) {
+                var catSpan = document.createElement('span');
+                catSpan.className = 'tah-popup-cat';
+                catSpan.textContent = m[0];
+                lineEl.appendChild(catSpan);
+                lineEl.appendChild(document.createTextNode(line.slice(m[0].length)));
+            } else {
+                lineEl.textContent = line;
+            }
+            container.appendChild(lineEl);
+        }
+
+        function renderLines(container, text) {
+            container.textContent = '';
+            text.split('\\n').forEach(function(line) { appendStyledLine(container, line); });
+        }
+
+        var AUDIO_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+        var INFO_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
+
         function showPopup(el, gloss, audioSrc, def) {
             closePopup();
             activeWord = el;
@@ -4751,23 +4814,26 @@ document.addEventListener('DOMContentLoaded', function() {
             popup = document.createElement('div');
             popup.className = 'tah-popup';
 
-            var row = document.createElement('div');
-            row.className = 'tah-popup-row';
-            var textEl = document.createElement('div');
-            textEl.className = 'tah-popup-text';
-            textEl.textContent = gloss;
-            row.appendChild(textEl);
+            var header = document.createElement('div');
+            header.className = 'tah-popup-header';
+            var titleEl = document.createElement('div');
+            titleEl.className = 'tah-popup-title';
+            titleEl.textContent = el.textContent;
+            header.appendChild(titleEl);
+
+            var icons = document.createElement('div');
+            icons.className = 'tah-popup-icons';
             if (audioSrc) {
                 var audioBtn = document.createElement('button');
                 audioBtn.className = 'tah-popup-audio-btn';
                 audioBtn.type = 'button';
                 audioBtn.setAttribute('aria-label', 'Écouter la prononciation');
-                audioBtn.textContent = '🔊';
+                audioBtn.innerHTML = AUDIO_ICON;
                 audioBtn.addEventListener('click', function(event) {
                     event.stopPropagation();
                     new Audio(audioSrc).play().catch(function() {});
                 });
-                row.appendChild(audioBtn);
+                icons.appendChild(audioBtn);
             }
 
             var defEl = null;
@@ -4777,7 +4843,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 defEl.style.display = 'none';
                 var defText = document.createElement('div');
                 defText.className = 'tah-popup-definition-text';
-                defText.textContent = def.text;
+                renderLines(defText, def.text);
                 defEl.appendChild(defText);
                 var sourceEl = document.createElement('span');
                 sourceEl.className = 'tah-popup-definition-source';
@@ -4788,27 +4854,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 infoBtn.className = 'tah-popup-info-btn';
                 infoBtn.type = 'button';
                 infoBtn.setAttribute('aria-label', 'Voir la définition complète');
-                infoBtn.textContent = 'ⓘ';
+                infoBtn.innerHTML = INFO_ICON;
                 infoBtn.addEventListener('click', function(event) {
                     event.stopPropagation();
                     defEl.style.display = defEl.style.display === 'none' ? 'block' : 'none';
                 });
-                row.appendChild(infoBtn);
+                icons.appendChild(infoBtn);
             }
+            header.appendChild(icons);
+            popup.appendChild(header);
 
-            popup.appendChild(row);
+            var textEl = document.createElement('div');
+            textEl.className = 'tah-popup-text';
+            renderLines(textEl, gloss);
+            popup.appendChild(textEl);
+
             if (defEl) popup.appendChild(defEl);
-            popup.style.maxWidth = Math.min(280, window.innerWidth - 16) + 'px';
+
+            var arrow = document.createElement('div');
+            arrow.className = 'tah-popup-arrow';
+            popup.appendChild(arrow);
+
+            popup.style.maxWidth = Math.min(320, window.innerWidth - 24) + 'px';
             document.body.appendChild(popup);
             var wordRect = el.getBoundingClientRect();
             var popupRect = popup.getBoundingClientRect();
             var left = Math.min(Math.max(8, wordRect.left), window.innerWidth - popupRect.width - 8);
-            var top = wordRect.bottom + 6;
+            var top = wordRect.bottom + 10;
+            var openedBelow = true;
             if (top + popupRect.height > window.innerHeight - 8) {
-                top = wordRect.top - popupRect.height - 6;
+                top = wordRect.top - popupRect.height - 10;
+                openedBelow = false;
             }
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
+
+            var wordCenterX = wordRect.left + wordRect.width / 2;
+            var arrowX = wordCenterX - left - 6;
+            arrowX = Math.max(14, Math.min(arrowX, popupRect.width - 26));
+            arrow.style.left = arrowX + 'px';
+            if (openedBelow) {
+                arrow.style.top = '-6px';
+            } else {
+                arrow.style.bottom = '-6px';
+            }
         }
 
         words.forEach(function(el) {
