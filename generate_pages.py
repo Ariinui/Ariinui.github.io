@@ -2802,7 +2802,7 @@ css_content = '''
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --bg: #15171c;
+        --bg: #000000;
         --surface: #1c1f26;
         --border: #2c313a;
         --text: #e8e9ec;
@@ -2840,7 +2840,7 @@ css_content = '''
 
 :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #15171c;
+    --bg: #000000;
     --surface: #1c1f26;
     --border: #2c313a;
     --text: #e8e9ec;
