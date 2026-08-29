@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-08-29)
 
 ## Corpus Check
-- 12 files · ~338,983 words
+- 12 files · ~413,057 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 368 nodes · 215 edges · 225 communities detected
+- 370 nodes · 215 edges · 227 communities detected
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 10 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -235,6 +235,8 @@
 - [[_COMMUNITY_Community 222|Community 222]]
 - [[_COMMUNITY_Community 223|Community 223]]
 - [[_COMMUNITY_Community 224|Community 224]]
+- [[_COMMUNITY_Community 225|Community 225]]
+- [[_COMMUNITY_Community 226|Community 226]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `normalize()` - 7 edges
@@ -253,18 +255,18 @@
   build_farevanaa_definitions.py → fetch_farevanaa_supplement.py
 - `structured_definition_for_word()` --calls--> `normalize()`  [INFERRED]
   build_farevanaa_definitions.py → fetch_reo_pf_supplement.py
+- `apply_to_tah_dict()` --calls--> `write()`  [INFERRED]
+  build_reo_pf_primary.py → generate_pages.py
 - `locutions_for_word()` --calls--> `tahitien_window()`  [INFERRED]
   fetch_farevanaa_phrases.py → fetch_farevanaa_supplement.py
 - `build_real_ngrams()` --calls--> `normalize()`  [INFERRED]
-  fetch_farevanaa_phrases.py → fetch_reo_pf_supplement.py
-- `main()` --calls--> `normalize()`  [INFERRED]
   fetch_farevanaa_phrases.py → fetch_reo_pf_supplement.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (27): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), conference_analogy_card_html(), guide2_section_content_html(), guide_section_content_html() (+19 more)
+Cohesion: 0.05
+Nodes (34): book_display_title(), book_display_title_tah(), cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), chapter_display_title(), chapter_display_title_tah(), conference_analogy_card_html() (+26 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.14
@@ -272,47 +274,47 @@ Nodes (11): entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goTo
 
 ### Community 2 - "Community 2"
 Cohesion: 0.19
-Nodes (14): audio_url_for_word(), main(), One-off: harvests Tahitian word pronunciation (mp3) URLs from the Academie Tahit, dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize() (+6 more)
+Nodes (15): apply_to_tah_dict(), Bulk-builds reo_pf_primary.json: for every one of the ~2318 words already in tah, Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, scrape(), structured_lines_for_lexeme(), structured_text_for_word(), dereduplicate_candidates(), get_token() (+7 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.23
-Nodes (13): Bulk-builds reo_pf_primary.json: for every one of the ~2318 words already in tah, scrape(), structured_lines_for_lexeme(), structured_text_for_word(), dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main() (+5 more)
+Cohesion: 0.19
+Nodes (14): audio_url_for_word(), main(), One-off: harvests Tahitian word pronunciation (mp3) URLs from the Academie Tahit, dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize() (+6 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.17
-Nodes (13): apply_to_tah_dict(), Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML b, La description (contrairement au texte d'analyse, deja extrait en     texte pur), Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles ( (+5 more)
-
-### Community 5 - "Community 5"
 Cohesion: 0.27
 Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
 
-### Community 6 - "Community 6"
+### Community 5 - "Community 5"
 Cohesion: 0.31
 Nodes (8): build_real_ngrams(), locutions_for_word(), locutions_in_window(), main(), One-off: harvests Tahitian multi-word expressions (locutions) from the Académie, Toute sequence de 2 a MAX_PHRASE_WORDS mots reellement adjacents     (separes pa, List of (locution_text, definition) found in this HTML window - a     locution h, Comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr
 
-### Community 7 - "Community 7"
+### Community 6 - "Community 6"
 Cohesion: 0.38
 Nodes (6): main(), Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta, List of (word_text, structured_text) for every headword entry found     in this, Queries farevanaa.pf for `word` (already normalized) and returns the     merged, structured_definition_for_window(), structured_definition_for_word()
 
-### Community 8 - "Community 8"
-Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p>, student_manual_body_nodes(), student_manual_parse_citation()
-
-### Community 9 - "Community 9"
+### Community 7 - "Community 7"
 Cohesion: 0.4
 Nodes (5): disambiguate_sense(), Si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf "vt: battre,     frapp, Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     compo, tah_normalize(), wrap_tah_words()
 
-### Community 10 - "Community 10"
+### Community 8 - "Community 8"
 Cohesion: 0.4
 Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux nett
 
+### Community 9 - "Community 9"
+Cohesion: 0.4
+Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p>, student_manual_body_nodes(), student_manual_parse_citation()
+
+### Community 10 - "Community 10"
+Cohesion: 0.5
+Nodes (4): conf_analogy_lien_with_lang(), parse_conference_analogies_sources(), parse_conference_issue_date(), 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '19
+
 ### Community 11 - "Community 11"
 Cohesion: 0.67
-Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)
+Nodes (1): One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a
 
 ### Community 12 - "Community 12"
 Cohesion: 0.67
-Nodes (1): One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a
+Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)
 
 ### Community 13 - "Community 13"
 Cohesion: 1.0
@@ -320,139 +322,139 @@ Nodes (0):
 
 ### Community 14 - "Community 14"
 Cohesion: 1.0
-Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '19
 
 ### Community 15 - "Community 15"
 Cohesion: 1.0
-Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 16 - "Community 16"
 Cohesion: 1.0
-Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
+Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
 
 ### Community 17 - "Community 17"
 Cohesion: 1.0
-Nodes (1): Meme logique que chapter_display_title, mais traduit aussi 'Chapitre'     en 'P
+Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
 
 ### Community 18 - "Community 18"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
 
 ### Community 19 - "Community 19"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : les paires question/reponse (une     par <d
+Nodes (1): Meme logique que chapter_display_title, mais traduit aussi 'Chapitre'     en 'P
 
 ### Community 20 - "Community 20"
 Cohesion: 1.0
-Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 21 - "Community 21"
 Cohesion: 1.0
-Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
+Nodes (1): HTML interne d'une section guide2 : les paires question/reponse (une     par <d
 
 ### Community 22 - "Community 22"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
 
 ### Community 23 - "Community 23"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
 
 ### Community 24 - "Community 24"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 25 - "Community 25"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 26 - "Community 26"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 27 - "Community 27"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 28 - "Community 28"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 29 - "Community 29"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 30 - "Community 30"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 31 - "Community 31"
 Cohesion: 1.0
-Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 32 - "Community 32"
 Cohesion: 1.0
-Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 33 - "Community 33"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
 
 ### Community 34 - "Community 34"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
 
 ### Community 35 - "Community 35"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 36 - "Community 36"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 37 - "Community 37"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 38 - "Community 38"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 39 - "Community 39"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 40 - "Community 40"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 41 - "Community 41"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 42 - "Community 42"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 43 - "Community 43"
 Cohesion: 1.0
-Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 44 - "Community 44"
 Cohesion: 1.0
-Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 45 - "Community 45"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
 
 ### Community 46 - "Community 46"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
 
 ### Community 47 - "Community 47"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 48 - "Community 48"
 Cohesion: 1.0
@@ -460,95 +462,95 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 
 ### Community 49 - "Community 49"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 50 - "Community 50"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 51 - "Community 51"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 52 - "Community 52"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 53 - "Community 53"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 54 - "Community 54"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 55 - "Community 55"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 56 - "Community 56"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 57 - "Community 57"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 58 - "Community 58"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 59 - "Community 59"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 60 - "Community 60"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 61 - "Community 61"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 62 - "Community 62"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 63 - "Community 63"
 Cohesion: 1.0
-Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 64 - "Community 64"
 Cohesion: 1.0
-Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 65 - "Community 65"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe
 
 ### Community 66 - "Community 66"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p
 
 ### Community 67 - "Community 67"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 68 - "Community 68"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 69 - "Community 69"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 70 - "Community 70"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 71 - "Community 71"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 72 - "Community 72"
 Cohesion: 1.0
@@ -556,31 +558,31 @@ Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (is
 
 ### Community 73 - "Community 73"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 74 - "Community 74"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 75 - "Community 75"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 76 - "Community 76"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 77 - "Community 77"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 78 - "Community 78"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 79 - "Community 79"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 80 - "Community 80"
 Cohesion: 1.0
@@ -588,75 +590,75 @@ Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous
 
 ### Community 81 - "Community 81"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 82 - "Community 82"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 83 - "Community 83"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 84 - "Community 84"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 85 - "Community 85"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 86 - "Community 86"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 87 - "Community 87"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 88 - "Community 88"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 89 - "Community 89"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 90 - "Community 90"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 91 - "Community 91"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 92 - "Community 92"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 93 - "Community 93"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 94 - "Community 94"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 95 - "Community 95"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 96 - "Community 96"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 97 - "Community 97"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 98 - "Community 98"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 99 - "Community 99"
 Cohesion: 1.0
@@ -664,343 +666,343 @@ Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous
 
 ### Community 100 - "Community 100"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 101 - "Community 101"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 102 - "Community 102"
 Cohesion: 1.0
-Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 103 - "Community 103"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 104 - "Community 104"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
 
 ### Community 105 - "Community 105"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 106 - "Community 106"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 107 - "Community 107"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 108 - "Community 108"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 109 - "Community 109"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 110 - "Community 110"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 111 - "Community 111"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 112 - "Community 112"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 113 - "Community 113"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 114 - "Community 114"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 115 - "Community 115"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 116 - "Community 116"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 117 - "Community 117"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 118 - "Community 118"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 119 - "Community 119"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 120 - "Community 120"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 121 - "Community 121"
 Cohesion: 1.0
-Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 122 - "Community 122"
 Cohesion: 1.0
-Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 123 - "Community 123"
 Cohesion: 1.0
-Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
+Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
 
 ### Community 124 - "Community 124"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
 
 ### Community 125 - "Community 125"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
 
 ### Community 126 - "Community 126"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 127 - "Community 127"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 128 - "Community 128"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 129 - "Community 129"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 130 - "Community 130"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 131 - "Community 131"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 132 - "Community 132"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 133 - "Community 133"
 Cohesion: 1.0
-Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 134 - "Community 134"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 135 - "Community 135"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): 3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1
 
 ### Community 136 - "Community 136"
 Cohesion: 1.0
-Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 137 - "Community 137"
 Cohesion: 1.0
-Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 138 - "Community 138"
 Cohesion: 1.0
-Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
+Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
 
 ### Community 139 - "Community 139"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
 
 ### Community 140 - "Community 140"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
 
 ### Community 141 - "Community 141"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 142 - "Community 142"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 143 - "Community 143"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 144 - "Community 144"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 145 - "Community 145"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 146 - "Community 146"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 147 - "Community 147"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 148 - "Community 148"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 149 - "Community 149"
 Cohesion: 1.0
-Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 150 - "Community 150"
 Cohesion: 1.0
-Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 151 - "Community 151"
 Cohesion: 1.0
-Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
+Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
 
 ### Community 152 - "Community 152"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
 
 ### Community 153 - "Community 153"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
 
 ### Community 154 - "Community 154"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 155 - "Community 155"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 156 - "Community 156"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 157 - "Community 157"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 158 - "Community 158"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 159 - "Community 159"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 160 - "Community 160"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 161 - "Community 161"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 162 - "Community 162"
 Cohesion: 1.0
-Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 163 - "Community 163"
 Cohesion: 1.0
-Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 164 - "Community 164"
 Cohesion: 1.0
-Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
+Nodes (1): Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML
 
 ### Community 165 - "Community 165"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): La description (contrairement au texte d'analyse, deja extrait en     texte pur
 
 ### Community 166 - "Community 166"
 Cohesion: 1.0
-Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
+Nodes (1): Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles
 
 ### Community 167 - "Community 167"
 Cohesion: 1.0
-Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 168 - "Community 168"
 Cohesion: 1.0
-Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
+Nodes (1): Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume
 
 ### Community 169 - "Community 169"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
 
 ### Community 170 - "Community 170"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que
 
 ### Community 171 - "Community 171"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 172 - "Community 172"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 173 - "Community 173"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 174 - "Community 174"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 175 - "Community 175"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 176 - "Community 176"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 177 - "Community 177"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 178 - "Community 178"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 179 - "Community 179"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 180 - "Community 180"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 181 - "Community 181"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 182 - "Community 182"
 Cohesion: 1.0
-Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 183 - "Community 183"
 Cohesion: 1.0
-Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
+Nodes (1): 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]
 
 ### Community 184 - "Community 184"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
 
 ### Community 185 - "Community 185"
 Cohesion: 1.0
@@ -1008,15 +1010,15 @@ Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut    
 
 ### Community 186 - "Community 186"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 187 - "Community 187"
 Cohesion: 1.0
-Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
+Nodes (1): 1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag
 
 ### Community 188 - "Community 188"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 189 - "Community 189"
 Cohesion: 1.0
@@ -1040,7 +1042,7 @@ Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de 
 
 ### Community 194 - "Community 194"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 195 - "Community 195"
 Cohesion: 1.0
@@ -1048,87 +1050,87 @@ Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de 
 
 ### Community 196 - "Community 196"
 Cohesion: 1.0
-Nodes (1): Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
 
 ### Community 197 - "Community 197"
 Cohesion: 1.0
-Nodes (1): Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines
+Nodes (1): Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon
 
 ### Community 198 - "Community 198"
 Cohesion: 1.0
-Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
+Nodes (1): Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des
 
 ### Community 199 - "Community 199"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
+Nodes (1): Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines
 
 ### Community 200 - "Community 200"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp
 
 ### Community 201 - "Community 201"
 Cohesion: 1.0
-Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+Nodes (1): HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.
 
 ### Community 202 - "Community 202"
 Cohesion: 1.0
-Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 203 - "Community 203"
 Cohesion: 1.0
-Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
 
 ### Community 204 - "Community 204"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 205 - "Community 205"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
 
 ### Community 206 - "Community 206"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
 
 ### Community 207 - "Community 207"
 Cohesion: 1.0
-Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 208 - "Community 208"
 Cohesion: 1.0
-Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+Nodes (1): HTML interne d'une section guide2 : uniquement les paires     question/reponse
 
 ### Community 209 - "Community 209"
 Cohesion: 1.0
-Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
 
 ### Community 210 - "Community 210"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 211 - "Community 211"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
 
 ### Community 212 - "Community 212"
 Cohesion: 1.0
-Nodes (1): HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
 
 ### Community 213 - "Community 213"
 Cohesion: 1.0
-Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 214 - "Community 214"
 Cohesion: 1.0
-Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+Nodes (1): HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej
 
 ### Community 215 - "Community 215"
 Cohesion: 1.0
-Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 216 - "Community 216"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 217 - "Community 217"
 Cohesion: 1.0
@@ -1136,386 +1138,394 @@ Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     
 
 ### Community 218 - "Community 218"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 219 - "Community 219"
 Cohesion: 1.0
-Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
 
 ### Community 220 - "Community 220"
 Cohesion: 1.0
-Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
 
 ### Community 221 - "Community 221"
 Cohesion: 1.0
-Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
+Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ### Community 222 - "Community 222"
 Cohesion: 1.0
-Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+Nodes (1): Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot
 
 ### Community 223 - "Community 223"
 Cohesion: 1.0
-Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+Nodes (1): Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha
 
 ### Community 224 - "Community 224"
+Cohesion: 1.0
+Nodes (1): Un <section id=...> de premier niveau sans div.body-block est un     separateur
+
+### Community 225 - "Community 225"
+Cohesion: 1.0
+Nodes (1): Forme attendue par render_volume_block : un 'livre' par numero de     conferenc
+
+### Community 226 - "Community 226"
 Cohesion: 1.0
 Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_
 
 ## Knowledge Gaps
-- **249 isolated node(s):** `One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a`, `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta`, `List of (word_text, structured_text) for every headword entry found     in this`, `Queries farevanaa.pf for `word` (already normalized) and returns the     merged` (+244 more)
+- **251 isolated node(s):** `One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a`, `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta`, `List of (word_text, structured_text) for every headword entry found     in this`, `Queries farevanaa.pf for `word` (already normalized) and returns the     merged` (+246 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 13`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
+- **Thin community `Community 14`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '19`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 15`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
+- **Thin community `Community 15`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 16`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
+- **Thin community `Community 16`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 17`** (1 nodes): `Meme logique que chapter_display_title, mais traduit aussi 'Chapitre'     en 'P`
+- **Thin community `Community 17`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 18`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (1 nodes): `HTML interne d'une section guide2 : les paires question/reponse (une     par <d`
+- **Thin community `Community 19`** (1 nodes): `Meme logique que chapter_display_title, mais traduit aussi 'Chapitre'     en 'P`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 20`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
+- **Thin community `Community 20`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
+- **Thin community `Community 21`** (1 nodes): `HTML interne d'une section guide2 : les paires question/reponse (une     par <d`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 22`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 22`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 23`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 23`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 24`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 24`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 25`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 25`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 26`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 27`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 28`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 29`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 30`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
+- **Thin community `Community 31`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
+- **Thin community `Community 32`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 33`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 34`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 35`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 36`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 37`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 38`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 39`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 40`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 41`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 42`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
+- **Thin community `Community 43`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
+- **Thin community `Community 44`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 45`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 46`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 47`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 48`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 49`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 50`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 51`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 52`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 53`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 54`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 55`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 56`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 57`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 58`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 59`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 60`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 61`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 62`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
+- **Thin community `Community 63`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
+- **Thin community `Community 64`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 65`** (1 nodes): `Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 66`** (1 nodes): `Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 67`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 68`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 69`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 70`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 71`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 72`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 73`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 74`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 75`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 76`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 77`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 78`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 79`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 80`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 81`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 82`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 83`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 84`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 85`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 86`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 87`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 88`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 89`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 90`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 91`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 92`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 93`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 94`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 95`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 96`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 97`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 98`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 99`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 100`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 101`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+- **Thin community `Community 102`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 103`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 104`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 105`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 106`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 107`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 108`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 109`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 110`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 111`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 112`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 113`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 113`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 114`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 114`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 115`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 116`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 117`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 118`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 119`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 120`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 120`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
+- **Thin community `Community 121`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
+- **Thin community `Community 122`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
+- **Thin community `Community 123`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 124`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 125`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 126`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 127`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 128`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 129`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 130`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 131`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 132`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
+- **Thin community `Community 133`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 134`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 135`** (1 nodes): `3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
+- **Thin community `Community 136`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
+- **Thin community `Community 137`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
+- **Thin community `Community 138`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 139`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 140`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 141`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 142`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 143`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 144`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 145`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 146`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 146`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 147`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 147`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 148`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 148`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 149`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
+- **Thin community `Community 149`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 150`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
+- **Thin community `Community 150`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
+- **Thin community `Community 151`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 152`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 153`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 154`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 155`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 156`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 157`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 158`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 159`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 160`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 161`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 162`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
+- **Thin community `Community 162`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 163`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
+- **Thin community `Community 163`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
+- **Thin community `Community 164`** (1 nodes): `Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 165`** (1 nodes): `La description (contrairement au texte d'analyse, deja extrait en     texte pur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
+- **Thin community `Community 166`** (1 nodes): `Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
+- **Thin community `Community 167`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
+- **Thin community `Community 168`** (1 nodes): `Renvoie (numero_de_verset, texte_sans_le_numero) ou (None, texte) si pas de nume`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 169`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 170`** (1 nodes): `raw_title est toujours '{book_title} Chapitre N' (source) - ne     remplace que`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 171`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 172`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 173`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 174`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 175`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 176`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 177`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 178`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 179`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 180`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 180`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 181`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
+- **Thin community `Community 181`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 182`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
+- **Thin community `Community 182`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 183`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
+- **Thin community `Community 183`** (1 nodes): `1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)]`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 184`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 184`** (1 nodes): `Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 185`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 186`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
+- **Thin community `Community 187`** (1 nodes): `1 Nephi 4' -> ('1 Nephi', 4) - donne le livre/chapitre par defaut     d'une pag`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 188`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 189`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1527,77 +1537,81 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 193`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 194`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 195`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 196`** (1 nodes): `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`
+- **Thin community `Community 196`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 197`** (1 nodes): `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines`
+- **Thin community `Community 197`** (1 nodes): `Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
+- **Thin community `Community 198`** (1 nodes): `Construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
+- **Thin community `Community 199`** (1 nodes): `Vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 200`** (1 nodes): `Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 201`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+- **Thin community `Community 201`** (1 nodes): `HTML interne d'une section de guide, sans son <h2> ni le lien 'back to top'.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+- **Thin community `Community 202`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+- **Thin community `Community 203`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 204`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 205`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
+- **Thin community `Community 206`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 207`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+- **Thin community `Community 207`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 208`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+- **Thin community `Community 208`** (1 nodes): `HTML interne d'une section guide2 : uniquement les paires     question/reponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 209`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+- **Thin community `Community 209`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 210`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 210`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 211`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (1 nodes): `HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej`
+- **Thin community `Community 212`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 213`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+- **Thin community `Community 213`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 214`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+- **Thin community `Community 214`** (1 nodes): `HTML interne d'une section guide2, sans son <p class="Chapter-Number">     (dej`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 215`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+- **Thin community `Community 215`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 216`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 216`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 217`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 218`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 218`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 219`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 219`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 220`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
+- **Thin community `Community 220`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 221`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
+- **Thin community `Community 221`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 222`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+- **Thin community `Community 222`** (1 nodes): `Equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 223`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+- **Thin community `Community 223`** (1 nodes): `Enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 224`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
+- **Thin community `Community 224`** (1 nodes): `Un <section id=...> de premier niveau sans div.body-block est un     separateur`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 225`** (1 nodes): `Forme attendue par render_volume_block : un 'livre' par numero de     conferenc`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 226`** (1 nodes): `books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `normalize()` connect `Community 3` to `Community 0`, `Community 6`, `Community 7`?**
+- **Why does `normalize()` connect `Community 2` to `Community 0`, `Community 5`, `Community 6`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
-- **Why does `slugify()` connect `Community 0` to `Community 3`?**
+- **Why does `slugify()` connect `Community 0` to `Community 2`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
-- **Why does `structured_definition_for_word()` connect `Community 7` to `Community 2`, `Community 3`?**
+- **Why does `structured_definition_for_word()` connect `Community 6` to `Community 2`, `Community 3`?**
   _High betweenness centrality (0.031) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `normalize()` (e.g. with `structured_definition_for_word()` and `build_real_ngrams()`) actually correct?**
   _`normalize()` has 4 INFERRED edges - model-reasoned connections that need verification._
@@ -1606,4 +1620,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 3 inferred relationships involving `tahitien_window()` (e.g. with `structured_definition_for_word()` and `audio_url_for_word()`) actually correct?**
   _`tahitien_window()` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a`, `One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)`, `Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta` to the rest of the system?**
-  _249 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _251 weakly-connected nodes found - possible documentation gaps or missing edges._
