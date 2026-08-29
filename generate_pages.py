@@ -2242,11 +2242,27 @@ else:
 # PARTIEL" de reprise, cloture) est ignore automatiquement.
 # ---------------------------------------------------------------------------
 
+
+# Deux formats de source coexistent (le 2e apparu avec le fichier
+# 1981+ : plusieurs entrees Theme/L'analogie/Signification/Lien de suite
+# sans separateur --- entre elles, juste une ligne vide devant chaque
+# nouvelle ligne de date). CONF_ANALOGY_SPLIT_RE ne change PAS le
+# comportement --- existant (deja verifie 427/427 sur 1971-1977.txt,
+# y compris son format Orateur-Titre AVANT la date, ou une ligne vide
+# devant "Conference generale du" apparait aussi mais AU MILIEU d'une
+# seule entree - un split aveugle dessus y casserait le rattachement
+# orateur/date). Un bloc --- est donc re-decoupe en sous-entrees UNIQUEMENT
+# s'il contient plus d'un "Lien :" (signe fiable du format compact) ; les
+# regex de champ s'arretent au prochain libelle connu (pas seulement a la
+# prochaine ligne vide) pour ne jamais deborder sur le champ suivant quel
+# que soit le format.
 CONF_ANALOGY_SPLIT_RE = re.compile(r'\n\s*[─\-]{3,}\s*\n')
+CONF_ANALOGY_SPLIT_COMPACT_RE = re.compile(r'\n\s*\n(?=Conf[ée]rence g[ée]n[ée]rale du )')
 CONF_ANALOGY_DATE_RE = re.compile(r'Conf[ée]rence g[ée]n[ée]rale du ([^\n]+)')
-CONF_ANALOGY_THEME_RE = re.compile(r'Th[eè]me\s*:\s*(.+?)\s*(?=\n\s*\n)', re.DOTALL)
-CONF_ANALOGY_TEXT_RE = re.compile(r"L'analogie\s*:\s*(.+?)\s*(?=\n\s*\n)", re.DOTALL)
-CONF_ANALOGY_SIGNIF_RE = re.compile(r'Signification\s*:\s*(.+?)\s*(?=\n\s*\n)', re.DOTALL)
+CONF_ANALOGY_FIELD_BOUNDARY = r"(?=\n\s*\n|\n\s*(?:Th[eè]me|L'analogie|Signification|Lien)\s*:|\Z)"
+CONF_ANALOGY_THEME_RE = re.compile(r'Th[eè]me\s*:\s*(.+?)\s*' + CONF_ANALOGY_FIELD_BOUNDARY, re.DOTALL)
+CONF_ANALOGY_TEXT_RE = re.compile(r"L'analogie\s*:\s*(.+?)\s*" + CONF_ANALOGY_FIELD_BOUNDARY, re.DOTALL)
+CONF_ANALOGY_SIGNIF_RE = re.compile(r'Signification\s*:\s*(.+?)\s*' + CONF_ANALOGY_FIELD_BOUNDARY, re.DOTALL)
 CONF_ANALOGY_LIEN_RE = re.compile(r'Lien\s*:\s*(\S+)')
 CONF_ANALOGY_DASH_LINE_RE = re.compile(r'^(.+?)\s+[–—‐―-]\s+(.+?)\s*$')
 CONF_ANALOGY_KNOWN_PREFIXES = ('Conf', 'Thème', 'Theme', "L'analogie", 'Signification', 'Lien')
@@ -2275,11 +2291,20 @@ def parse_conference_issue_date(date_raw):
     if not m:
         return None, None, None
     month_word, year, session = m.groups()
-    month_num = CONF_ANALOGY_MONTH_FR.get(month_word.lower())
+    month_key = month_word.lower()
+    # La Conference generale n'a jamais officiellement lieu en mars/septembre :
+    # une session (reunion de la Pretrise, allocution aux femmes...) peut
+    # se tenir jusqu'a ~2 semaines avant le week-end principal, mais reste
+    # rattachee a l'edition d'avril/octobre de la meme annee, jamais a une
+    # edition "mars"/"septembre" distincte - sans ce rattachement, ces
+    # sessions se retrouvent scindees en un faux numero separe (trouve sur
+    # le fichier 1978-1989 : 10 numeros casses en 2 avant ce fix).
+    month_key = {'septembre': 'octobre', 'mars': 'avril'}.get(month_key, month_key)
+    month_num = CONF_ANALOGY_MONTH_FR.get(month_key)
     if not month_num:
         return None, None, None
     issue_key = f'{year}-{month_num}'
-    issue_label = f'{month_word.capitalize()} {year}'
+    issue_label = f'{month_key.capitalize()} {year}'
     return issue_key, issue_label, session.strip() if session else None
 
 
@@ -2297,7 +2322,14 @@ def parse_conference_analogies_sources(folder):
 
         last_issue_key = last_issue_label = last_session = None
         last_speaker = last_title = None
-        for block in CONF_ANALOGY_SPLIT_RE.split(text):
+        raw_blocks = CONF_ANALOGY_SPLIT_RE.split(text)
+        blocks = []
+        for raw_block in raw_blocks:
+            if len(CONF_ANALOGY_LIEN_RE.findall(raw_block)) > 1:
+                blocks.extend(CONF_ANALOGY_SPLIT_COMPACT_RE.split(raw_block))
+            else:
+                blocks.append(raw_block)
+        for block in blocks:
             lien_m = CONF_ANALOGY_LIEN_RE.search(block)
             if not lien_m:
                 continue  # pas un bloc d'analogie (preambule/ARRET/cloture)
@@ -2305,6 +2337,13 @@ def parse_conference_analogies_sources(folder):
             analogie_m = CONF_ANALOGY_TEXT_RE.search(block)
             signif_m = CONF_ANALOGY_SIGNIF_RE.search(block)
             if not (theme_m and analogie_m and signif_m):
+                continue
+            if len(theme_m.group(1)) > 80:
+                # Un theme n'est jamais une phrase longue (toujours 1-3 mots
+                # dans toutes les sources vues) - un match anormalement long
+                # signale un format non reconnu (le champ a debordé sur le
+                # reste du bloc) : on ignore l'entree plutot que d'ecrire un
+                # nom de fichier absurde (deja cause un crash une fois).
                 continue
 
             date_m = CONF_ANALOGY_DATE_RE.search(block)
