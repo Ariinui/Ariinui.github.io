@@ -662,6 +662,16 @@ document.addEventListener('DOMContentLoaded', function() {
             text.split('\n').forEach(function(line) { appendStyledLine(container, line); });
         }
 
+        // Prononciation reelle des lettres empruntees (absentes du tahitien natif,
+        // f/h/m/n/p/r/t/v/') dans les noms/mots bibliques transcrits avec leur
+        // orthographe d'origine (ex. Alama, Babulonia) - regle systematique
+        // confirmee par l'utilisateur, sans liste d'exceptions : b->p, d->t,
+        // l->r, s->t, z->t ; k et les voyelles (dont u, jamais "ou") inchanges.
+        var PHONETIC_MAP = { b: 'p', d: 't', l: 'r', s: 't', z: 't', B: 'P', D: 'T', L: 'R', S: 'T', Z: 'T' };
+        function toPhoneticTahitian(text) {
+            return text.replace(/[bdlszBDLSZ]/g, function(ch) { return PHONETIC_MAP[ch]; });
+        }
+
         var AUDIO_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
         var INFO_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
 
@@ -678,6 +688,14 @@ document.addEventListener('DOMContentLoaded', function() {
             titleEl.className = 'tah-popup-title';
             titleEl.textContent = el.textContent;
             header.appendChild(titleEl);
+
+            var phoneticText = toPhoneticTahitian(el.textContent);
+            if (phoneticText !== el.textContent) {
+                var phoneticEl = document.createElement('div');
+                phoneticEl.className = 'tah-popup-phonetic';
+                phoneticEl.textContent = phoneticText;
+                header.appendChild(phoneticEl);
+            }
 
             var icons = document.createElement('div');
             icons.className = 'tah-popup-icons';

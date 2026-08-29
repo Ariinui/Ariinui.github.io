@@ -948,6 +948,14 @@ nav a:hover {
     color: #ffffff;
 }
 
+.tah-popup-phonetic {
+    text-align: center;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--tah-accent);
+    margin-top: 2px;
+}
+
 .tah-popup-icons {
     position: absolute;
     top: 0;

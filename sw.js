@@ -1,6 +1,6 @@
 const SHELL_CACHE = 'bam-shell-v1';
 const RUNTIME_CACHE = 'bam-runtime-v1';
-const SHELL_ASSETS = ["/", "/index.html", "/styles.css?v=6e47cf7f", "/script.js?v=8f66a09f", "/manifest.json", "/offline.html", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
+const SHELL_ASSETS = ["/", "/index.html", "/styles.css?v=b7c43f0c", "/script.js?v=3969aa44", "/manifest.json", "/offline.html", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
