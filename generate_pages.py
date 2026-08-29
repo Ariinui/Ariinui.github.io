@@ -3596,6 +3596,7 @@ nav a:hover {
     min-width: 220px;
     max-width: 320px;
     background: #0b0b0f;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 18px;
     padding: 16px 18px 14px;
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
@@ -3610,6 +3611,7 @@ nav a:hover {
     width: 12px;
     height: 12px;
     background: #0b0b0f;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     transform: rotate(45deg);
     border-radius: 2px;
 }
