@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import html
+import html as html_lib
 import json
 import os
 import re
@@ -128,15 +129,75 @@ def tah_normalize(word):
 
 MAX_PHRASE_WORDS = 5
 
+FR_WORD_RE = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿ]+")
+GLOSS_CAT_RE = re.compile(r'^[a-zàâäéèêëïîôöùûüç]{1,6}:\s*(.*)$', re.IGNORECASE)
 
-def wrap_tah_words(text):
+# Mots-outils francais (articles, pronoms, prepositions, conjonctions...)
+# exclus des mots de glose consideres pour la correspondance - sans ca, un
+# sens comme "art: le, la, les, un, des," matche PRESQUE TOUJOURS (ces mots
+# apparaissent dans quasiment chaque verset), rendant la desambiguisation
+# inutile pour les mots grammaticaux tahitiens (ex. "te"). Seuls des mots de
+# contenu (verbes, noms, adjectifs specifiques) doivent pouvoir declencher
+# une correspondance.
+FR_STOPWORDS = {
+    'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou', 'où', 'a', 'à',
+    'au', 'aux', 'en', 'que', 'qui', 'quoi', 'dont', 'ce', 'cet', 'cette', 'ces',
+    'se', "s'", 'sa', 'son', 'ses', 'leur', 'leurs', 'mon', 'ma', 'mes', 'ton', 'ta',
+    'tes', 'notre', 'nos', 'votre', 'vos', 'il', 'elle', 'ils', 'elles', 'on', 'nous',
+    'vous', 'je', "j'", 'tu', 'me', "m'", 'moi', 'toi', 'te', "t'", 'lui', 'eux', 'y',
+    'ne', 'pas', 'plus', 'moins', 'mais', 'donc', 'car', 'ni', 'si', 'dans', 'sur',
+    'sous', 'pour', 'par', 'avec', 'sans', 'vers', 'chez', 'entre', 'être', 'est',
+    'suis', 'es', 'sommes', 'êtes', 'sont', 'était', 'étais', 'étions', 'étiez',
+    'étaient', 'été', 'avoir', 'ai', 'as', 'avons', 'avez', 'ont', 'avait', 'avais',
+    'avions', 'aviez', 'avaient', 'eu', 'quand', 'comme', 'tout', 'tous', 'toute',
+    'toutes', 'aussi', 'alors', 'ainsi', 'ici', 'là', 'très', 'bien', 'meme', 'même',
+    'encore', 'deja', 'déjà', 'fut', 'fût', 'sera', 'seras', 'serai', 'serez',
+    'serons', 'seront', 'peu', 'trop', 'afin', 'lorsque', 'apres', 'après', 'avant',
+    'depuis', 'pendant', 'jusque', "jusqu'", 'celui', 'celle', 'ceux', 'celles',
+    'cela', 'ceci', 'quel', 'quelle', 'quels', 'quelles',
+}
+
+
+def disambiguate_sense(gloss, french_context):
+    """Si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf "vt: battre,
+    frapper,\nvt: tuer,") et qu'un seul de ces sens a un mot de CONTENU (pas
+    un mot-outil, cf. FR_STOPWORDS) qui apparait tel quel dans le texte
+    francais officiel du meme verset, retourne ce sens (la ligne complete)
+    pour affichage prioritaire dans la bulle - sinon None (la bulle affiche
+    alors la liste complete, comme avant cette fonction). Volontairement
+    prudent : zero ou plusieurs sens correspondants => on ne tranche pas, cf.
+    discussion utilisateur (mieux vaut s'abstenir que se tromper - la
+    traduction du Livre de Mormon choisit souvent un synonyme different du
+    mot generique donne par reo.pf/Fare Vana'a)."""
+    lines = gloss.split('\n')
+    if len(lines) < 2:
+        return None
+    fr_words = set(w.lower() for w in FR_WORD_RE.findall(french_context))
+    if not fr_words:
+        return None
+    matched_lines = []
+    for line in lines:
+        m = GLOSS_CAT_RE.match(line)
+        rest = m.group(1) if m else line
+        words = [w.strip(' .') for w in rest.split(',') if w.strip(' .')]
+        words = [w for w in words if w.lower() not in FR_STOPWORDS]
+        if any(w.lower() in fr_words for w in words):
+            matched_lines.append(line)
+    if len(matched_lines) == 1:
+        return matched_lines[0]
+    return None
+
+
+def wrap_tah_words(text, french_context=''):
     """Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe
     compose connu, ex. "haere mai" = venir, une seule bulle pour le groupe
     entier) ayant une glose dans tah_dict d'un <span class="tah-word"> pour
     le tap-to-translate - laisse tel quel tout mot absent du glossaire (nom
     propre, forme flechie...) ou tah_dict vide. Essaie toujours le plus long
     groupe d'abord (match exact requis contre tah_dict a chaque longueur -
-    c'est ce qui evite les faux positifs, pas une liste de POS autorises)."""
+    c'est ce qui evite les faux positifs, pas une liste de POS autorises).
+    `french_context` (texte francais du meme verset/entree) sert uniquement
+    a tenter disambiguate_sense - laisse vide pour desactiver."""
     if not tah_dict:
         return text
 
@@ -156,8 +217,10 @@ def wrap_tah_words(text):
                 continue
             phrase_key = ' '.join(tah_normalize(g.group(0)) for g in group)
             if phrase_key in tah_dict:
+                sense = disambiguate_sense(tah_dict[phrase_key], french_context)
+                sense_attr = f' data-sense="{html_lib.escape(sense)}"' if sense else ''
                 out.append(text[last_end:group[0].start()])
-                out.append(f'<span class="tah-word" data-w="{phrase_key}">{text[group[0].start():group[-1].end()]}</span>')
+                out.append(f'<span class="tah-word" data-w="{phrase_key}"{sense_attr}>{text[group[0].start():group[-1].end()]}</span>')
                 last_end = group[-1].end()
                 i += span
                 matched_phrase = True
@@ -167,8 +230,10 @@ def wrap_tah_words(text):
         m = matches[i]
         key = tah_normalize(m.group(0))
         if key in tah_dict:
+            sense = disambiguate_sense(tah_dict[key], french_context)
+            sense_attr = f' data-sense="{html_lib.escape(sense)}"' if sense else ''
             out.append(text[last_end:m.start()])
-            out.append(f'<span class="tah-word" data-w="{key}">{m.group(0)}</span>')
+            out.append(f'<span class="tah-word" data-w="{key}"{sense_attr}>{m.group(0)}</span>')
             last_end = m.end()
         i += 1
     out.append(text[last_end:])
@@ -2541,7 +2606,7 @@ if SITE_TAHITIEN:
             verses_html = ''
             for verse in chapter['verses']:
                 verse_num, verse_text = split_verse_number(verse['tahitien'])
-                verse_text = wrap_tah_words(verse_text)
+                verse_text = wrap_tah_words(verse_text, verse.get('francais', ''))
                 if verse_num is None:
                     verses_html += f'<p class="verse-fr">{verse_text}</p>'
                     continue
@@ -2549,7 +2614,7 @@ if SITE_TAHITIEN:
 
             introduction_html = ''
             if chapter['introduction']:
-                intro_text = wrap_tah_words(chapter["introduction"]["tahitien"])
+                intro_text = wrap_tah_words(chapter["introduction"]["tahitien"], chapter["introduction"].get("francais", ''))
                 introduction_html = f'<p class="verse-fr introduction">{intro_text}</p>'
 
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
@@ -3682,6 +3747,12 @@ nav a:hover {
 
 .tah-popup-definition-text {
     white-space: pre-line;
+}
+
+.tah-popup-definition-text + .tah-popup-definition-text {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tah-popup-definition-source {
@@ -4838,19 +4909,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 icons.appendChild(audioBtn);
             }
 
+            // Sens precis pour ce verset (pose a la generation en comparant
+            // au texte francais officiel du meme verset, cf. disambiguate_sense
+            // dans generate_pages.py) : si present, il devient le texte
+            // principal et la liste complete reo.pf rejoint la definition
+            // Fare Vana'a derriere le (i) - sinon comportement inchange
+            // (liste complete en principal, rien de plus a montrer que
+            // Fare Vana'a derriere le (i)).
+            var matchedSense = el.getAttribute('data-sense');
+            var primaryText = matchedSense || gloss;
+
             var defEl = null;
-            if (def && def.text) {
+            if (matchedSense || (def && def.text)) {
                 defEl = document.createElement('div');
                 defEl.className = 'tah-popup-definition';
                 defEl.style.display = 'none';
-                var defText = document.createElement('div');
-                defText.className = 'tah-popup-definition-text';
-                renderLines(defText, def.text);
-                defEl.appendChild(defText);
-                var sourceEl = document.createElement('span');
-                sourceEl.className = 'tah-popup-definition-source';
-                sourceEl.textContent = "Source : Fare Vana'a";
-                defEl.appendChild(sourceEl);
+
+                if (matchedSense) {
+                    var fullGlossText = document.createElement('div');
+                    fullGlossText.className = 'tah-popup-definition-text';
+                    renderLines(fullGlossText, gloss);
+                    defEl.appendChild(fullGlossText);
+                }
+                if (def && def.text) {
+                    var defText = document.createElement('div');
+                    defText.className = 'tah-popup-definition-text';
+                    renderLines(defText, def.text);
+                    defEl.appendChild(defText);
+                    var sourceEl = document.createElement('span');
+                    sourceEl.className = 'tah-popup-definition-source';
+                    sourceEl.textContent = "Source : Fare Vana'a";
+                    defEl.appendChild(sourceEl);
+                }
 
                 var infoBtn = document.createElement('button');
                 infoBtn.className = 'tah-popup-info-btn';
@@ -4868,7 +4958,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var textEl = document.createElement('div');
             textEl.className = 'tah-popup-text';
-            renderLines(textEl, gloss);
+            renderLines(textEl, primaryText);
             popup.appendChild(textEl);
 
             if (defEl) popup.appendChild(defEl);

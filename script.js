@@ -694,19 +694,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 icons.appendChild(audioBtn);
             }
 
+            // Sens precis pour ce verset (pose a la generation en comparant
+            // au texte francais officiel du meme verset, cf. disambiguate_sense
+            // dans generate_pages.py) : si present, il devient le texte
+            // principal et la liste complete reo.pf rejoint la definition
+            // Fare Vana'a derriere le (i) - sinon comportement inchange
+            // (liste complete en principal, rien de plus a montrer que
+            // Fare Vana'a derriere le (i)).
+            var matchedSense = el.getAttribute('data-sense');
+            var primaryText = matchedSense || gloss;
+
             var defEl = null;
-            if (def && def.text) {
+            if (matchedSense || (def && def.text)) {
                 defEl = document.createElement('div');
                 defEl.className = 'tah-popup-definition';
                 defEl.style.display = 'none';
-                var defText = document.createElement('div');
-                defText.className = 'tah-popup-definition-text';
-                renderLines(defText, def.text);
-                defEl.appendChild(defText);
-                var sourceEl = document.createElement('span');
-                sourceEl.className = 'tah-popup-definition-source';
-                sourceEl.textContent = "Source : Fare Vana'a";
-                defEl.appendChild(sourceEl);
+
+                if (matchedSense) {
+                    var fullGlossText = document.createElement('div');
+                    fullGlossText.className = 'tah-popup-definition-text';
+                    renderLines(fullGlossText, gloss);
+                    defEl.appendChild(fullGlossText);
+                }
+                if (def && def.text) {
+                    var defText = document.createElement('div');
+                    defText.className = 'tah-popup-definition-text';
+                    renderLines(defText, def.text);
+                    defEl.appendChild(defText);
+                    var sourceEl = document.createElement('span');
+                    sourceEl.className = 'tah-popup-definition-source';
+                    sourceEl.textContent = "Source : Fare Vana'a";
+                    defEl.appendChild(sourceEl);
+                }
 
                 var infoBtn = document.createElement('button');
                 infoBtn.className = 'tah-popup-info-btn';
@@ -724,7 +743,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var textEl = document.createElement('div');
             textEl.className = 'tah-popup-text';
-            renderLines(textEl, gloss);
+            renderLines(textEl, primaryText);
             popup.appendChild(textEl);
 
             if (defEl) popup.appendChild(defEl);
