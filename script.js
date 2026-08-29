@@ -734,9 +734,20 @@ document.addEventListener('DOMContentLoaded', function() {
             popup.appendChild(arrow);
 
             popup.style.maxWidth = Math.min(320, window.innerWidth - 24) + 'px';
+            popup.addEventListener('click', function(event) {
+                event.stopPropagation();
+                closePopup();
+            });
             document.body.appendChild(popup);
+            positionPopup(el, popup, arrow);
+        }
+
+        // Recalcule position de la bulle + pointe par rapport au mot - appele a
+        // l'ouverture et a chaque scroll (la bulle reste ouverte et suit le mot
+        // au lieu de se fermer, sur demande explicite de l'utilisateur).
+        function positionPopup(el, popupEl, arrowEl) {
             var wordRect = el.getBoundingClientRect();
-            var popupRect = popup.getBoundingClientRect();
+            var popupRect = popupEl.getBoundingClientRect();
             var left = Math.min(Math.max(8, wordRect.left), window.innerWidth - popupRect.width - 8);
             var top = wordRect.bottom + 10;
             var openedBelow = true;
@@ -744,17 +755,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 top = wordRect.top - popupRect.height - 10;
                 openedBelow = false;
             }
-            popup.style.left = left + 'px';
-            popup.style.top = top + 'px';
+            popupEl.style.left = left + 'px';
+            popupEl.style.top = top + 'px';
 
             var wordCenterX = wordRect.left + wordRect.width / 2;
             var arrowX = wordCenterX - left - 6;
             arrowX = Math.max(14, Math.min(arrowX, popupRect.width - 26));
-            arrow.style.left = arrowX + 'px';
+            arrowEl.style.left = arrowX + 'px';
             if (openedBelow) {
-                arrow.style.top = '-6px';
+                arrowEl.style.top = '-6px';
+                arrowEl.style.bottom = '';
             } else {
-                arrow.style.bottom = '-6px';
+                arrowEl.style.bottom = '-6px';
+                arrowEl.style.top = '';
             }
         }
 
@@ -770,8 +783,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         });
-        document.addEventListener('click', closePopup);
-        window.addEventListener('scroll', closePopup);
+        window.addEventListener('scroll', function() {
+            if (popup && activeWord) {
+                positionPopup(activeWord, popup, popup.querySelector('.tah-popup-arrow'));
+            }
+        }, true);
     }
 
     setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
