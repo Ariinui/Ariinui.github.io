@@ -1,7 +1,7 @@
-# Graph Report - .  (2026-08-28)
+# Graph Report - .  (2026-08-29)
 
 ## Corpus Check
-- 12 files · ~337,654 words
+- 12 files · ~338,977 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -264,7 +264,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
-Nodes (28): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), disambiguate_sense(), guide2_section_content_html(), guide_section_content_html() (+20 more)
+Nodes (33): apply_to_tah_dict(), Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), conference_analogy_card_html() (+25 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.14
@@ -283,28 +283,28 @@ Cohesion: 0.27
 Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.22
-Nodes (10): apply_to_tah_dict(), Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, conference_analogy_card_html(), Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon, slugify(), to_superscript(), write(), write_conference_analogy_talk_page() (+2 more)
-
-### Community 6 - "Community 6"
 Cohesion: 0.31
 Nodes (8): build_real_ngrams(), locutions_for_word(), locutions_in_window(), main(), One-off: harvests Tahitian multi-word expressions (locutions) from the Académie, Toute sequence de 2 a MAX_PHRASE_WORDS mots reellement adjacents     (separes pa, List of (locution_text, definition) found in this HTML window - a     locution h, Comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr
+
+### Community 6 - "Community 6"
+Cohesion: 0.33
+Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML b, La description (contrairement au texte d'analyse, deja extrait en     texte pur), Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles (, write_cameos()
 
 ### Community 7 - "Community 7"
 Cohesion: 0.38
 Nodes (6): main(), Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta, List of (word_text, structured_text) for every headword entry found     in this, Queries farevanaa.pf for `word` (already normalized) and returns the     merged, structured_definition_for_window(), structured_definition_for_word()
 
 ### Community 8 - "Community 8"
-Cohesion: 0.33
-Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML b, La description (contrairement au texte d'analyse, deja extrait en     texte pur), Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles (, write_cameos()
+Cohesion: 0.4
+Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p>, student_manual_body_nodes(), student_manual_parse_citation()
 
 ### Community 9 - "Community 9"
 Cohesion: 0.4
-Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux nett
+Nodes (5): disambiguate_sense(), Si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf "vt: battre,     frapp, Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     compo, tah_normalize(), wrap_tah_words()
 
 ### Community 10 - "Community 10"
 Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p>, student_manual_body_nodes(), student_manual_parse_citation()
+Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux nett
 
 ### Community 11 - "Community 11"
 Cohesion: 0.67
@@ -1593,9 +1593,9 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `normalize()` connect `Community 3` to `Community 5`, `Community 6`, `Community 7`?**
+- **Why does `normalize()` connect `Community 3` to `Community 0`, `Community 5`, `Community 7`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
-- **Why does `slugify()` connect `Community 5` to `Community 0`, `Community 3`?**
+- **Why does `slugify()` connect `Community 0` to `Community 3`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Why does `structured_definition_for_word()` connect `Community 7` to `Community 2`, `Community 3`?**
   _High betweenness centrality (0.031) - this node is a cross-community bridge._
