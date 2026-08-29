@@ -9,7 +9,7 @@
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
       "id": "build_embark_audio_py",
-      "community": 11,
+      "community": 12,
       "norm_label": "build_embark_audio.py"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "build_embark_audio.py",
       "source_location": "L38",
       "id": "build_embark_audio_normalize",
-      "community": 11,
+      "community": 12,
       "norm_label": "normalize()"
     },
     {
@@ -26,7 +26,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
-      "community": 11,
+      "community": 12,
       "norm_label": "one-off: extracts tah_audio.json (word/locution -> pronunciation mp3 url) from a",
       "id": "build_embark_audio_rationale_1"
     },
@@ -36,7 +36,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
       "id": "build_embark_supplement_py",
-      "community": 12,
+      "community": 11,
       "norm_label": "build_embark_supplement.py"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L49",
       "id": "build_embark_supplement_normalize",
-      "community": 12,
+      "community": 11,
       "norm_label": "normalize()"
     },
     {
@@ -53,7 +53,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
-      "community": 12,
+      "community": 11,
       "norm_label": "one-off: extracts embark_supplement.json (single-word tahitian -> french gloss)",
       "id": "build_embark_supplement_rationale_1"
     },
@@ -162,7 +162,7 @@
       "source_file": "build_reo_pf_primary.py",
       "source_location": "L122",
       "id": "build_reo_pf_primary_apply_to_tah_dict",
-      "community": 0,
+      "community": 4,
       "norm_label": "apply_to_tah_dict()"
     },
     {
@@ -179,7 +179,7 @@
       "file_type": "rationale",
       "source_file": "build_reo_pf_primary.py",
       "source_location": "L123",
-      "community": 0,
+      "community": 4,
       "norm_label": "merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen",
       "id": "build_reo_pf_primary_rationale_123"
     },
@@ -189,7 +189,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
       "id": "build_tah_dict_py",
-      "community": 4,
+      "community": 5,
       "norm_label": "build_tah_dict.py"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L20",
       "id": "build_tah_dict_normalize",
-      "community": 4,
+      "community": 5,
       "norm_label": "normalize()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L37",
       "id": "build_tah_dict_dereduplicate_candidates",
-      "community": 4,
+      "community": 5,
       "norm_label": "dereduplicate_candidates()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L52",
       "id": "build_tah_dict_strip_candidates",
-      "community": 4,
+      "community": 5,
       "norm_label": "strip_candidates()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L97",
       "id": "build_tah_dict_glosses_for",
-      "community": 4,
+      "community": 5,
       "norm_label": "glosses_for()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L294",
       "id": "build_tah_dict_strip_accents",
-      "community": 4,
+      "community": 5,
       "norm_label": "strip_accents()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L299",
       "id": "build_tah_dict_fr_words",
-      "community": 4,
+      "community": 5,
       "norm_label": "fr_words()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L303",
       "id": "build_tah_dict_content_stem",
-      "community": 4,
+      "community": 5,
       "norm_label": "content_stem()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "build_tah_dict.py",
       "source_location": "L311",
       "id": "build_tah_dict_part_stem",
-      "community": 4,
+      "community": 5,
       "norm_label": "part_stem()"
     },
     {
@@ -269,7 +269,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L1",
-      "community": 4,
+      "community": 5,
       "norm_label": "one-off extraction: builds tah_dict.json (word -> short french gloss) from the r",
       "id": "build_tah_dict_rationale_1"
     },
@@ -278,7 +278,7 @@
       "file_type": "rationale",
       "source_file": "build_tah_dict.py",
       "source_location": "L38",
-      "community": 4,
+      "community": 5,
       "norm_label": "un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     \"maitatai\" = \"",
       "id": "build_tah_dict_rationale_38"
     },
@@ -324,7 +324,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L1",
       "id": "fetch_farevanaa_phrases_py",
-      "community": 5,
+      "community": 6,
       "norm_label": "fetch_farevanaa_phrases.py"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L42",
       "id": "fetch_farevanaa_phrases_locutions_in_window",
-      "community": 5,
+      "community": 6,
       "norm_label": "locutions_in_window()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L70",
       "id": "fetch_farevanaa_phrases_locutions_for_word",
-      "community": 5,
+      "community": 6,
       "norm_label": "locutions_for_word()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L103",
       "id": "fetch_farevanaa_phrases_build_real_ngrams",
-      "community": 5,
+      "community": 6,
       "norm_label": "build_real_ngrams()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L127",
       "id": "fetch_farevanaa_phrases_main",
-      "community": 5,
+      "community": 6,
       "norm_label": "main()"
     },
     {
@@ -368,7 +368,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L1",
-      "community": 5,
+      "community": 6,
       "norm_label": "one-off: harvests tahitian multi-word expressions (locutions) from the academie",
       "id": "fetch_farevanaa_phrases_rationale_1"
     },
@@ -377,7 +377,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L43",
-      "community": 5,
+      "community": 6,
       "norm_label": "list of (locution_text, definition) found in this html window - a     locution h",
       "id": "fetch_farevanaa_phrases_rationale_43"
     },
@@ -386,7 +386,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L71",
-      "community": 5,
+      "community": 6,
       "norm_label": "comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr",
       "id": "fetch_farevanaa_phrases_rationale_71"
     },
@@ -395,7 +395,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L104",
-      "community": 5,
+      "community": 6,
       "norm_label": "toute sequence de 2 a max_phrase_words mots reellement adjacents     (separes pa",
       "id": "fetch_farevanaa_phrases_rationale_104"
     },
@@ -612,7 +612,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L36",
       "id": "generate_pages_to_superscript",
-      "community": 0,
+      "community": 4,
       "norm_label": "to_superscript()"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1835",
       "id": "generate_pages_write",
-      "community": 0,
+      "community": 4,
       "norm_label": "write()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2096",
       "id": "generate_pages_cameo_clean_field",
-      "community": 6,
+      "community": 4,
       "norm_label": "cameo_clean_field()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2108",
       "id": "generate_pages_cameo_render_paragraphs",
-      "community": 6,
+      "community": 4,
       "norm_label": "cameo_render_paragraphs()"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2129",
       "id": "generate_pages_cameo_render_entry",
-      "community": 6,
+      "community": 4,
       "norm_label": "cameo_render_entry()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2159",
       "id": "generate_pages_write_cameos",
-      "community": 6,
+      "community": 4,
       "norm_label": "write_cameos()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2635",
       "id": "generate_pages_write_guide_volume",
-      "community": 0,
+      "community": 4,
       "norm_label": "write_guide_volume()"
     },
     {
@@ -1187,7 +1187,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2097",
-      "community": 6,
+      "community": 4,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html b",
       "id": "generate_pages_rationale_2097"
     },
@@ -1196,7 +1196,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2109",
-      "community": 6,
+      "community": 4,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur)",
       "id": "generate_pages_rationale_2109"
     },
@@ -1205,7 +1205,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2130",
-      "community": 6,
+      "community": 4,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles (",
       "id": "generate_pages_rationale_2130"
     },
@@ -1223,7 +1223,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2636",
-      "community": 0,
+      "community": 4,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2636"
     },

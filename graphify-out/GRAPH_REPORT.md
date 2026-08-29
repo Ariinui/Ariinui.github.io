@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-29)
 
 ## Corpus Check
-- 12 files · ~338,977 words
+- 12 files · ~338,983 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -263,8 +263,8 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.05
-Nodes (33): apply_to_tah_dict(), Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), conference_analogy_card_html() (+25 more)
+Cohesion: 0.06
+Nodes (27): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), conference_analogy_card_html(), guide2_section_content_html(), guide_section_content_html() (+19 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.14
@@ -279,16 +279,16 @@ Cohesion: 0.23
 Nodes (13): Bulk-builds reo_pf_primary.json: for every one of the ~2318 words already in tah, scrape(), structured_lines_for_lexeme(), structured_text_for_word(), dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main() (+5 more)
 
 ### Community 4 - "Community 4"
+Cohesion: 0.17
+Nodes (13): apply_to_tah_dict(), Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML b, La description (contrairement au texte d'analyse, deja extrait en     texte pur), Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles ( (+5 more)
+
+### Community 5 - "Community 5"
 Cohesion: 0.27
 Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
 
-### Community 5 - "Community 5"
+### Community 6 - "Community 6"
 Cohesion: 0.31
 Nodes (8): build_real_ngrams(), locutions_for_word(), locutions_in_window(), main(), One-off: harvests Tahitian multi-word expressions (locutions) from the Académie, Toute sequence de 2 a MAX_PHRASE_WORDS mots reellement adjacents     (separes pa, List of (locution_text, definition) found in this HTML window - a     locution h, Comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr
-
-### Community 6 - "Community 6"
-Cohesion: 0.33
-Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML b, La description (contrairement au texte d'analyse, deja extrait en     texte pur), Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles (, write_cameos()
 
 ### Community 7 - "Community 7"
 Cohesion: 0.38
@@ -308,11 +308,11 @@ Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_ev
 
 ### Community 11 - "Community 11"
 Cohesion: 0.67
-Nodes (1): One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a
+Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.67
-Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)
+Nodes (1): One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a
 
 ### Community 13 - "Community 13"
 Cohesion: 1.0
@@ -1593,7 +1593,7 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `normalize()` connect `Community 3` to `Community 0`, `Community 5`, `Community 7`?**
+- **Why does `normalize()` connect `Community 3` to `Community 0`, `Community 6`, `Community 7`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **Why does `slugify()` connect `Community 0` to `Community 3`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
