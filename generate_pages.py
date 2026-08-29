@@ -2900,6 +2900,7 @@ h1 {
     margin: 16px 0 16px;
     font-size: 22px;
     text-align: center;
+    color: #4dabff;
 }
 
 /* Nom du livre (ex. "1 Nephi"), affiche uniquement sur les pages de
@@ -3636,7 +3637,7 @@ nav a:hover {
 }
 
 .verse-fr sup {
-    color: var(--text-faint);
+    color: #4dabff;
     font-weight: 600;
     font-size: 0.65em;
     margin-right: 2px;
