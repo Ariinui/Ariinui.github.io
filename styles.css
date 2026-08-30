@@ -1026,6 +1026,121 @@ nav a:hover {
     opacity: 0.55;
 }
 
+.verse-num-tap {
+    cursor: pointer;
+    padding: 4px 6px 4px 2px;
+    margin: -4px -4px -4px -2px;
+}
+
+.translation-pane .verse-num-tap {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Mode "Traduction" plein ecran (tap sur un numero de verset tahitien) - un
+   seul verset a la fois dans 2 panneaux (tahitien/francais) qui defilent en
+   synchronisation proportionnelle, cf. script.js openTranslation(). Z-index
+   au-dessus du popover "..." (2000) mais SOUS .tah-popup (3000) - la bulle
+   de mot doit rester visible par-dessus cette overlay. */
+.translation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.translation-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.translation-close {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 6px;
+    flex-shrink: 0;
+}
+
+.translation-titles {
+    min-width: 0;
+}
+
+.translation-title {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.translation-ref {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.translation-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.translation-lang-label {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px 0;
+    flex-shrink: 0;
+}
+
+.translation-pane {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 10px 18px 48px;
+    font-size: var(--reading-font-size);
+    line-height: 1.65;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+}
+
+.translation-pane .verse-fr {
+    margin: 0;
+}
+
+.translation-footer {
+    display: flex;
+    gap: 10px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.translation-nav-btn {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 12px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.translation-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
 .bookmark {
     text-decoration: none;
     opacity: 0.55;

@@ -597,8 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // cache memoire) et on affiche la glose dans une bulle sous le mot.
     // Meme mecanique pour les deux glossaires, juste selecteur/URL differents.
     function setupTapToTranslate(selector, dictUrl, audioUrl, defUrl) {
-        var words = document.querySelectorAll(selector);
-        if (!words.length) return;
+        if (!document.querySelector(selector)) return;
         var dictPromise = null;
         var audioDictPromise = null;
         var defDictPromise = null;
@@ -808,16 +807,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        words.forEach(function(el) {
-            el.addEventListener('click', function(event) {
-                event.stopPropagation();
-                if (activeWord === el) { closePopup(); return; }
-                Promise.all([loadDict(), loadAudioDict(), loadDefDict()]).then(function(results) {
-                    var gloss = results[0][el.getAttribute('data-w')];
-                    var audioSrc = results[1][el.getAttribute('data-w')];
-                    var def = results[2][el.getAttribute('data-w')];
-                    if (gloss) showPopup(el, gloss, audioSrc, def);
-                });
+        // Delegation depuis document (pas d'attache par mot) : les mots du
+        // mode Traduction plein ecran sont des clones ajoutes apres coup
+        // (cf. openTranslation) et n'auraient jamais recu de listener direct
+        // - deja documente comme peu fiable sur Android Chrome de toute
+        // facon (cf. feedback_mobile_click_delegation).
+        document.addEventListener('click', function(event) {
+            var el = event.target.closest(selector);
+            if (!el) return;
+            event.stopPropagation();
+            if (activeWord === el) { closePopup(); return; }
+            Promise.all([loadDict(), loadAudioDict(), loadDefDict()]).then(function(results) {
+                var gloss = results[0][el.getAttribute('data-w')];
+                var audioSrc = results[1][el.getAttribute('data-w')];
+                var def = results[2][el.getAttribute('data-w')];
+                if (gloss) showPopup(el, gloss, audioSrc, def);
             });
         });
         window.addEventListener('scroll', function() {
@@ -825,9 +829,199 @@ document.addEventListener('DOMContentLoaded', function() {
                 positionPopup(activeWord, popup, popup.querySelector('.tah-popup-arrow'));
             }
         }, true);
+        window.__closeTahPopup = closePopup;
     }
 
     setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
+
+    // Mode "Traduction" plein ecran : tap sur un numero de verset tahitien
+    // (.verse-num-tap) -> overlay avec CE SEUL verset dans 2 panneaux
+    // (tahitien/francais) qui defilent en synchronisation proportionnelle
+    // (memes % de progression - pas la meme longueur de texte dans les 2
+    // langues). Traduction francaise deja embarquee en JSON inerte par
+    // generate_pages.py (#translation-fr-verses), aucun fetch. Absent sur
+    // toute page sans ce bloc (francais, guides...) - tout le reste de cette
+    // IIFE ne s'execute donc que sur les pages tahitiennes.
+    (function() {
+        var frDataEl = document.getElementById('translation-fr-verses');
+        if (!frDataEl) return;
+        var translationFr = {};
+        try { translationFr = JSON.parse(frDataEl.textContent) || {}; } catch (e) {}
+        var verseNums = Object.keys(translationFr).map(Number).sort(function(a, b) { return a - b; });
+        if (!verseNums.length) return;
+
+        var versesContainer = document.querySelector('.verses-tah');
+        var translationRef = versesContainer ? versesContainer.getAttribute('data-translation-ref') : '';
+
+        var overlay = null, tahPane = null, frPane = null, prevBtn = null, nextBtn = null;
+        var currentVerse = null;
+        var syncing = false;
+
+        function buildOverlay() {
+            overlay = document.createElement('div');
+            overlay.className = 'translation-overlay';
+
+            var header = document.createElement('div');
+            header.className = 'translation-header';
+            var closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'translation-close';
+            closeBtn.setAttribute('aria-label', 'Fermer');
+            closeBtn.textContent = '×';
+            closeBtn.addEventListener('click', closeOverlay);
+            header.appendChild(closeBtn);
+
+            var titles = document.createElement('div');
+            titles.className = 'translation-titles';
+            var titleEl = document.createElement('div');
+            titleEl.className = 'translation-title';
+            titleEl.textContent = 'Traduction';
+            titles.appendChild(titleEl);
+            var refEl = document.createElement('div');
+            refEl.className = 'translation-ref';
+            refEl.textContent = translationRef || '';
+            titles.appendChild(refEl);
+            header.appendChild(titles);
+            overlay.appendChild(header);
+
+            var body = document.createElement('div');
+            body.className = 'translation-body';
+
+            var tahLabel = document.createElement('div');
+            tahLabel.className = 'translation-lang-label';
+            tahLabel.textContent = 'tahitien';
+            body.appendChild(tahLabel);
+
+            tahPane = document.createElement('div');
+            tahPane.className = 'translation-pane';
+            tahPane.setAttribute('data-lang', 'tah');
+            body.appendChild(tahPane);
+
+            var frLabel = document.createElement('div');
+            frLabel.className = 'translation-lang-label';
+            frLabel.textContent = 'français';
+            body.appendChild(frLabel);
+
+            frPane = document.createElement('div');
+            frPane.className = 'translation-pane';
+            frPane.setAttribute('data-lang', 'fr');
+            body.appendChild(frPane);
+
+            overlay.appendChild(body);
+
+            var footer = document.createElement('div');
+            footer.className = 'translation-footer';
+            prevBtn = document.createElement('button');
+            prevBtn.type = 'button';
+            prevBtn.className = 'translation-nav-btn';
+            prevBtn.textContent = '‹ Verset précédent';
+            prevBtn.addEventListener('click', function() { gotoVerse(-1); });
+            footer.appendChild(prevBtn);
+            nextBtn = document.createElement('button');
+            nextBtn.type = 'button';
+            nextBtn.className = 'translation-nav-btn';
+            nextBtn.textContent = 'Verset suivant ›';
+            nextBtn.addEventListener('click', function() { gotoVerse(1); });
+            footer.appendChild(nextBtn);
+            overlay.appendChild(footer);
+
+            tahPane.addEventListener('scroll', function() { syncScroll(tahPane, frPane); });
+            frPane.addEventListener('scroll', function() { syncScroll(frPane, tahPane); });
+
+            document.body.appendChild(overlay);
+        }
+
+        // Defilement libre dans un panneau, l'autre suit a la MEME fraction
+        // de progression (scrollTop / (scrollHeight - clientHeight)) plutot
+        // qu'en pixels - le tahitien et le francais n'ont jamais la meme
+        // longueur pour un meme verset. Drapeau de reentrance releve en rAF
+        // (pas immediatement) : le scroll programmatique du panneau cible
+        // declenche lui-meme un evenement scroll qu'il ne faut pas re-suivre.
+        function syncScroll(src, dst) {
+            if (syncing) return;
+            syncing = true;
+            var srcMax = src.scrollHeight - src.clientHeight;
+            var dstMax = dst.scrollHeight - dst.clientHeight;
+            if (srcMax > 0 && dstMax > 0) {
+                dst.scrollTop = (src.scrollTop / srcMax) * dstMax;
+            }
+            // setTimeout plutot que requestAnimationFrame : ce dernier peut
+            // ne jamais se declencher si la page/onglet est en arriere-plan
+            // au moment du scroll (throttling navigateur), ce qui bloquerait
+            // definitivement la synchronisation (drapeau syncing jamais
+            // releve).
+            setTimeout(function() { syncing = false; }, 0);
+        }
+
+        function renderVerse(num) {
+            currentVerse = num;
+            tahPane.textContent = '';
+            var sourceP = versesContainer ? versesContainer.querySelector('#v' + num) : null;
+            if (sourceP) {
+                // Clone du <p> reel (pas une reconstruction du texte) : les
+                // <span class="tah-word" data-w… data-sense…> du tap-to-
+                // translate sont donc preserves tels quels et restent
+                // cliquables via la delegation posee dans setupTapToTranslate.
+                var clone = sourceP.cloneNode(true);
+                clone.removeAttribute('id');
+                tahPane.appendChild(clone);
+            }
+
+            frPane.textContent = '';
+            var frP = document.createElement('p');
+            frP.className = 'verse-fr';
+            var sup = document.createElement('sup');
+            sup.textContent = num;
+            frP.appendChild(sup);
+            frP.appendChild(document.createTextNode(translationFr[num] || ''));
+            frPane.appendChild(frP);
+
+            tahPane.scrollTop = 0;
+            frPane.scrollTop = 0;
+
+            var idx = verseNums.indexOf(Number(num));
+            prevBtn.disabled = idx <= 0;
+            nextBtn.disabled = idx === -1 || idx >= verseNums.length - 1;
+        }
+
+        function gotoVerse(delta) {
+            var idx = verseNums.indexOf(Number(currentVerse));
+            var nextIdx = idx + delta;
+            if (nextIdx < 0 || nextIdx >= verseNums.length) return;
+            renderVerse(verseNums[nextIdx]);
+        }
+
+        function openTranslation(num) {
+            if (window.__closeTahPopup) window.__closeTahPopup();
+            if (!overlay) buildOverlay();
+            renderVerse(num);
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            if (window.history && window.history.pushState) {
+                history.pushState({ translationOverlay: true }, '', location.href);
+            }
+        }
+
+        function closeOverlay() {
+            if (!overlay || overlay.style.display === 'none' || overlay.style.display === '') return false;
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            return true;
+        }
+
+        window.closeTranslationOverlay = closeOverlay;
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') closeOverlay();
+        });
+
+        document.querySelectorAll('.verse-num-tap').forEach(function(el) {
+            el.addEventListener('click', function(event) {
+                event.stopPropagation();
+                openTranslation(el.getAttribute('data-verse-tap'));
+            });
+        });
+    })();
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une

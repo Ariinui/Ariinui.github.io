@@ -13,8 +13,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Etude">
     <title>Hartman Rector, Jr. – The Strength of Testimony</title>
-    <link rel="stylesheet" href="../../styles.css?v=3a1393f8">
-    <script src="../../script.js?v=3969aa44"></script>
+    <link rel="stylesheet" href="../../styles.css?v=cae06dce">
+    <script src="../../script.js?v=263e3539"></script>
 </head>
 <body>
     <div class="page">
@@ -69,6 +69,16 @@
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         history.pushState({backToToc: true}, '', location.href);
         window.addEventListener('popstate', function() {
+            // Le mode Traduction plein ecran (tap sur un numero de verset
+            // tahitien) pousse lui-meme une entree d'historique a
+            // l'ouverture - un geste retour doit d'abord le fermer plutot
+            // que de quitter le chapitre. closeTranslationOverlay() n'existe
+            // que sur les pages tahitiennes et ne renvoie true que si une
+            // overlay etait effectivement ouverte.
+            if (window.closeTranslationOverlay && window.closeTranslationOverlay()) {
+                history.pushState({backToToc: true}, '', location.href);
+                return;
+            }
             location.replace('../../conference-analogies.html');
         });
     })();

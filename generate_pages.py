@@ -1825,6 +1825,16 @@ CHAPTER_NAV = '''
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         history.pushState({{backToToc: true}}, '', location.href);
         window.addEventListener('popstate', function() {{
+            // Le mode Traduction plein ecran (tap sur un numero de verset
+            // tahitien) pousse lui-meme une entree d'historique a
+            // l'ouverture - un geste retour doit d'abord le fermer plutot
+            // que de quitter le chapitre. closeTranslationOverlay() n'existe
+            // que sur les pages tahitiennes et ne renvoie true que si une
+            // overlay etait effectivement ouverte.
+            if (window.closeTranslationOverlay && window.closeTranslationOverlay()) {{
+                history.pushState({{backToToc: true}}, '', location.href);
+                return;
+            }}
             location.replace('{index_href}');
         }});
     }})();
@@ -2643,13 +2653,16 @@ if SITE_TAHITIEN:
     for book_idx, book in enumerate(bom_book_data, 1):
         for chap_idx, chapter in enumerate(book['chapters'], 1):
             verses_html = ''
+            translation_fr_verses = {}
             for verse in chapter['verses']:
                 verse_num, verse_text = split_verse_number(verse['tahitien'])
                 verse_text = wrap_tah_words(verse_text, verse.get('francais', ''))
                 if verse_num is None:
                     verses_html += f'<p class="verse-fr">{verse_text}</p>'
                     continue
-                verses_html += f'<p class="verse-fr" id="v{verse_num}"><sup>{verse_num}</sup>{verse_text}</p>'
+                verses_html += f'<p class="verse-fr" id="v{verse_num}"><sup class="verse-num-tap" data-verse-tap="{verse_num}">{verse_num}</sup>{verse_text}</p>'
+                _, fr_verse_text = split_verse_number(verse.get('francais', ''))
+                translation_fr_verses[str(verse_num)] = fr_verse_text
 
             introduction_html = ''
             if chapter['introduction']:
@@ -2660,12 +2673,25 @@ if SITE_TAHITIEN:
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
             display_chapter_title = chapter_display_title_tah(book['book_title'], chapter['title'])
+            # Reference tahitienne affichee en en-tete du mode Traduction plein
+            # ecran (overlay verset par verset) - meme forme que .chapter-book-name
+            # + .chapter-title de cette page (jamais la forme francaise), pour
+            # rester coherent avec la page d'origine.
+            translation_ref = f'{book_display_title_tah(book["book_title"])}, Pene {chap_idx}'
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
-            html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona">'
+            html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona" data-translation-ref="{html_lib.escape(translation_ref)}">'
             html += introduction_html + verses_html
             html += '</div>'
+            # Traduction francaise de chaque verset, embarquee en JSON inerte
+            # (pas de fetch, pas de fichier separe - cf. mode Traduction plein
+            # ecran dans script.js) - deja disponible ici (verse['francais']),
+            # aucune nouvelle source de donnees. < echappe pour ne jamais
+            # risquer de fermer prematurement ce <script> si un texte contenait
+            # litteralement "</script".
+            translation_json = json.dumps(translation_fr_verses, ensure_ascii=False).replace('<', '\\u003c')
+            html += f'<script type="application/json" id="translation-fr-verses">{translation_json}</script>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
             html += PAGE_TAIL
 
@@ -3811,6 +3837,121 @@ nav a:hover {
     opacity: 0.55;
 }
 
+.verse-num-tap {
+    cursor: pointer;
+    padding: 4px 6px 4px 2px;
+    margin: -4px -4px -4px -2px;
+}
+
+.translation-pane .verse-num-tap {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Mode "Traduction" plein ecran (tap sur un numero de verset tahitien) - un
+   seul verset a la fois dans 2 panneaux (tahitien/francais) qui defilent en
+   synchronisation proportionnelle, cf. script.js openTranslation(). Z-index
+   au-dessus du popover "..." (2000) mais SOUS .tah-popup (3000) - la bulle
+   de mot doit rester visible par-dessus cette overlay. */
+.translation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.translation-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.translation-close {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 6px;
+    flex-shrink: 0;
+}
+
+.translation-titles {
+    min-width: 0;
+}
+
+.translation-title {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.translation-ref {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.translation-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.translation-lang-label {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px 0;
+    flex-shrink: 0;
+}
+
+.translation-pane {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 10px 18px 48px;
+    font-size: var(--reading-font-size);
+    line-height: 1.65;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+}
+
+.translation-pane .verse-fr {
+    margin: 0;
+}
+
+.translation-footer {
+    display: flex;
+    gap: 10px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.translation-nav-btn {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 12px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.translation-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
 .bookmark {
     text-decoration: none;
     opacity: 0.55;
@@ -4860,8 +5001,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // cache memoire) et on affiche la glose dans une bulle sous le mot.
     // Meme mecanique pour les deux glossaires, juste selecteur/URL differents.
     function setupTapToTranslate(selector, dictUrl, audioUrl, defUrl) {
-        var words = document.querySelectorAll(selector);
-        if (!words.length) return;
+        if (!document.querySelector(selector)) return;
         var dictPromise = null;
         var audioDictPromise = null;
         var defDictPromise = null;
@@ -5071,16 +5211,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        words.forEach(function(el) {
-            el.addEventListener('click', function(event) {
-                event.stopPropagation();
-                if (activeWord === el) { closePopup(); return; }
-                Promise.all([loadDict(), loadAudioDict(), loadDefDict()]).then(function(results) {
-                    var gloss = results[0][el.getAttribute('data-w')];
-                    var audioSrc = results[1][el.getAttribute('data-w')];
-                    var def = results[2][el.getAttribute('data-w')];
-                    if (gloss) showPopup(el, gloss, audioSrc, def);
-                });
+        // Delegation depuis document (pas d'attache par mot) : les mots du
+        // mode Traduction plein ecran sont des clones ajoutes apres coup
+        // (cf. openTranslation) et n'auraient jamais recu de listener direct
+        // - deja documente comme peu fiable sur Android Chrome de toute
+        // facon (cf. feedback_mobile_click_delegation).
+        document.addEventListener('click', function(event) {
+            var el = event.target.closest(selector);
+            if (!el) return;
+            event.stopPropagation();
+            if (activeWord === el) { closePopup(); return; }
+            Promise.all([loadDict(), loadAudioDict(), loadDefDict()]).then(function(results) {
+                var gloss = results[0][el.getAttribute('data-w')];
+                var audioSrc = results[1][el.getAttribute('data-w')];
+                var def = results[2][el.getAttribute('data-w')];
+                if (gloss) showPopup(el, gloss, audioSrc, def);
             });
         });
         window.addEventListener('scroll', function() {
@@ -5088,9 +5233,199 @@ document.addEventListener('DOMContentLoaded', function() {
                 positionPopup(activeWord, popup, popup.querySelector('.tah-popup-arrow'));
             }
         }, true);
+        window.__closeTahPopup = closePopup;
     }
 
     setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
+
+    // Mode "Traduction" plein ecran : tap sur un numero de verset tahitien
+    // (.verse-num-tap) -> overlay avec CE SEUL verset dans 2 panneaux
+    // (tahitien/francais) qui defilent en synchronisation proportionnelle
+    // (memes % de progression - pas la meme longueur de texte dans les 2
+    // langues). Traduction francaise deja embarquee en JSON inerte par
+    // generate_pages.py (#translation-fr-verses), aucun fetch. Absent sur
+    // toute page sans ce bloc (francais, guides...) - tout le reste de cette
+    // IIFE ne s'execute donc que sur les pages tahitiennes.
+    (function() {
+        var frDataEl = document.getElementById('translation-fr-verses');
+        if (!frDataEl) return;
+        var translationFr = {};
+        try { translationFr = JSON.parse(frDataEl.textContent) || {}; } catch (e) {}
+        var verseNums = Object.keys(translationFr).map(Number).sort(function(a, b) { return a - b; });
+        if (!verseNums.length) return;
+
+        var versesContainer = document.querySelector('.verses-tah');
+        var translationRef = versesContainer ? versesContainer.getAttribute('data-translation-ref') : '';
+
+        var overlay = null, tahPane = null, frPane = null, prevBtn = null, nextBtn = null;
+        var currentVerse = null;
+        var syncing = false;
+
+        function buildOverlay() {
+            overlay = document.createElement('div');
+            overlay.className = 'translation-overlay';
+
+            var header = document.createElement('div');
+            header.className = 'translation-header';
+            var closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'translation-close';
+            closeBtn.setAttribute('aria-label', 'Fermer');
+            closeBtn.textContent = '×';
+            closeBtn.addEventListener('click', closeOverlay);
+            header.appendChild(closeBtn);
+
+            var titles = document.createElement('div');
+            titles.className = 'translation-titles';
+            var titleEl = document.createElement('div');
+            titleEl.className = 'translation-title';
+            titleEl.textContent = 'Traduction';
+            titles.appendChild(titleEl);
+            var refEl = document.createElement('div');
+            refEl.className = 'translation-ref';
+            refEl.textContent = translationRef || '';
+            titles.appendChild(refEl);
+            header.appendChild(titles);
+            overlay.appendChild(header);
+
+            var body = document.createElement('div');
+            body.className = 'translation-body';
+
+            var tahLabel = document.createElement('div');
+            tahLabel.className = 'translation-lang-label';
+            tahLabel.textContent = 'tahitien';
+            body.appendChild(tahLabel);
+
+            tahPane = document.createElement('div');
+            tahPane.className = 'translation-pane';
+            tahPane.setAttribute('data-lang', 'tah');
+            body.appendChild(tahPane);
+
+            var frLabel = document.createElement('div');
+            frLabel.className = 'translation-lang-label';
+            frLabel.textContent = 'français';
+            body.appendChild(frLabel);
+
+            frPane = document.createElement('div');
+            frPane.className = 'translation-pane';
+            frPane.setAttribute('data-lang', 'fr');
+            body.appendChild(frPane);
+
+            overlay.appendChild(body);
+
+            var footer = document.createElement('div');
+            footer.className = 'translation-footer';
+            prevBtn = document.createElement('button');
+            prevBtn.type = 'button';
+            prevBtn.className = 'translation-nav-btn';
+            prevBtn.textContent = '‹ Verset précédent';
+            prevBtn.addEventListener('click', function() { gotoVerse(-1); });
+            footer.appendChild(prevBtn);
+            nextBtn = document.createElement('button');
+            nextBtn.type = 'button';
+            nextBtn.className = 'translation-nav-btn';
+            nextBtn.textContent = 'Verset suivant ›';
+            nextBtn.addEventListener('click', function() { gotoVerse(1); });
+            footer.appendChild(nextBtn);
+            overlay.appendChild(footer);
+
+            tahPane.addEventListener('scroll', function() { syncScroll(tahPane, frPane); });
+            frPane.addEventListener('scroll', function() { syncScroll(frPane, tahPane); });
+
+            document.body.appendChild(overlay);
+        }
+
+        // Defilement libre dans un panneau, l'autre suit a la MEME fraction
+        // de progression (scrollTop / (scrollHeight - clientHeight)) plutot
+        // qu'en pixels - le tahitien et le francais n'ont jamais la meme
+        // longueur pour un meme verset. Drapeau de reentrance releve en rAF
+        // (pas immediatement) : le scroll programmatique du panneau cible
+        // declenche lui-meme un evenement scroll qu'il ne faut pas re-suivre.
+        function syncScroll(src, dst) {
+            if (syncing) return;
+            syncing = true;
+            var srcMax = src.scrollHeight - src.clientHeight;
+            var dstMax = dst.scrollHeight - dst.clientHeight;
+            if (srcMax > 0 && dstMax > 0) {
+                dst.scrollTop = (src.scrollTop / srcMax) * dstMax;
+            }
+            // setTimeout plutot que requestAnimationFrame : ce dernier peut
+            // ne jamais se declencher si la page/onglet est en arriere-plan
+            // au moment du scroll (throttling navigateur), ce qui bloquerait
+            // definitivement la synchronisation (drapeau syncing jamais
+            // releve).
+            setTimeout(function() { syncing = false; }, 0);
+        }
+
+        function renderVerse(num) {
+            currentVerse = num;
+            tahPane.textContent = '';
+            var sourceP = versesContainer ? versesContainer.querySelector('#v' + num) : null;
+            if (sourceP) {
+                // Clone du <p> reel (pas une reconstruction du texte) : les
+                // <span class="tah-word" data-w… data-sense…> du tap-to-
+                // translate sont donc preserves tels quels et restent
+                // cliquables via la delegation posee dans setupTapToTranslate.
+                var clone = sourceP.cloneNode(true);
+                clone.removeAttribute('id');
+                tahPane.appendChild(clone);
+            }
+
+            frPane.textContent = '';
+            var frP = document.createElement('p');
+            frP.className = 'verse-fr';
+            var sup = document.createElement('sup');
+            sup.textContent = num;
+            frP.appendChild(sup);
+            frP.appendChild(document.createTextNode(translationFr[num] || ''));
+            frPane.appendChild(frP);
+
+            tahPane.scrollTop = 0;
+            frPane.scrollTop = 0;
+
+            var idx = verseNums.indexOf(Number(num));
+            prevBtn.disabled = idx <= 0;
+            nextBtn.disabled = idx === -1 || idx >= verseNums.length - 1;
+        }
+
+        function gotoVerse(delta) {
+            var idx = verseNums.indexOf(Number(currentVerse));
+            var nextIdx = idx + delta;
+            if (nextIdx < 0 || nextIdx >= verseNums.length) return;
+            renderVerse(verseNums[nextIdx]);
+        }
+
+        function openTranslation(num) {
+            if (window.__closeTahPopup) window.__closeTahPopup();
+            if (!overlay) buildOverlay();
+            renderVerse(num);
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            if (window.history && window.history.pushState) {
+                history.pushState({ translationOverlay: true }, '', location.href);
+            }
+        }
+
+        function closeOverlay() {
+            if (!overlay || overlay.style.display === 'none' || overlay.style.display === '') return false;
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            return true;
+        }
+
+        window.closeTranslationOverlay = closeOverlay;
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') closeOverlay();
+        });
+
+        document.querySelectorAll('.verse-num-tap').forEach(function(el) {
+            el.addEventListener('click', function(event) {
+                event.stopPropagation();
+                openTranslation(el.getAttribute('data-verse-tap'));
+            });
+        });
+    })();
 
     // Suivi de la position de lecture, generique pour tout volume : sauve en
     // localStorage le verset/entree actuellement en haut de l'ecran, une
