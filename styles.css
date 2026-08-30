@@ -900,7 +900,7 @@ nav a:hover {
 .tah-word,
 .en-word {
     cursor: pointer;
-    border-bottom: 1px dotted var(--accent);
+    border-bottom: 1px dotted color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .tah-word:hover,
