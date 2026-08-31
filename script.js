@@ -813,6 +813,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // - deja documente comme peu fiable sur Android Chrome de toute
         // facon (cf. feedback_mobile_click_delegation).
         document.addEventListener('click', function(event) {
+            // Dates des resumes de chapitre 1 (.tah-date, cf. wrap_tah_dates
+            // dans generate_pages.py) : ecriture tahitienne deja embarquee en
+            // data-words a la generation, meme bulle visuelle (showPopup)
+            // que le tap-to-translate mais sans dictionnaire/audio/definition.
+            var dateEl = event.target.closest('.tah-date');
+            if (dateEl) {
+                event.stopPropagation();
+                if (activeWord === dateEl) { closePopup(); return; }
+                showPopup(dateEl, dateEl.getAttribute('data-words'), null, null);
+                return;
+            }
             var el = event.target.closest(selector);
             if (!el) return;
             event.stopPropagation();

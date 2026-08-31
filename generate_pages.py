@@ -240,6 +240,58 @@ def wrap_tah_words(text, french_context=''):
     return ''.join(out)
 
 
+TAH_ONES = ['', 'hō’ē', 'piti', 'toru', 'maha', 'pae', 'ono', 'hitu', 'va’u', 'iva']
+
+
+def tahitian_number(n):
+    """Ecrit un nombre (1-999, suffisant pour les dates des resumes de
+    chapitre 1 - max 600) en toutes lettres tahitiennes. Regle deduite du
+    vrai texte scripturaire deja present sur ce site (pas invente) :
+    centaines en "X hānere" (Helamana 14:2 "ono hānere matahiti" = 600 ans),
+    dizaines en "X ’ahuru" (1 Nephi 3:31 "pae ’ahuru" = 50, Alma 56:9 "toru
+    ’ahuru" = 30), unite finale liee par "’e ma X" des qu'une centaine ou une
+    dizaine precede (Alma 56:9 "pae ’ahuru ’e ma pae" = 55, Alma 1 Nephi 4:10
+    "hō’ē ’ahuru ’e ma piti" = 12)."""
+    if n <= 0:
+        return str(n)
+    hundreds, remainder = divmod(n, 100)
+    tens, units = divmod(remainder, 10)
+    parts = []
+    if hundreds:
+        parts.append(f'{TAH_ONES[hundreds]} hānere')
+    if tens:
+        parts.append(f'{TAH_ONES[tens]} ’ahuru')
+    if units:
+        parts.append(f'’e ma {TAH_ONES[units]}' if parts else TAH_ONES[units])
+    return ' '.join(parts)
+
+
+# Repere uniquement la queue "NNN[–NNN] H.M./M.M." en toute fin des resumes
+# de chapitre 1 (FIRST_CHAPTER_SUMMARY plus bas) - jamais ailleurs dans le
+# texte tahitien, donc aucun risque de toucher un chiffre hors de ce
+# contexte precis. Ancre sur $ plutot que sur le mot "Fātata" qui precede :
+# wrap_tah_words (deja applique avant cet appel) enveloppe "Fātata" dans un
+# <span class="tah-word"> (present dans tah_dict), donc il n'est plus
+# directement adjacent au chiffre dans le texte deja transforme.
+TAH_DATE_TAIL_RE = re.compile(r'(\d+(?:–\d+)?)(\s*(?:H\.M\.|M\.M\.))\s*$')
+
+
+def wrap_tah_dates(text):
+    """Entoure chaque nombre de la date de fin de resume (ex. "588" et "570"
+    dans "... Fātata 588–570 H.M.") d'un <span class="tah-date"> avec son
+    ecriture tahitienne en toutes lettres en data-words - au tap, script.js
+    reutilise directement showPopup() du tap-to-translate (meme bulle
+    visuelle) avec ce texte, sans passer par le dictionnaire tah_dict.json."""
+    def repl(m):
+        nums, suffix = m.group(1), m.group(2)
+        wrapped = [
+            f'<span class="tah-date" data-words="{html_lib.escape(tahitian_number(int(part)))}">{part}</span>'
+            for part in nums.split('–')
+        ]
+        return '–'.join(wrapped) + suffix
+    return TAH_DATE_TAIL_RE.sub(repl, text, count=1)
+
+
 # ---------------------------------------------------------------------------
 # Volume 3 source : Book of Mormon Study Guide (commentaire par verset)
 # ---------------------------------------------------------------------------
@@ -2667,6 +2719,7 @@ if SITE_TAHITIEN:
             introduction_html = ''
             if chapter['introduction']:
                 intro_text = wrap_tah_words(chapter["introduction"]["tahitien"], chapter["introduction"].get("francais", ''))
+                intro_text = wrap_tah_dates(intro_text)
                 introduction_html = f'<p class="verse-fr introduction">{intro_text}</p>'
 
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
@@ -3709,7 +3762,8 @@ nav a:hover {
 }
 
 .tah-word,
-.en-word {
+.en-word,
+.tah-date {
     cursor: pointer;
     border-bottom: 1px dotted color-mix(in srgb, var(--accent) 8%, transparent);
 }
@@ -3717,7 +3771,9 @@ nav a:hover {
 .tah-word:hover,
 .tah-word.active,
 .en-word:hover,
-.en-word.active {
+.en-word.active,
+.tah-date:hover,
+.tah-date.active {
     background: var(--hover-bg);
 }
 
@@ -5217,6 +5273,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // - deja documente comme peu fiable sur Android Chrome de toute
         // facon (cf. feedback_mobile_click_delegation).
         document.addEventListener('click', function(event) {
+            // Dates des resumes de chapitre 1 (.tah-date, cf. wrap_tah_dates
+            // dans generate_pages.py) : ecriture tahitienne deja embarquee en
+            // data-words a la generation, meme bulle visuelle (showPopup)
+            // que le tap-to-translate mais sans dictionnaire/audio/definition.
+            var dateEl = event.target.closest('.tah-date');
+            if (dateEl) {
+                event.stopPropagation();
+                if (activeWord === dateEl) { closePopup(); return; }
+                showPopup(dateEl, dateEl.getAttribute('data-words'), null, null);
+                return;
+            }
             var el = event.target.closest(selector);
             if (!el) return;
             event.stopPropagation();

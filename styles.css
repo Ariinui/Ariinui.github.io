@@ -898,7 +898,8 @@ nav a:hover {
 }
 
 .tah-word,
-.en-word {
+.en-word,
+.tah-date {
     cursor: pointer;
     border-bottom: 1px dotted color-mix(in srgb, var(--accent) 8%, transparent);
 }
@@ -906,7 +907,9 @@ nav a:hover {
 .tah-word:hover,
 .tah-word.active,
 .en-word:hover,
-.en-word.active {
+.en-word.active,
+.tah-date:hover,
+.tah-date.active {
     background: var(--hover-bg);
 }
 
