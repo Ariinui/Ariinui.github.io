@@ -2907,6 +2907,12 @@ css_content = '''
     --guide6-text: #ffffff;
     --guide7-text: #1c1e21;
     --guide8-text: #1c1e21;
+    /* Couleurs des Continuer FR/TAH accordees aux couvertures de l'accueil
+       (bleu marine / vert) plutot que le bleu --accent generique. */
+    --continue-french-color: #16305c;
+    --continue-french-text: #ffffff;
+    --continue-tahitian-color: #1f6f43;
+    --continue-tahitian-text: #ffffff;
 }
 
 :root[data-text-size="xsmall"] {
@@ -2960,6 +2966,10 @@ css_content = '''
     --guide6-text: #1c1e21;
     --guide7-text: #1c1e21;
     --guide8-text: #1c1e21;
+    --continue-french-color: #2c4a7c;
+    --continue-french-text: #ffffff;
+    --continue-tahitian-color: #3ea86b;
+    --continue-tahitian-text: #1c1e21;
     }
 }
 
@@ -2995,6 +3005,10 @@ css_content = '''
     --guide6-text: #1c1e21;
     --guide7-text: #1c1e21;
     --guide8-text: #1c1e21;
+    --continue-french-color: #2c4a7c;
+    --continue-french-text: #ffffff;
+    --continue-tahitian-color: #3ea86b;
+    --continue-tahitian-text: #1c1e21;
 }
 
 * {
@@ -3316,6 +3330,10 @@ nav a:hover {
 .continue-reading.continue-guide6 { background: var(--guide6-color); color: var(--guide6-text); }
 .continue-reading.continue-guide7 { background: var(--guide7-color); color: var(--guide7-text); }
 .continue-reading.continue-guide8 { background: var(--guide8-color); color: var(--guide8-text); }
+/* Continuer des volumes francais/tahitien accordes a la couleur de leur
+   couverture sur l'accueil (bleu marine / vert) plutot que --accent generique. */
+.continue-reading.continue-french { background: var(--continue-french-color); color: var(--continue-french-text); }
+.continue-reading.continue-tahitian { background: var(--continue-tahitian-color); color: var(--continue-tahitian-text); }
 
 .volume {
     margin-bottom: 14px;
@@ -5796,6 +5814,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.appendChild(guideBadge);
                 }
             } else {
+                link.classList.add('continue-' + key);
                 var verseMatch2 = /^v(\\d+)$/.exec(saved.itemId || '');
                 var mainText2;
                 if (__COMPACT_CONTINUE__ && verseMatch2) {

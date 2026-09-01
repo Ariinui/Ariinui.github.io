@@ -9,7 +9,7 @@
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
       "id": "build_embark_audio_py",
-      "community": 12,
+      "community": 11,
       "norm_label": "build_embark_audio.py"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "build_embark_audio.py",
       "source_location": "L38",
       "id": "build_embark_audio_normalize",
-      "community": 12,
+      "community": 11,
       "norm_label": "normalize()"
     },
     {
@@ -26,7 +26,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
-      "community": 12,
+      "community": 11,
       "norm_label": "one-off: extracts tah_audio.json (word/locution -> pronunciation mp3 url) from a",
       "id": "build_embark_audio_rationale_1"
     },
@@ -36,7 +36,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
       "id": "build_embark_supplement_py",
-      "community": 11,
+      "community": 12,
       "norm_label": "build_embark_supplement.py"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L49",
       "id": "build_embark_supplement_normalize",
-      "community": 11,
+      "community": 12,
       "norm_label": "normalize()"
     },
     {
@@ -53,7 +53,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
-      "community": 11,
+      "community": 12,
       "norm_label": "one-off: extracts embark_supplement.json (single-word tahitian -> french gloss)",
       "id": "build_embark_supplement_rationale_1"
     },
@@ -639,7 +639,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L124",
       "id": "generate_pages_tah_normalize",
-      "community": 9,
+      "community": 0,
       "norm_label": "tah_normalize()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L161",
       "id": "generate_pages_disambiguate_sense",
-      "community": 9,
+      "community": 0,
       "norm_label": "disambiguate_sense()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L191",
       "id": "generate_pages_wrap_tah_words",
-      "community": 9,
+      "community": 0,
       "norm_label": "wrap_tah_words()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L883",
       "id": "generate_pages_student_manual_parse_citation",
-      "community": 0,
+      "community": 9,
       "norm_label": "student_manual_parse_citation()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L909",
       "id": "generate_pages_student_manual_body_nodes",
-      "community": 0,
+      "community": 9,
       "norm_label": "student_manual_body_nodes()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L946",
       "id": "generate_pages_parse_student_manual_source",
-      "community": 0,
+      "community": 9,
       "norm_label": "parse_student_manual_source()"
     },
     {
@@ -1097,7 +1097,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L162",
-      "community": 9,
+      "community": 0,
       "norm_label": "si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf \"vt: battre,     frapp",
       "id": "generate_pages_rationale_162"
     },
@@ -1106,7 +1106,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L192",
-      "community": 9,
+      "community": 0,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     compo",
       "id": "generate_pages_rationale_192"
     },
@@ -1169,7 +1169,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L884",
-      "community": 0,
+      "community": 9,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_884"
     },
@@ -1178,7 +1178,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L910",
-      "community": 0,
+      "community": 9,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_910"
     },
@@ -1223,45 +1223,45 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2168",
-      "id": "generate_pages_rationale_2168",
       "community": 7,
-      "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html"
+      "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
+      "id": "generate_pages_rationale_2168"
     },
     {
       "label": "La description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2180",
-      "id": "generate_pages_rationale_2180",
       "community": 7,
-      "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur"
+      "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
+      "id": "generate_pages_rationale_2180"
     },
     {
       "label": "Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2201",
-      "id": "generate_pages_rationale_2201",
       "community": 7,
-      "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles"
+      "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
+      "id": "generate_pages_rationale_2201"
     },
     {
       "label": "3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->     (issue_key '1",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2359",
-      "id": "generate_pages_rationale_2359",
       "community": 0,
-      "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1"
+      "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
+      "id": "generate_pages_rationale_2359"
     },
     {
       "label": "Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon",
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2765",
-      "id": "generate_pages_rationale_2765",
       "community": 5,
-      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon"
+      "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
+      "id": "generate_pages_rationale_2765"
     },
     {
       "label": "script.js",

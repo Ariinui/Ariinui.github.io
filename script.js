@@ -1302,6 +1302,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.appendChild(guideBadge);
                 }
             } else {
+                link.classList.add('continue-' + key);
                 var verseMatch2 = /^v(\d+)$/.exec(saved.itemId || '');
                 var mainText2;
                 if (true && verseMatch2) {
