@@ -478,6 +478,29 @@ nav a:hover {
     background: var(--hover-bg);
 }
 
+.volume-cover {
+    flex-shrink: 0;
+    width: 52px;
+    height: 74px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.volume-cover-green {
+    filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.6) brightness(0.92);
+}
+
+.volume-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.volume-toggle .chevron:last-child {
+    margin-left: auto;
+}
+
 .chevron {
     flex-shrink: 0;
     display: inline-block;

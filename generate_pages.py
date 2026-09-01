@@ -1692,16 +1692,25 @@ def bomm_section_content_html(section_tag):
 # Rendu HTML generique (accordeon volume > livre > grille de chapitres)
 # ---------------------------------------------------------------------------
 
-def render_volume_block(title, books, chapter_href, book_title_fn=book_display_title, chapter_title_fn=chapter_display_title):
+def render_volume_block(title, books, chapter_href, book_title_fn=book_display_title, chapter_title_fn=chapter_display_title, cover=None):
     """books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_idx, chapter) -> url.
     book_title_fn/chapter_title_fn permettent au volume tahitien de passer
     book_display_title_tah/chapter_display_title_tah plutot que les
-    versions francaises par defaut."""
+    versions francaises par defaut.
+    cover (optionnel) : {'src': url_relative, 'class': classe_css_optionnelle} - affiche une
+    couverture de livre a gauche du titre (style etagere Google Play Livres) sur le
+    volume-toggle. Sans cover, rendu texte-seul inchange (page Conference analogy)."""
+    if cover:
+        toggle_inner = f'''<img class="volume-cover{(' ' + cover['class']) if cover.get('class') else ''}" src="{cover['src']}" alt="" aria-hidden="true">
+                <span class="volume-title">{title}</span>
+                <span class="chevron" aria-hidden="true"></span>'''
+    else:
+        toggle_inner = f'''<span class="chevron" aria-hidden="true"></span>
+                {title}'''
     html = f'''
         <div class="volume">
             <button class="volume-toggle" type="button" aria-expanded="false">
-                <span class="chevron" aria-hidden="true"></span>
-                {title}
+                {toggle_inner}
             </button>
             <div class="volume-content">
                 <div class="accordion">
@@ -2595,7 +2604,8 @@ toc_html += '        <div id="continue-reading-slot"></div>\n'
 toc_html += render_volume_block(
     'Livre de Mormon (francais)' if SITE_TAHITIEN else 'Livre de Mormon',
     bom_book_data,
-    lambda bi, ci, ch: f'chapters-fr/chapter_{bi}_{ci}.html'
+    lambda bi, ci, ch: f'chapters-fr/chapter_{bi}_{ci}.html',
+    cover={'src': 'covers/livre-de-mormon-fr.jpg'}
 )
 
 if SITE_TAHITIEN:
@@ -2604,7 +2614,8 @@ if SITE_TAHITIEN:
         bom_book_data,
         lambda bi, ci, ch: f'chapters-tah/chapter_{bi}_{ci}.html',
         book_title_fn=book_display_title_tah,
-        chapter_title_fn=chapter_display_title_tah
+        chapter_title_fn=chapter_display_title_tah,
+        cover={'src': 'covers/te-buka-a-moromona-tah.jpg', 'class': 'volume-cover-green'}
     )
 
 if SITE_CAMEOS:
@@ -3340,6 +3351,29 @@ nav a:hover {
 .volume-toggle:hover,
 .accordion-button:hover {
     background: var(--hover-bg);
+}
+
+.volume-cover {
+    flex-shrink: 0;
+    width: 52px;
+    height: 74px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.volume-cover-green {
+    filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.6) brightness(0.92);
+}
+
+.volume-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.volume-toggle .chevron:last-child {
+    margin-left: auto;
 }
 
 .chevron {
