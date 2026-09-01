@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-08-31)
 
 ## Corpus Check
-- 12 files · ~418,909 words
+- 12 files · ~418,132 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -290,7 +290,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
-Nodes (32): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), conf_analogy_lien_with_lang(), disambiguate_sense(), guide2_section_content_html(), guide_section_content_html() (+24 more)
+Nodes (32): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), clean_evidence_body(), conf_analogy_lien_with_lang(), guide2_section_content_html(), guide_section_content_html() (+24 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.12
@@ -326,11 +326,11 @@ Nodes (6): main(), Bulk-builds tah_definitions.json: for every one of the ~2318 
 
 ### Community 9 - "Community 9"
 Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
+Nodes (5): disambiguate_sense(), Si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf "vt: battre,     frapp, Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     compo, tah_normalize(), wrap_tah_words()
 
 ### Community 10 - "Community 10"
 Cohesion: 0.4
-Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_evidence_source(), 1 Nephi 13:29; Alma 41:14-16' -> [('1 Nephi', 13, 29, 29), ('Alma', 41, 14, 16)], Parse le HTML de l'article et retourne un fragment pret a inserer.     Deux net
+Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
 
 ### Community 11 - "Community 11"
 Cohesion: 0.67

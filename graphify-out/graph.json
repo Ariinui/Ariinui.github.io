@@ -639,7 +639,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L124",
       "id": "generate_pages_tah_normalize",
-      "community": 0,
+      "community": 9,
       "norm_label": "tah_normalize()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L161",
       "id": "generate_pages_disambiguate_sense",
-      "community": 0,
+      "community": 9,
       "norm_label": "disambiguate_sense()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L191",
       "id": "generate_pages_wrap_tah_words",
-      "community": 0,
+      "community": 9,
       "norm_label": "wrap_tah_words()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L883",
       "id": "generate_pages_student_manual_parse_citation",
-      "community": 9,
+      "community": 10,
       "norm_label": "student_manual_parse_citation()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L909",
       "id": "generate_pages_student_manual_body_nodes",
-      "community": 9,
+      "community": 10,
       "norm_label": "student_manual_body_nodes()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L946",
       "id": "generate_pages_parse_student_manual_source",
-      "community": 9,
+      "community": 10,
       "norm_label": "parse_student_manual_source()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1307",
       "id": "generate_pages_parse_evidence_scripture_reference",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse_evidence_scripture_reference()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1357",
       "id": "generate_pages_clean_evidence_body",
-      "community": 10,
+      "community": 0,
       "norm_label": "clean_evidence_body()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1418",
       "id": "generate_pages_parse_evidence_source",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse_evidence_source()"
     },
     {
@@ -1097,7 +1097,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L162",
-      "community": 0,
+      "community": 9,
       "norm_label": "si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf \"vt: battre,     frapp",
       "id": "generate_pages_rationale_162"
     },
@@ -1106,7 +1106,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L192",
-      "community": 0,
+      "community": 9,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     compo",
       "id": "generate_pages_rationale_192"
     },
@@ -1169,7 +1169,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L884",
-      "community": 9,
+      "community": 10,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_884"
     },
@@ -1178,7 +1178,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L910",
-      "community": 9,
+      "community": 10,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_910"
     },
@@ -1187,7 +1187,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1308",
-      "community": 10,
+      "community": 0,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1308"
     },
@@ -1196,7 +1196,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1358",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1358"
     },
