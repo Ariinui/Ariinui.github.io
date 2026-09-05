@@ -1199,7 +1199,7 @@ nav a:hover {
     opacity: 1;
 }
 
-/* Epingle par appui prolonge 2s (setupBookmarkLongPress) - reste en pleine
+/* Epingle par appui prolonge 1s (setupBookmarkLongPress) - reste en pleine
    couleur (contour ET interieur rempli, pas juste opacite:1 sur le contour
    creux par defaut) independamment du survol/focus, jusqu'a desactivation
    par le meme geste. Etat par INSTANCE (verset+type), pas par type entier.

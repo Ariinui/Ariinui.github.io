@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Appui prolonge 2s sur un signet (.bookmark) -> l'epingle en pleine
+    // Appui prolonge 1s sur un signet (.bookmark) -> l'epingle en pleine
     // couleur en permanence (data-bookmark-id sert de cle localStorage),
-    // par INSTANCE (verset+type), pas par type entier - un 2e appui de 2s
+    // par INSTANCE (verset+type), pas par type entier - un 2e appui de 1s
     // desepingle. Un tap COURT continue de naviguer normalement vers le
     // guide (comportement du lien inchange) : seul un appui qui atteint le
-    // seuil de 2s marque longPressFired, lu par le handler "click" en
+    // seuil de 1s marque longPressFired, lu par le handler "click" en
     // phase de capture pour annuler UNIQUEMENT cette navigation-la.
     (function setupBookmarkLongPress() {
         var PINNED_KEY = 'bukaAMoromona:pinnedBookmarks';
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pinned[el.getAttribute('data-bookmark-id')]) el.classList.add('bookmark-pinned');
         });
 
-        var LONG_PRESS_MS = 2000;
+        var LONG_PRESS_MS = 1000;
         var MOVE_TOLERANCE = 10;
         var timer = null;
         var startX = 0;

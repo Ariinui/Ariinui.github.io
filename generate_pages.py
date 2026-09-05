@@ -1811,7 +1811,7 @@ ICON_BOOKMARK = ('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
 
 def bookmark_link(href, type_key, label, bid):
     # bid : identifiant unique de CETTE instance de signet (verset+type),
-    # sert de cle localStorage pour l'appui prolonge 2s qui l'epingle en
+    # sert de cle localStorage pour l'appui prolonge 1s qui l'epingle en
     # pleine couleur - independant des autres signets, meme de meme type
     # (cf. setupBookmarkLongPress cote JS).
     return (f' <a class="bookmark bookmark-{type_key}" href="{href}" '
@@ -4079,7 +4079,7 @@ nav a:hover {
     opacity: 1;
 }
 
-/* Epingle par appui prolonge 2s (setupBookmarkLongPress) - reste en pleine
+/* Epingle par appui prolonge 1s (setupBookmarkLongPress) - reste en pleine
    couleur (contour ET interieur rempli, pas juste opacite:1 sur le contour
    creux par defaut) independamment du survol/focus, jusqu'a desactivation
    par le meme geste. Etat par INSTANCE (verset+type), pas par type entier.
@@ -4592,12 +4592,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Appui prolonge 2s sur un signet (.bookmark) -> l'epingle en pleine
+    // Appui prolonge 1s sur un signet (.bookmark) -> l'epingle en pleine
     // couleur en permanence (data-bookmark-id sert de cle localStorage),
-    // par INSTANCE (verset+type), pas par type entier - un 2e appui de 2s
+    // par INSTANCE (verset+type), pas par type entier - un 2e appui de 1s
     // desepingle. Un tap COURT continue de naviguer normalement vers le
     // guide (comportement du lien inchange) : seul un appui qui atteint le
-    // seuil de 2s marque longPressFired, lu par le handler "click" en
+    // seuil de 1s marque longPressFired, lu par le handler "click" en
     // phase de capture pour annuler UNIQUEMENT cette navigation-la.
     (function setupBookmarkLongPress() {
         var PINNED_KEY = 'bukaAMoromona:pinnedBookmarks';
@@ -4607,7 +4607,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pinned[el.getAttribute('data-bookmark-id')]) el.classList.add('bookmark-pinned');
         });
 
-        var LONG_PRESS_MS = 2000;
+        var LONG_PRESS_MS = 1000;
         var MOVE_TOLERANCE = 10;
         var timer = null;
         var startX = 0;
