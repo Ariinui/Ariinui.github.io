@@ -59,6 +59,79 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Appui prolonge 2s sur un signet (.bookmark) -> l'epingle en pleine
+    // couleur en permanence (data-bookmark-id sert de cle localStorage),
+    // par INSTANCE (verset+type), pas par type entier - un 2e appui de 2s
+    // desepingle. Un tap COURT continue de naviguer normalement vers le
+    // guide (comportement du lien inchange) : seul un appui qui atteint le
+    // seuil de 2s marque longPressFired, lu par le handler "click" en
+    // phase de capture pour annuler UNIQUEMENT cette navigation-la.
+    (function setupBookmarkLongPress() {
+        var PINNED_KEY = 'bukaAMoromona:pinnedBookmarks';
+        var pinned = {};
+        try { pinned = JSON.parse(localStorage.getItem(PINNED_KEY)) || {}; } catch (e) {}
+        [].slice.call(document.querySelectorAll('.bookmark[data-bookmark-id]')).forEach(function(el) {
+            if (pinned[el.getAttribute('data-bookmark-id')]) el.classList.add('bookmark-pinned');
+        });
+
+        var LONG_PRESS_MS = 2000;
+        var MOVE_TOLERANCE = 10;
+        var timer = null;
+        var startX = 0;
+        var startY = 0;
+        var longPressFired = false;
+
+        var cancelTimer = function() {
+            if (timer) { clearTimeout(timer); timer = null; }
+        };
+
+        document.addEventListener('pointerdown', function(event) {
+            var el = event.target.closest && event.target.closest('.bookmark[data-bookmark-id]');
+            if (!el) return;
+            startX = event.clientX;
+            startY = event.clientY;
+            longPressFired = false;
+            cancelTimer();
+            timer = setTimeout(function() {
+                timer = null;
+                longPressFired = true;
+                var id = el.getAttribute('data-bookmark-id');
+                if (pinned[id]) {
+                    delete pinned[id];
+                    el.classList.remove('bookmark-pinned');
+                } else {
+                    pinned[id] = 1;
+                    el.classList.add('bookmark-pinned');
+                }
+                try { localStorage.setItem(PINNED_KEY, JSON.stringify(pinned)); } catch (e) {}
+            }, LONG_PRESS_MS);
+        });
+
+        document.addEventListener('pointermove', function(event) {
+            if (!timer) return;
+            var dx = event.clientX - startX;
+            var dy = event.clientY - startY;
+            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) cancelTimer();
+        });
+
+        document.addEventListener('pointerup', cancelTimer);
+        document.addEventListener('pointercancel', cancelTimer);
+
+        document.addEventListener('click', function(event) {
+            var el = event.target.closest && event.target.closest('.bookmark[data-bookmark-id]');
+            if (el && longPressFired) {
+                event.preventDefault();
+                longPressFired = false;
+            }
+        }, true);
+
+        document.addEventListener('contextmenu', function(event) {
+            if (event.target.closest && event.target.closest('.bookmark[data-bookmark-id]')) {
+                event.preventDefault();
+            }
+        });
+    })();
+
     var themeRow = document.querySelector('.theme-menu-row');
     if (themeRow) {
         var currentTheme = function() {

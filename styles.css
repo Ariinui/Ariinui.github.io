@@ -1190,10 +1190,19 @@ nav a:hover {
     opacity: 0.55;
     display: inline-flex;
     vertical-align: middle;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
 }
 
 .bookmark:hover,
 .bookmark:focus-visible {
+    opacity: 1;
+}
+
+/* Epingle par appui prolonge 2s (setupBookmarkLongPress) - reste en pleine
+   couleur independamment du survol/focus, jusqu'a desactivation par le
+   meme geste. Etat par INSTANCE (verset+type), pas par type entier. */
+.bookmark.bookmark-pinned {
     opacity: 1;
 }
 

@@ -1809,8 +1809,13 @@ ICON_BOOKMARK = ('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
                   '</path></svg>')
 
 
-def bookmark_link(href, type_key, label):
+def bookmark_link(href, type_key, label, bid):
+    # bid : identifiant unique de CETTE instance de signet (verset+type),
+    # sert de cle localStorage pour l'appui prolonge 2s qui l'epingle en
+    # pleine couleur - independant des autres signets, meme de meme type
+    # (cf. setupBookmarkLongPress cote JS).
     return (f' <a class="bookmark bookmark-{type_key}" href="{href}" '
+            f'data-bookmark-id="{bid}" '
             f'title="{label}" aria-label="{label}">{ICON_BOOKMARK}</a>')
 
 
@@ -2664,31 +2669,31 @@ for book_idx, book in enumerate(bom_book_data, 1):
             anchor = guide_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor:
                 guide_link = f'../guide/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor}'
-                verses_html += bookmark_link(guide_link, 'guide', "Voir le commentaire du guide d'etude (Gospel Doctrine)")
+                verses_html += bookmark_link(guide_link, 'guide', "Voir le commentaire du guide d'etude (Gospel Doctrine)", f'{book_idx}_{chap_idx}_{verse_num}_guide')
             anchor2 = guide2_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor2:
                 guide2_link = f'../guide2/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor2}'
-                verses_html += bookmark_link(guide2_link, 'guide2', "Voir le commentaire du guide d'etude (Start to Finish)")
+                verses_html += bookmark_link(guide2_link, 'guide2', "Voir le commentaire du guide d'etude (Start to Finish)", f'{book_idx}_{chap_idx}_{verse_num}_guide2')
             anchor3 = guide3_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor3:
                 guide3_link = f'../guide3/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor3}'
-                verses_html += bookmark_link(guide3_link, 'guide3', "Voir le commentaire Verse by Verse")
+                verses_html += bookmark_link(guide3_link, 'guide3', "Voir le commentaire Verse by Verse", f'{book_idx}_{chap_idx}_{verse_num}_guide3')
             anchor5 = guide5_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor5:
                 guide5_link = f'../guide5/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor5}'
-                verses_html += bookmark_link(guide5_link, 'guide5', "Voir le commentaire du Manuel de l'eleve")
+                verses_html += bookmark_link(guide5_link, 'guide5', "Voir le commentaire du Manuel de l'eleve", f'{book_idx}_{chap_idx}_{verse_num}_guide5')
             anchor6 = guide6_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor6:
                 guide6_link = f'../guide6/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor6}'
-                verses_html += bookmark_link(guide6_link, 'guide6', "Voir le commentaire ScripturePlus")
+                verses_html += bookmark_link(guide6_link, 'guide6', "Voir le commentaire ScripturePlus", f'{book_idx}_{chap_idx}_{verse_num}_guide6')
             anchor7 = guide7_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor7:
                 guide7_link = f'../guide7/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor7}'
-                verses_html += bookmark_link(guide7_link, 'guide7', "Voir BOM Evidence")
+                verses_html += bookmark_link(guide7_link, 'guide7', "Voir BOM Evidence", f'{book_idx}_{chap_idx}_{verse_num}_guide7')
             anchor8 = guide8_verse_index.get((book_idx, chap_idx, verse_num))
             if anchor8:
                 guide8_link = f'../guide8/chapters/chapter_{book_idx}_{chap_idx}.html#{anchor8}'
-                verses_html += bookmark_link(guide8_link, 'guide8', "Voir BOM Minute")
+                verses_html += bookmark_link(guide8_link, 'guide8', "Voir BOM Minute", f'{book_idx}_{chap_idx}_{verse_num}_guide8')
             verses_html += '</p>'
 
         introduction_html = ''
@@ -4065,10 +4070,19 @@ nav a:hover {
     opacity: 0.55;
     display: inline-flex;
     vertical-align: middle;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
 }
 
 .bookmark:hover,
 .bookmark:focus-visible {
+    opacity: 1;
+}
+
+/* Epingle par appui prolonge 2s (setupBookmarkLongPress) - reste en pleine
+   couleur independamment du survol/focus, jusqu'a desactivation par le
+   meme geste. Etat par INSTANCE (verset+type), pas par type entier. */
+.bookmark.bookmark-pinned {
     opacity: 1;
 }
 
@@ -4570,6 +4584,79 @@ document.addEventListener('DOMContentLoaded', function() {
             sync();
         });
     });
+
+    // Appui prolonge 2s sur un signet (.bookmark) -> l'epingle en pleine
+    // couleur en permanence (data-bookmark-id sert de cle localStorage),
+    // par INSTANCE (verset+type), pas par type entier - un 2e appui de 2s
+    // desepingle. Un tap COURT continue de naviguer normalement vers le
+    // guide (comportement du lien inchange) : seul un appui qui atteint le
+    // seuil de 2s marque longPressFired, lu par le handler "click" en
+    // phase de capture pour annuler UNIQUEMENT cette navigation-la.
+    (function setupBookmarkLongPress() {
+        var PINNED_KEY = 'bukaAMoromona:pinnedBookmarks';
+        var pinned = {};
+        try { pinned = JSON.parse(localStorage.getItem(PINNED_KEY)) || {}; } catch (e) {}
+        [].slice.call(document.querySelectorAll('.bookmark[data-bookmark-id]')).forEach(function(el) {
+            if (pinned[el.getAttribute('data-bookmark-id')]) el.classList.add('bookmark-pinned');
+        });
+
+        var LONG_PRESS_MS = 2000;
+        var MOVE_TOLERANCE = 10;
+        var timer = null;
+        var startX = 0;
+        var startY = 0;
+        var longPressFired = false;
+
+        var cancelTimer = function() {
+            if (timer) { clearTimeout(timer); timer = null; }
+        };
+
+        document.addEventListener('pointerdown', function(event) {
+            var el = event.target.closest && event.target.closest('.bookmark[data-bookmark-id]');
+            if (!el) return;
+            startX = event.clientX;
+            startY = event.clientY;
+            longPressFired = false;
+            cancelTimer();
+            timer = setTimeout(function() {
+                timer = null;
+                longPressFired = true;
+                var id = el.getAttribute('data-bookmark-id');
+                if (pinned[id]) {
+                    delete pinned[id];
+                    el.classList.remove('bookmark-pinned');
+                } else {
+                    pinned[id] = 1;
+                    el.classList.add('bookmark-pinned');
+                }
+                try { localStorage.setItem(PINNED_KEY, JSON.stringify(pinned)); } catch (e) {}
+            }, LONG_PRESS_MS);
+        });
+
+        document.addEventListener('pointermove', function(event) {
+            if (!timer) return;
+            var dx = event.clientX - startX;
+            var dy = event.clientY - startY;
+            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) cancelTimer();
+        });
+
+        document.addEventListener('pointerup', cancelTimer);
+        document.addEventListener('pointercancel', cancelTimer);
+
+        document.addEventListener('click', function(event) {
+            var el = event.target.closest && event.target.closest('.bookmark[data-bookmark-id]');
+            if (el && longPressFired) {
+                event.preventDefault();
+                longPressFired = false;
+            }
+        }, true);
+
+        document.addEventListener('contextmenu', function(event) {
+            if (event.target.closest && event.target.closest('.bookmark[data-bookmark-id]')) {
+                event.preventDefault();
+            }
+        });
+    })();
 
     var themeRow = document.querySelector('.theme-menu-row');
     if (themeRow) {
