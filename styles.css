@@ -1483,7 +1483,7 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
 .guide-content h4,
 .guide-content h3.conf-subhead {
     margin: 1.4em 0 0.4em;
-    font-size: 15px;
+    font-size: var(--reading-font-size);
     color: var(--accent);
 }
 
