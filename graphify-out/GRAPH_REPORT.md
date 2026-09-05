@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-09-05)
 
 ## Corpus Check
-- 12 files · ~419,116 words
+- 12 files · ~419,074 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -321,12 +321,12 @@ Cohesion: 0.31
 Nodes (8): build_real_ngrams(), locutions_for_word(), locutions_in_window(), main(), One-off: harvests Tahitian multi-word expressions (locutions) from the Académie, Toute sequence de 2 a MAX_PHRASE_WORDS mots reellement adjacents     (separes pa, List of (locution_text, definition) found in this HTML window - a     locution h, Comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr
 
 ### Community 7 - "Community 7"
-Cohesion: 0.33
-Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML, La description (contrairement au texte d'analyse, deja extrait en     texte pur, Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles, write_cameos()
-
-### Community 8 - "Community 8"
 Cohesion: 0.38
 Nodes (6): main(), Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta, List of (word_text, structured_text) for every headword entry found     in this, Queries farevanaa.pf for `word` (already normalized) and returns the     merged, structured_definition_for_window(), structured_definition_for_word()
+
+### Community 8 - "Community 8"
+Cohesion: 0.33
+Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(), Certains champs de la source (ex. le nom d'une entree) contiennent du     HTML, La description (contrairement au texte d'analyse, deja extrait en     texte pur, Une entree top-level (personne/concept) peut avoir plusieurs     sous-articles, write_cameos()
 
 ### Community 9 - "Community 9"
 Cohesion: 0.4
@@ -334,11 +334,11 @@ Nodes (5): clean_evidence_body(), parse_evidence_scripture_reference(), parse_ev
 
 ### Community 10 - "Community 10"
 Cohesion: 0.67
-Nodes (1): One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a
+Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.67
-Nodes (1): One-off: extracts embark_supplement.json (single-word Tahitian -> French gloss)
+Nodes (1): One-off: extracts tah_audio.json (word/locution -> pronunciation mp3 URL) from a
 
 ### Community 12 - "Community 12"
 Cohesion: 1.0
@@ -1805,11 +1805,11 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `normalize()` connect `Community 3` to `Community 8`, `Community 5`, `Community 6`?**
+- **Why does `normalize()` connect `Community 3` to `Community 5`, `Community 6`, `Community 7`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Why does `slugify()` connect `Community 5` to `Community 0`, `Community 3`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `structured_definition_for_word()` connect `Community 8` to `Community 2`, `Community 3`?**
+- **Why does `structured_definition_for_word()` connect `Community 7` to `Community 2`, `Community 3`?**
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `normalize()` (e.g. with `structured_definition_for_word()` and `build_real_ngrams()`) actually correct?**
   _`normalize()` has 4 INFERRED edges - model-reasoned connections that need verification._

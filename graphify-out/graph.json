@@ -9,7 +9,7 @@
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
       "id": "build_embark_audio_py",
-      "community": 10,
+      "community": 11,
       "norm_label": "build_embark_audio.py"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "build_embark_audio.py",
       "source_location": "L38",
       "id": "build_embark_audio_normalize",
-      "community": 10,
+      "community": 11,
       "norm_label": "normalize()"
     },
     {
@@ -26,7 +26,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_audio.py",
       "source_location": "L1",
-      "community": 10,
+      "community": 11,
       "norm_label": "one-off: extracts tah_audio.json (word/locution -> pronunciation mp3 url) from a",
       "id": "build_embark_audio_rationale_1"
     },
@@ -36,7 +36,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
       "id": "build_embark_supplement_py",
-      "community": 11,
+      "community": 10,
       "norm_label": "build_embark_supplement.py"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L49",
       "id": "build_embark_supplement_normalize",
-      "community": 11,
+      "community": 10,
       "norm_label": "normalize()"
     },
     {
@@ -53,7 +53,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
-      "community": 11,
+      "community": 10,
       "norm_label": "one-off: extracts embark_supplement.json (single-word tahitian -> french gloss)",
       "id": "build_embark_supplement_rationale_1"
     },
@@ -63,7 +63,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L1",
       "id": "build_farevanaa_definitions_py",
-      "community": 8,
+      "community": 7,
       "norm_label": "build_farevanaa_definitions.py"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L43",
       "id": "build_farevanaa_definitions_structured_definition_for_window",
-      "community": 8,
+      "community": 7,
       "norm_label": "structured_definition_for_window()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L88",
       "id": "build_farevanaa_definitions_structured_definition_for_word",
-      "community": 8,
+      "community": 7,
       "norm_label": "structured_definition_for_word()"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L131",
       "id": "build_farevanaa_definitions_main",
-      "community": 8,
+      "community": 7,
       "norm_label": "main()"
     },
     {
@@ -98,7 +98,7 @@
       "file_type": "rationale",
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L1",
-      "community": 8,
+      "community": 7,
       "norm_label": "bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta",
       "id": "build_farevanaa_definitions_rationale_1"
     },
@@ -107,7 +107,7 @@
       "file_type": "rationale",
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L44",
-      "community": 8,
+      "community": 7,
       "norm_label": "list of (word_text, structured_text) for every headword entry found     in this",
       "id": "build_farevanaa_definitions_rationale_44"
     },
@@ -116,7 +116,7 @@
       "file_type": "rationale",
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L89",
-      "community": 8,
+      "community": 7,
       "norm_label": "queries farevanaa.pf for `word` (already normalized) and returns the     merged",
       "id": "build_farevanaa_definitions_rationale_89"
     },
@@ -954,7 +954,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2172",
       "id": "generate_pages_cameo_clean_field",
-      "community": 7,
+      "community": 8,
       "norm_label": "cameo_clean_field()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2184",
       "id": "generate_pages_cameo_render_paragraphs",
-      "community": 7,
+      "community": 8,
       "norm_label": "cameo_render_paragraphs()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2205",
       "id": "generate_pages_cameo_render_entry",
-      "community": 7,
+      "community": 8,
       "norm_label": "cameo_render_entry()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2235",
       "id": "generate_pages_write_cameos",
-      "community": 7,
+      "community": 8,
       "norm_label": "write_cameos()"
     },
     {
@@ -1223,7 +1223,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2173",
-      "community": 7,
+      "community": 8,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2173"
     },
@@ -1232,7 +1232,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2185",
-      "community": 7,
+      "community": 8,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2185"
     },
@@ -1241,7 +1241,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2206",
-      "community": 7,
+      "community": 8,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2206"
     },
