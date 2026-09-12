@@ -1794,21 +1794,33 @@ TEXT_SIZE_CONTROL = '''
                     </div>
 '''
 
-# Bouton flottant de defilement automatique (pages de chapitre LdM FR/TAH +
-# pages des guides d'etude uniquement - injecte apres coup via
-# with_auto_scroll_button() plutot qu'un placeholder PAGE_HEAD, pour ne pas
-# avoir a toucher les ~10 autres appels PAGE_HEAD.format() qui n'en ont pas
-# besoin). Un seul bouton (pas d'indicateur de vitesse separe, meme choix
-# que sur Journal Ariinui) : tap demarre/cycle les vitesses, appui long
-# arrete - logique cote JS dans setupAutoScrollReading().
+# Defilement automatique (pages de chapitre LdM FR/TAH + pages des guides
+# d'etude uniquement) : le bouton flottant recouvrait du texte en lecture
+# manuelle sur ecran etroit (constate en test reel - le 1er essai le
+# laissait visible en permanence). Nouveau compromis : le bouton
+# n'existe visuellement (display:none par defaut, cf. CSS) que PENDANT une
+# lecture active, demarree depuis une ligne dediee dans le menu "..."
+# existant (AUTO_SCROLL_MENU_ROW) - en lecture manuelle, aucun element
+# flottant sur l'ecran. Un seul bouton une fois actif (pas d'indicateur de
+# vitesse separe, meme choix que sur Journal Ariinui) : tap cycle les
+# vitesses, appui long arrete et fait disparaitre le bouton - logique cote
+# JS dans setupAutoScrollReading(). Les deux sont ajoutes ensemble a
+# extra_controls (pas de placeholder PAGE_HEAD dedie, pour ne pas toucher
+# aux ~10 autres appels PAGE_HEAD.format() qui n'en ont pas besoin).
+AUTO_SCROLL_MENU_ROW = '''
+                    <button type="button" class="menu-row auto-scroll-menu-row" role="menuitem">
+                        <span class="menu-row-icon" aria-hidden="true">&#9654;</span>
+                        <span class="menu-row-label">Defilement automatique</span>
+                    </button>
+'''
+
 AUTO_SCROLL_BUTTON_HTML = '''<button type="button" class="auto-scroll-toggle" aria-label="Defilement automatique" title="Defilement automatique">
                     <span class="icon-play" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
                     <span class="icon-pause" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg></span>
                 </button>
-                '''
+'''
 
-def with_auto_scroll_button(page_html):
-    return page_html.replace('<div class="more-menu">', AUTO_SCROLL_BUTTON_HTML + '<div class="more-menu">', 1)
+AUTO_SCROLL_CONTROL = AUTO_SCROLL_MENU_ROW + AUTO_SCROLL_BUTTON_HTML
 
 # Icone de signet partagee par les liens de signet (colores par type via
 # CSS, cf. .bookmark-guide/.bookmark-guide2) et leur controle
@@ -2720,7 +2732,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
-        html = with_auto_scroll_button(PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL))
+        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL + BOOKMARK_FILTER_CONTROL)
         html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
@@ -2763,7 +2775,7 @@ if SITE_TAHITIEN:
             # + .chapter-title de cette page (jamais la forme francaise), pour
             # rester coherent avec la page d'origine.
             translation_ref = f'{book_display_title_tah(book["book_title"])}, Pene {chap_idx}'
-            html = with_auto_scroll_button(PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL))
+            html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL)
             html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
             html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona" data-translation-ref="{html_lib.escape(translation_ref)}">'
@@ -2829,7 +2841,7 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if has_prev else ''
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if has_next else ''
 
-            html = with_auto_scroll_button(PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL))
+            html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL)
             html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR[volume_key]})">{GUIDE_BOOKMARK_LABELS[volume_key]}</h1>\n    <h2>{title}</h2>\n'
             html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="{volume_key}" data-volume-title="{volume_title}">{content_html}</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -2844,7 +2856,7 @@ for n, item in enumerate(guide_intro_items, 1):
     prev_link = f'<a href="intro_{n-1}.html">Page precedente</a>' if n > 1 else ''
     next_link = f'<a href="intro_{n+1}.html">Page suivante</a>' if n < len(guide_intro_items) else ''
 
-    html = with_auto_scroll_button(PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL))
+    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL)
     html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR["guide"]})">{GUIDE_BOOKMARK_LABELS["guide"]}</h1>\n    <h2>{item["title"]}</h2>\n'
     html += f'<div class="guide-content" data-volume-key="guide" data-volume-title="Book of Mormon Study Guide">{content_html}</div>'
     html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -3169,21 +3181,28 @@ nav a:hover {
    le centrage vertical evite ce chevauchement structurellement (aucun
    contenu de ces pages ne vit jamais au milieu de l'ecran de facon fixe),
    sans avoir besoin d'un listener de scroll pour repositionner dynamiquement.
-   Un seul bouton play/pause (pas d'indicateur de vitesse separe) : tap
-   demarre/cycle les vitesses, appui long arrete (setupAutoScrollReading
-   cote JS). Masquage automatique pendant la lecture (comme un lecteur
-   video/liseuse pro) : .auto-scroll-hidden est ajoutee apres un delai sans
-   interaction, retiree par n'importe quel tap "dans le vide" (en dehors
-   des mots tap-to-translate/liens/signets, geres separement) - jamais par
-   defaut a l'arret, la lecture terminee/stoppee reaffiche le bouton. */
+   Invisible par defaut (display:none) - n'existe visuellement que PENDANT
+   une lecture active (.is-active, ajoutee par play()/retiree par stop()
+   dans setupAutoScrollReading), demarree depuis AUTO_SCROLL_MENU_ROW dans
+   le menu "..." : constate en test reel sur ecran etroit qu'un bouton
+   flottant visible EN PERMANENCE recouvre du texte pendant la lecture
+   manuelle, ce que le declenchement depuis le menu evite entierement (rien
+   de flottant tant que l'utilisateur n'a pas explicitement demarre). Un
+   seul bouton play/pause une fois actif (pas d'indicateur de vitesse
+   separe) : tap cycle les vitesses, appui long arrete ET fait disparaitre
+   le bouton. Masquage temporaire supplementaire PENDANT une lecture active
+   (comme un lecteur video/liseuse pro) : .auto-scroll-hidden (juste
+   opacite/pointer-events, .is-active reste vrai) est ajoutee apres un
+   delai sans interaction, retiree par n'importe quel tap "dans le vide"
+   (en dehors des mots tap-to-translate/liens/signets, geres separement). */
 .auto-scroll-toggle {
+    display: none;
     position: fixed;
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
     width: 52px;
     height: 52px;
-    display: flex;
     align-items: center;
     justify-content: center;
     background: var(--surface);
@@ -3195,6 +3214,10 @@ nav a:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     z-index: 1000;
     transition: opacity 0.25s ease;
+}
+
+.auto-scroll-toggle.is-active {
+    display: flex;
 }
 
 .auto-scroll-toggle.auto-scroll-hidden {
@@ -4753,7 +4776,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // reapparaissent au tap) au lieu de rester visible en permanence.
     (function setupAutoScrollReading() {
         var btn = document.querySelector('.auto-scroll-toggle');
-        if (!btn) return;
+        var menuRow = document.querySelector('.auto-scroll-menu-row');
+        if (!btn || !menuRow) return;
 
         var SPEEDS_PX_S = [8, 10, 15, 30];
         var LONG_PRESS_MS = 600;
@@ -4812,10 +4836,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function play() {
+            if (playing) return;
             if (maxScroll() - window.scrollY < 2) return;
             playing = true;
             lastTime = null;
             scrollPos = window.scrollY;
+            btn.classList.add('is-active');
+            btn.classList.remove('auto-scroll-hidden');
             updateIcon();
             rafId = requestAnimationFrame(step);
             scheduleHide();
@@ -4828,7 +4855,11 @@ document.addEventListener('DOMContentLoaded', function() {
             rafId = null;
             clearTimeout(hideTimer);
             updateIcon();
-            showButton();
+            // Contrairement a l'ancienne version (bouton toujours visible en
+            // dehors de la lecture), on le fait disparaitre entierement a
+            // l'arret - il ne reapparaitra qu'en relancant depuis le menu.
+            btn.classList.remove('is-active');
+            btn.classList.remove('auto-scroll-hidden');
         }
 
         function showButton() {
@@ -4875,6 +4906,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!playing) return;
             if (event.target.closest && event.target.closest(TAP_EXCLUDE)) return;
             showButton();
+        });
+
+        // Point d'entree unique du defilement automatique : demarre la
+        // lecture et referme le popover "..." (moreMenuPopover/moreMenuToggle
+        // declares plus haut dans cette meme fonction DOMContentLoaded,
+        // accessibles ici par fermeture) pour que le bouton flottant devienne
+        // immediatement visible/joignable au lieu de rester sous le menu.
+        menuRow.addEventListener('click', function() {
+            play();
+            if (moreMenuPopover) {
+                moreMenuPopover.hidden = true;
+                if (moreMenuToggle) moreMenuToggle.setAttribute('aria-expanded', 'false');
+            }
         });
 
         // Permet au mode Traduction plein ecran (qui couvre tout l'ecran,

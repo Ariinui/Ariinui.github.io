@@ -142,7 +142,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // reapparaissent au tap) au lieu de rester visible en permanence.
     (function setupAutoScrollReading() {
         var btn = document.querySelector('.auto-scroll-toggle');
-        if (!btn) return;
+        var menuRow = document.querySelector('.auto-scroll-menu-row');
+        if (!btn || !menuRow) return;
 
         var SPEEDS_PX_S = [8, 10, 15, 30];
         var LONG_PRESS_MS = 600;
@@ -201,10 +202,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function play() {
+            if (playing) return;
             if (maxScroll() - window.scrollY < 2) return;
             playing = true;
             lastTime = null;
             scrollPos = window.scrollY;
+            btn.classList.add('is-active');
+            btn.classList.remove('auto-scroll-hidden');
             updateIcon();
             rafId = requestAnimationFrame(step);
             scheduleHide();
@@ -217,7 +221,11 @@ document.addEventListener('DOMContentLoaded', function() {
             rafId = null;
             clearTimeout(hideTimer);
             updateIcon();
-            showButton();
+            // Contrairement a l'ancienne version (bouton toujours visible en
+            // dehors de la lecture), on le fait disparaitre entierement a
+            // l'arret - il ne reapparaitra qu'en relancant depuis le menu.
+            btn.classList.remove('is-active');
+            btn.classList.remove('auto-scroll-hidden');
         }
 
         function showButton() {
@@ -264,6 +272,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!playing) return;
             if (event.target.closest && event.target.closest(TAP_EXCLUDE)) return;
             showButton();
+        });
+
+        // Point d'entree unique du defilement automatique : demarre la
+        // lecture et referme le popover "..." (moreMenuPopover/moreMenuToggle
+        // declares plus haut dans cette meme fonction DOMContentLoaded,
+        // accessibles ici par fermeture) pour que le bouton flottant devienne
+        // immediatement visible/joignable au lieu de rester sous le menu.
+        menuRow.addEventListener('click', function() {
+            play();
+            if (moreMenuPopover) {
+                moreMenuPopover.hidden = true;
+                if (moreMenuToggle) moreMenuToggle.setAttribute('aria-expanded', 'false');
+            }
         });
 
         // Permet au mode Traduction plein ecran (qui couvre tout l'ecran,

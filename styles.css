@@ -273,21 +273,28 @@ nav a:hover {
    le centrage vertical evite ce chevauchement structurellement (aucun
    contenu de ces pages ne vit jamais au milieu de l'ecran de facon fixe),
    sans avoir besoin d'un listener de scroll pour repositionner dynamiquement.
-   Un seul bouton play/pause (pas d'indicateur de vitesse separe) : tap
-   demarre/cycle les vitesses, appui long arrete (setupAutoScrollReading
-   cote JS). Masquage automatique pendant la lecture (comme un lecteur
-   video/liseuse pro) : .auto-scroll-hidden est ajoutee apres un delai sans
-   interaction, retiree par n'importe quel tap "dans le vide" (en dehors
-   des mots tap-to-translate/liens/signets, geres separement) - jamais par
-   defaut a l'arret, la lecture terminee/stoppee reaffiche le bouton. */
+   Invisible par defaut (display:none) - n'existe visuellement que PENDANT
+   une lecture active (.is-active, ajoutee par play()/retiree par stop()
+   dans setupAutoScrollReading), demarree depuis AUTO_SCROLL_MENU_ROW dans
+   le menu "..." : constate en test reel sur ecran etroit qu'un bouton
+   flottant visible EN PERMANENCE recouvre du texte pendant la lecture
+   manuelle, ce que le declenchement depuis le menu evite entierement (rien
+   de flottant tant que l'utilisateur n'a pas explicitement demarre). Un
+   seul bouton play/pause une fois actif (pas d'indicateur de vitesse
+   separe) : tap cycle les vitesses, appui long arrete ET fait disparaitre
+   le bouton. Masquage temporaire supplementaire PENDANT une lecture active
+   (comme un lecteur video/liseuse pro) : .auto-scroll-hidden (juste
+   opacite/pointer-events, .is-active reste vrai) est ajoutee apres un
+   delai sans interaction, retiree par n'importe quel tap "dans le vide"
+   (en dehors des mots tap-to-translate/liens/signets, geres separement). */
 .auto-scroll-toggle {
+    display: none;
     position: fixed;
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
     width: 52px;
     height: 52px;
-    display: flex;
     align-items: center;
     justify-content: center;
     background: var(--surface);
@@ -299,6 +306,10 @@ nav a:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     z-index: 1000;
     transition: opacity 0.25s ease;
+}
+
+.auto-scroll-toggle.is-active {
+    display: flex;
 }
 
 .auto-scroll-toggle.auto-scroll-hidden {
