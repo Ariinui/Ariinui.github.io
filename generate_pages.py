@@ -1795,32 +1795,26 @@ TEXT_SIZE_CONTROL = '''
 '''
 
 # Defilement automatique (pages de chapitre LdM FR/TAH + pages des guides
-# d'etude uniquement) : le bouton flottant recouvrait du texte en lecture
-# manuelle sur ecran etroit (constate en test reel - le 1er essai le
-# laissait visible en permanence). Nouveau compromis : le bouton
-# n'existe visuellement (display:none par defaut, cf. CSS) que PENDANT une
-# lecture active, demarree depuis une ligne dediee dans le menu "..."
-# existant (AUTO_SCROLL_MENU_ROW) - en lecture manuelle, aucun element
-# flottant sur l'ecran. Un seul bouton une fois actif (pas d'indicateur de
-# vitesse separe, meme choix que sur Journal Ariinui) : tap cycle les
-# vitesses, appui long arrete et fait disparaitre le bouton - logique cote
-# JS dans setupAutoScrollReading(). Les deux sont ajoutes ensemble a
-# extra_controls (pas de placeholder PAGE_HEAD dedie, pour ne pas toucher
-# aux ~10 autres appels PAGE_HEAD.format() qui n'en ont pas besoin).
+# d'etude) : apres 2 essais avec un element visuel (bouton flottant
+# toujours visible, puis bouton demarre depuis le menu de chaque page) tous
+# deux juges genants/redondants par l'utilisateur, version finale
+# entierement gestuelle - AUCUN bouton ni header nulle part. Reglage
+# global unique (localStorage), avec un SEUL interrupteur marche/arret -
+# ajoute uniquement au menu "..." de la page Bibliotheque (index.html,
+# cf. toc_reset_controls), jamais repete dans le menu de chaque page de
+# lecture. Une fois active, s'applique automatiquement a toute page de
+# lecture ouverte/rechargee (verifie en JS via localStorage, cf.
+# setupAutoScrollReading) - gestes sur l'ecran (tap court = demarrer/
+# vitesse, appui long = pause/reprise), tap-to-translate desactive en
+# parallele. Switch modelise sur .theme-menu-row (meme structure
+# menu-row-switch), pas AUTO_SCROLL_BUTTON_HTML (supprime, plus de bouton).
 AUTO_SCROLL_MENU_ROW = '''
-                    <button type="button" class="menu-row auto-scroll-menu-row" role="menuitem">
+                    <button type="button" class="menu-row auto-scroll-menu-row" role="menuitemcheckbox" aria-checked="false">
                         <span class="menu-row-icon" aria-hidden="true">&#9654;</span>
                         <span class="menu-row-label">Defilement automatique</span>
+                        <span class="menu-row-switch" aria-hidden="true"></span>
                     </button>
 '''
-
-AUTO_SCROLL_BUTTON_HTML = '''<button type="button" class="auto-scroll-toggle" aria-label="Defilement automatique" title="Defilement automatique">
-                    <span class="icon-play" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
-                    <span class="icon-pause" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg></span>
-                </button>
-'''
-
-AUTO_SCROLL_CONTROL = AUTO_SCROLL_MENU_ROW + AUTO_SCROLL_BUTTON_HTML
 
 # Icone de signet partagee par les liens de signet (colores par type via
 # CSS, cf. .bookmark-guide/.bookmark-guide2) et leur controle
@@ -2627,7 +2621,8 @@ else:
 # a ete retiree sur demande explicite. Le bilingue/l'anglais/la Conference
 # ont ete supprimes completement (plus de generation du tout, voir plus bas).
 
-toc_reset_controls = reset_time_row('french', 'Réinitialiser (FR)' if SITE_TAHITIEN else 'Réinitialiser')
+toc_reset_controls = AUTO_SCROLL_MENU_ROW
+toc_reset_controls += reset_time_row('french', 'Réinitialiser (FR)' if SITE_TAHITIEN else 'Réinitialiser')
 if SITE_TAHITIEN:
     toc_reset_controls += reset_time_row('tahitian', 'Réinitialiser (TAH)')
 toc_html = PAGE_HEAD.format(title='Bibliotheque - Table des matieres', styles_href='styles.css', script_href='script.js', lang='fr', extra_controls=toc_reset_controls)
@@ -2732,7 +2727,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
-        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL + BOOKMARK_FILTER_CONTROL)
+        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
         html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
@@ -2775,7 +2770,7 @@ if SITE_TAHITIEN:
             # + .chapter-title de cette page (jamais la forme francaise), pour
             # rester coherent avec la page d'origine.
             translation_ref = f'{book_display_title_tah(book["book_title"])}, Pene {chap_idx}'
-            html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL)
+            html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
             html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona" data-translation-ref="{html_lib.escape(translation_ref)}">'
@@ -2841,7 +2836,7 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if has_prev else ''
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if has_next else ''
 
-            html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL)
+            html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR[volume_key]})">{GUIDE_BOOKMARK_LABELS[volume_key]}</h1>\n    <h2>{title}</h2>\n'
             html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="{volume_key}" data-volume-title="{volume_title}">{content_html}</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -2856,7 +2851,7 @@ for n, item in enumerate(guide_intro_items, 1):
     prev_link = f'<a href="intro_{n-1}.html">Page precedente</a>' if n > 1 else ''
     next_link = f'<a href="intro_{n+1}.html">Page suivante</a>' if n < len(guide_intro_items) else ''
 
-    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL + AUTO_SCROLL_CONTROL)
+    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
     html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR["guide"]})">{GUIDE_BOOKMARK_LABELS["guide"]}</h1>\n    <h2>{item["title"]}</h2>\n'
     html += f'<div class="guide-content" data-volume-key="guide" data-volume-title="Book of Mormon Study Guide">{content_html}</div>'
     html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -3164,86 +3159,13 @@ nav a:hover {
     touch-action: manipulation;
 }
 
-/* Bouton flottant de defilement automatique - absent du DOM sur les pages
-   sans contenu de lecture (with_auto_scroll_button n'est applique qu'aux
-   chapitres LdM + guides), donc aucune regle ici n'affecte les autres
-   pages. position:fixed (pas absolute comme .page-controls) : .page-controls
-   scrolle AVEC le contenu (position:absolute dans .page, qui n'a pas de
-   scroll interne propre - toute la fenetre defile), donc un bouton cense
-   rester joignable PENDANT le defilement automatique doit rester ancre a
-   l'ecran independamment du scroll - bouton d'action flottant, separe du
-   menu "..." plutot qu'ajoute a cote de lui. Centre verticalement sur le
-   bord droit (PAS bas-droite) - teste et confirme par chevauchement reel
-   avec la barre de navigation Chapitre precedent/suivant en bas de page :
-   celle-ci vit dans le flux normal juste avant le padding-bottom de .page,
-   donc un fixed bas-droite la recouvre exactement au moment ou l'utilisateur
-   atteint la fin d'un chapitre (justement quand il defile jusqu'en bas) -
-   le centrage vertical evite ce chevauchement structurellement (aucun
-   contenu de ces pages ne vit jamais au milieu de l'ecran de facon fixe),
-   sans avoir besoin d'un listener de scroll pour repositionner dynamiquement.
-   Invisible par defaut (display:none) - n'existe visuellement que PENDANT
-   une lecture active (.is-active, ajoutee par play()/retiree par stop()
-   dans setupAutoScrollReading), demarree depuis AUTO_SCROLL_MENU_ROW dans
-   le menu "..." : constate en test reel sur ecran etroit qu'un bouton
-   flottant visible EN PERMANENCE recouvre du texte pendant la lecture
-   manuelle, ce que le declenchement depuis le menu evite entierement (rien
-   de flottant tant que l'utilisateur n'a pas explicitement demarre). Un
-   seul bouton play/pause une fois actif (pas d'indicateur de vitesse
-   separe) : tap cycle les vitesses, appui long arrete ET fait disparaitre
-   le bouton. Masquage temporaire supplementaire PENDANT une lecture active
-   (comme un lecteur video/liseuse pro) : .auto-scroll-hidden (juste
-   opacite/pointer-events, .is-active reste vrai) est ajoutee apres un
-   delai sans interaction, retiree par n'importe quel tap "dans le vide"
-   (en dehors des mots tap-to-translate/liens/signets, geres separement). */
-.auto-scroll-toggle {
-    display: none;
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 52px;
-    height: 52px;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    color: var(--text);
-    cursor: pointer;
-    touch-action: manipulation;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-    z-index: 1000;
-    transition: opacity 0.25s ease;
-}
-
-.auto-scroll-toggle.is-active {
-    display: flex;
-}
-
-.auto-scroll-toggle.auto-scroll-hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.auto-scroll-toggle .icon-pause {
-    display: none;
-}
-
-.auto-scroll-toggle.is-playing .icon-play {
-    display: none;
-}
-
-.auto-scroll-toggle.is-playing .icon-pause {
-    display: flex;
-}
-
 .more-menu-toggle::before {
     content: '';
     position: absolute;
     inset: -10px;
 }
 
-.more-menu-toggle:hover, .auto-scroll-toggle:hover {
+.more-menu-toggle:hover {
     background: var(--hover-bg);
 }
 
@@ -4766,39 +4688,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     })();
 
-    // Defilement automatique (bouton play flottant, pages de chapitre LdM +
-    // guides uniquement - cf. AUTO_SCROLL_BUTTON_HTML/with_auto_scroll_button
-    // cote Python, absent du DOM ailleurs donc no-op ici via le guard sur
-    // btn). Meme cycle de vitesses que Journal Ariinui, mais scroll de la
-    // FENETRE entiere (pas d'un div interne - ces pages n'ont pas de
-    // conteneur scrollable dedie) et masquage auto pendant la lecture
-    // (comme un lecteur video/liseuse pro : les controles s'estompent puis
-    // reapparaissent au tap) au lieu de rester visible en permanence.
+    // Defilement automatique (pages de chapitre LdM FR/TAH + guides
+    // d'etude) : entierement gestuel, AUCUN element visuel a l'ecran (ni
+    // bouton ni header - 3 essais precedents avec un bouton flottant
+    // toujours juges genants par l'utilisateur, cf. memoire du projet).
+    // Reglage global unique, allume/eteint UNIQUEMENT depuis le menu "..."
+    // de la page Bibliotheque (index.html, AUTO_SCROLL_MENU_ROW) - jamais
+    // depuis les pages de lecture elles-memes - et persistant en
+    // localStorage : une fois active, s'applique automatiquement a
+    // n'importe quelle page de lecture ouverte/rechargee ensuite, sans
+    // reglage par page. Tant qu'il est actif sur une page de lecture :
+    // tap court = demarre si arrete, sinon cycle la vitesse ; appui long
+    // = bascule pause/reprise (jamais l'inverse - precision explicite de
+    // l'utilisateur). Le tap-to-translate est desactive en parallele
+    // (cf. le garde ajoute autour de l'appel setupTapToTranslate) puisque
+    // tout tap sert desormais a piloter le defilement.
     (function setupAutoScrollReading() {
-        var btn = document.querySelector('.auto-scroll-toggle');
-        var menuRow = document.querySelector('.auto-scroll-menu-row');
-        if (!btn || !menuRow) return;
+        if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
+        if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
 
         var SPEEDS_PX_S = [8, 10, 15, 30];
         var LONG_PRESS_MS = 600;
-        var HIDE_DELAY_MS = 2000;
-        // Elements deja tap-ables sur ces pages (mot tahitien/anglais,
-        // date en toutes lettres, numero de verset -> mode Traduction,
-        // bulle de traduction elle-meme, signets, liens, boutons) : un tap
-        // dessus ne doit jamais aussi basculer la visibilite du bouton -
-        // les deux systemes restent independants, comme sur Kindle (un mot
-        // reste cliquable meme barre masquee, pas besoin d'un 1er tap "a
-        // vide" pour la reafficher avant de pouvoir taper sur le mot).
-        var TAP_EXCLUDE = '.tah-word, .en-word, .verse-num-tap, .tah-date, .tah-popup, .bookmark, .auto-scroll-toggle, a, button, input, select, textarea';
+        var MOVE_TOLERANCE = 10;
+        // Elements qui doivent garder leur propre comportement de tap -
+        // navigation, signets (appui long deja dedie a l'epinglage,
+        // setupBookmarkLongPress plus haut), menu, mode Traduction plein
+        // ecran (verse-num-tap) - tout le reste (y compris les mots
+        // tahitiens, desormais libres puisque le tap-to-translate est
+        // desactive) sert a piloter le defilement.
+        var GESTURE_EXCLUDE = '.verse-num-tap, .bookmark, .more-menu, a, button, input, select, textarea';
 
         var speedIndex = 0;
         var playing = false;
         var rafId = null;
         var scrollPos = 0;
         var lastTime = null;
-        var pressTimer = null;
-        var pressFired = false;
-        var hideTimer = null;
 
         function maxScroll() {
             return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
@@ -4822,7 +4746,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 var max = maxScroll();
                 if (scrollPos >= max) {
                     window.scrollTo(0, max);
-                    stop();
+                    playing = false;
                     return;
                 }
                 window.scrollTo(0, scrollPos);
@@ -4831,102 +4755,80 @@ document.addEventListener('DOMContentLoaded', function() {
             rafId = requestAnimationFrame(step);
         }
 
-        function updateIcon() {
-            btn.classList.toggle('is-playing', playing);
-        }
-
         function play() {
             if (playing) return;
             if (maxScroll() - window.scrollY < 2) return;
             playing = true;
             lastTime = null;
             scrollPos = window.scrollY;
-            btn.classList.add('is-active');
-            btn.classList.remove('auto-scroll-hidden');
-            updateIcon();
             rafId = requestAnimationFrame(step);
-            scheduleHide();
         }
 
-        function stop() {
+        function pause() {
             if (!playing) return;
             playing = false;
             if (rafId) cancelAnimationFrame(rafId);
             rafId = null;
-            clearTimeout(hideTimer);
-            updateIcon();
-            // Contrairement a l'ancienne version (bouton toujours visible en
-            // dehors de la lecture), on le fait disparaitre entierement a
-            // l'arret - il ne reapparaitra qu'en relancant depuis le menu.
-            btn.classList.remove('is-active');
-            btn.classList.remove('auto-scroll-hidden');
         }
 
-        function showButton() {
-            btn.classList.remove('auto-scroll-hidden');
-            clearTimeout(hideTimer);
-            if (playing) scheduleHide();
-        }
+        // Meme technique de distinction tap-court/appui-long que
+        // setupBookmarkLongPress plus haut dans ce fichier (tolerance de
+        // mouvement, flag longPressFired lu par un handler "click" en
+        // phase de capture) - ici sur tout le document plutot qu'un
+        // element precis, et les deux issues (court/long) declenchent une
+        // action au lieu qu'une seule ne fasse quelque chose.
+        var pressTimer = null;
+        var longPressFired = false;
+        var startX = 0;
+        var startY = 0;
 
-        function scheduleHide() {
-            clearTimeout(hideTimer);
-            hideTimer = setTimeout(function() {
-                btn.classList.add('auto-scroll-hidden');
-            }, HIDE_DELAY_MS);
-        }
+        var cancelTimer = function() {
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+        };
 
-        btn.addEventListener('pointerdown', function() {
-            pressFired = false;
+        document.addEventListener('pointerdown', function(event) {
+            if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
+            startX = event.clientX;
+            startY = event.clientY;
+            longPressFired = false;
+            cancelTimer();
             pressTimer = setTimeout(function() {
                 pressTimer = null;
-                pressFired = true;
-                stop();
+                longPressFired = true;
+                if (playing) pause(); else play();
             }, LONG_PRESS_MS);
         });
 
-        btn.addEventListener('pointerup', function() {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
+        document.addEventListener('pointermove', function(event) {
+            if (!pressTimer) return;
+            var dx = event.clientX - startX;
+            var dy = event.clientY - startY;
+            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) cancelTimer();
+        });
+
+        document.addEventListener('pointerup', cancelTimer);
+        document.addEventListener('pointercancel', cancelTimer);
+
+        document.addEventListener('click', function(event) {
+            if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
+            if (longPressFired) {
+                // Deja gere par l'appui long ci-dessus - un tap court qui
+                // suit un appui prolonge ne doit pas AUSSI cycler la
+                // vitesse.
+                longPressFired = false;
+                return;
             }
-            if (pressFired) return;
             if (!playing) {
                 play();
             } else {
                 speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
             }
-            showButton();
         });
 
-        btn.addEventListener('pointercancel', function() {
-            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!playing) return;
-            if (event.target.closest && event.target.closest(TAP_EXCLUDE)) return;
-            showButton();
-        });
-
-        // Point d'entree unique du defilement automatique : demarre la
-        // lecture et referme le popover "..." (moreMenuPopover/moreMenuToggle
-        // declares plus haut dans cette meme fonction DOMContentLoaded,
-        // accessibles ici par fermeture) pour que le bouton flottant devienne
-        // immediatement visible/joignable au lieu de rester sous le menu.
-        menuRow.addEventListener('click', function() {
-            play();
-            if (moreMenuPopover) {
-                moreMenuPopover.hidden = true;
-                if (moreMenuToggle) moreMenuToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        // Permet au mode Traduction plein ecran (qui couvre tout l'ecran,
-        // z-index superieur) de stopper le defilement de la page derriere
-        // lui plutot que de le laisser tourner invisible - meme pattern de
-        // hook global que window.closeTranslationOverlay/__closeTahPopup
-        // deja utilise ailleurs dans ce fichier.
-        window.stopAutoScrollReading = stop;
+        // Le mode Traduction plein ecran (verse-num-tap, exclu ci-dessus)
+        // reste utilisable independamment - juste mis en pause le temps
+        // qu'il soit ouvert pour ne pas defiler invisiblement derriere.
+        window.stopAutoScrollReading = pause;
     })();
 
     var themeRow = document.querySelector('.theme-menu-row');
@@ -4945,6 +4847,27 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
             syncTheme();
+        });
+    }
+
+    // Interrupteur "Defilement automatique" - present UNIQUEMENT dans le
+    // menu de la page Bibliotheque (index.html, cf. toc_reset_controls
+    // cote Python), jamais sur les pages de lecture elles-memes. Reglage
+    // global : bascule juste le localStorage, la logique de defilement
+    // gestuel (setupAutoScrollReading) le relit a chaque page de lecture.
+    var autoScrollRow = document.querySelector('.auto-scroll-menu-row');
+    if (autoScrollRow) {
+        var syncAutoScrollRow = function() {
+            autoScrollRow.setAttribute('aria-checked', localStorage.getItem('bukaAMoromona:autoScrollMode') === '1' ? 'true' : 'false');
+        };
+        syncAutoScrollRow();
+        autoScrollRow.addEventListener('click', function() {
+            if (localStorage.getItem('bukaAMoromona:autoScrollMode') === '1') {
+                localStorage.removeItem('bukaAMoromona:autoScrollMode');
+            } else {
+                localStorage.setItem('bukaAMoromona:autoScrollMode', '1');
+            }
+            syncAutoScrollRow();
         });
     }
 
@@ -5713,7 +5636,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.__closeTahPopup = closePopup;
     }
 
-    setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
+    // Tap-to-translate desactive pendant le mode "Defilement automatique"
+    // (reglage global, cf. setupAutoScrollReading plus haut) - tout tap sur
+    // un mot/date sert alors a piloter le defilement (demarrer/vitesse) au
+    // lieu d'ouvrir la bulle de traduction, comme demande explicitement.
+    if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') {
+        setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
+    }
 
     // Mode "Traduction" plein ecran : tap sur un numero de verset tahitien
     // (.verse-num-tap) -> overlay avec CE SEUL verset dans 2 panneaux

@@ -256,86 +256,13 @@ nav a:hover {
     touch-action: manipulation;
 }
 
-/* Bouton flottant de defilement automatique - absent du DOM sur les pages
-   sans contenu de lecture (with_auto_scroll_button n'est applique qu'aux
-   chapitres LdM + guides), donc aucune regle ici n'affecte les autres
-   pages. position:fixed (pas absolute comme .page-controls) : .page-controls
-   scrolle AVEC le contenu (position:absolute dans .page, qui n'a pas de
-   scroll interne propre - toute la fenetre defile), donc un bouton cense
-   rester joignable PENDANT le defilement automatique doit rester ancre a
-   l'ecran independamment du scroll - bouton d'action flottant, separe du
-   menu "..." plutot qu'ajoute a cote de lui. Centre verticalement sur le
-   bord droit (PAS bas-droite) - teste et confirme par chevauchement reel
-   avec la barre de navigation Chapitre precedent/suivant en bas de page :
-   celle-ci vit dans le flux normal juste avant le padding-bottom de .page,
-   donc un fixed bas-droite la recouvre exactement au moment ou l'utilisateur
-   atteint la fin d'un chapitre (justement quand il defile jusqu'en bas) -
-   le centrage vertical evite ce chevauchement structurellement (aucun
-   contenu de ces pages ne vit jamais au milieu de l'ecran de facon fixe),
-   sans avoir besoin d'un listener de scroll pour repositionner dynamiquement.
-   Invisible par defaut (display:none) - n'existe visuellement que PENDANT
-   une lecture active (.is-active, ajoutee par play()/retiree par stop()
-   dans setupAutoScrollReading), demarree depuis AUTO_SCROLL_MENU_ROW dans
-   le menu "..." : constate en test reel sur ecran etroit qu'un bouton
-   flottant visible EN PERMANENCE recouvre du texte pendant la lecture
-   manuelle, ce que le declenchement depuis le menu evite entierement (rien
-   de flottant tant que l'utilisateur n'a pas explicitement demarre). Un
-   seul bouton play/pause une fois actif (pas d'indicateur de vitesse
-   separe) : tap cycle les vitesses, appui long arrete ET fait disparaitre
-   le bouton. Masquage temporaire supplementaire PENDANT une lecture active
-   (comme un lecteur video/liseuse pro) : .auto-scroll-hidden (juste
-   opacite/pointer-events, .is-active reste vrai) est ajoutee apres un
-   delai sans interaction, retiree par n'importe quel tap "dans le vide"
-   (en dehors des mots tap-to-translate/liens/signets, geres separement). */
-.auto-scroll-toggle {
-    display: none;
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 52px;
-    height: 52px;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    color: var(--text);
-    cursor: pointer;
-    touch-action: manipulation;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-    z-index: 1000;
-    transition: opacity 0.25s ease;
-}
-
-.auto-scroll-toggle.is-active {
-    display: flex;
-}
-
-.auto-scroll-toggle.auto-scroll-hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.auto-scroll-toggle .icon-pause {
-    display: none;
-}
-
-.auto-scroll-toggle.is-playing .icon-play {
-    display: none;
-}
-
-.auto-scroll-toggle.is-playing .icon-pause {
-    display: flex;
-}
-
 .more-menu-toggle::before {
     content: '';
     position: absolute;
     inset: -10px;
 }
 
-.more-menu-toggle:hover, .auto-scroll-toggle:hover {
+.more-menu-toggle:hover {
     background: var(--hover-bg);
 }
 

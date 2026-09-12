@@ -132,39 +132,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     })();
 
-    // Defilement automatique (bouton play flottant, pages de chapitre LdM +
-    // guides uniquement - cf. AUTO_SCROLL_BUTTON_HTML/with_auto_scroll_button
-    // cote Python, absent du DOM ailleurs donc no-op ici via le guard sur
-    // btn). Meme cycle de vitesses que Journal Ariinui, mais scroll de la
-    // FENETRE entiere (pas d'un div interne - ces pages n'ont pas de
-    // conteneur scrollable dedie) et masquage auto pendant la lecture
-    // (comme un lecteur video/liseuse pro : les controles s'estompent puis
-    // reapparaissent au tap) au lieu de rester visible en permanence.
+    // Defilement automatique (pages de chapitre LdM FR/TAH + guides
+    // d'etude) : entierement gestuel, AUCUN element visuel a l'ecran (ni
+    // bouton ni header - 3 essais precedents avec un bouton flottant
+    // toujours juges genants par l'utilisateur, cf. memoire du projet).
+    // Reglage global unique, allume/eteint UNIQUEMENT depuis le menu "..."
+    // de la page Bibliotheque (index.html, AUTO_SCROLL_MENU_ROW) - jamais
+    // depuis les pages de lecture elles-memes - et persistant en
+    // localStorage : une fois active, s'applique automatiquement a
+    // n'importe quelle page de lecture ouverte/rechargee ensuite, sans
+    // reglage par page. Tant qu'il est actif sur une page de lecture :
+    // tap court = demarre si arrete, sinon cycle la vitesse ; appui long
+    // = bascule pause/reprise (jamais l'inverse - precision explicite de
+    // l'utilisateur). Le tap-to-translate est desactive en parallele
+    // (cf. le garde ajoute autour de l'appel setupTapToTranslate) puisque
+    // tout tap sert desormais a piloter le defilement.
     (function setupAutoScrollReading() {
-        var btn = document.querySelector('.auto-scroll-toggle');
-        var menuRow = document.querySelector('.auto-scroll-menu-row');
-        if (!btn || !menuRow) return;
+        if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
+        if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
 
         var SPEEDS_PX_S = [8, 10, 15, 30];
         var LONG_PRESS_MS = 600;
-        var HIDE_DELAY_MS = 2000;
-        // Elements deja tap-ables sur ces pages (mot tahitien/anglais,
-        // date en toutes lettres, numero de verset -> mode Traduction,
-        // bulle de traduction elle-meme, signets, liens, boutons) : un tap
-        // dessus ne doit jamais aussi basculer la visibilite du bouton -
-        // les deux systemes restent independants, comme sur Kindle (un mot
-        // reste cliquable meme barre masquee, pas besoin d'un 1er tap "a
-        // vide" pour la reafficher avant de pouvoir taper sur le mot).
-        var TAP_EXCLUDE = '.tah-word, .en-word, .verse-num-tap, .tah-date, .tah-popup, .bookmark, .auto-scroll-toggle, a, button, input, select, textarea';
+        var MOVE_TOLERANCE = 10;
+        // Elements qui doivent garder leur propre comportement de tap -
+        // navigation, signets (appui long deja dedie a l'epinglage,
+        // setupBookmarkLongPress plus haut), menu, mode Traduction plein
+        // ecran (verse-num-tap) - tout le reste (y compris les mots
+        // tahitiens, desormais libres puisque le tap-to-translate est
+        // desactive) sert a piloter le defilement.
+        var GESTURE_EXCLUDE = '.verse-num-tap, .bookmark, .more-menu, a, button, input, select, textarea';
 
         var speedIndex = 0;
         var playing = false;
         var rafId = null;
         var scrollPos = 0;
         var lastTime = null;
-        var pressTimer = null;
-        var pressFired = false;
-        var hideTimer = null;
 
         function maxScroll() {
             return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
@@ -188,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 var max = maxScroll();
                 if (scrollPos >= max) {
                     window.scrollTo(0, max);
-                    stop();
+                    playing = false;
                     return;
                 }
                 window.scrollTo(0, scrollPos);
@@ -197,102 +199,80 @@ document.addEventListener('DOMContentLoaded', function() {
             rafId = requestAnimationFrame(step);
         }
 
-        function updateIcon() {
-            btn.classList.toggle('is-playing', playing);
-        }
-
         function play() {
             if (playing) return;
             if (maxScroll() - window.scrollY < 2) return;
             playing = true;
             lastTime = null;
             scrollPos = window.scrollY;
-            btn.classList.add('is-active');
-            btn.classList.remove('auto-scroll-hidden');
-            updateIcon();
             rafId = requestAnimationFrame(step);
-            scheduleHide();
         }
 
-        function stop() {
+        function pause() {
             if (!playing) return;
             playing = false;
             if (rafId) cancelAnimationFrame(rafId);
             rafId = null;
-            clearTimeout(hideTimer);
-            updateIcon();
-            // Contrairement a l'ancienne version (bouton toujours visible en
-            // dehors de la lecture), on le fait disparaitre entierement a
-            // l'arret - il ne reapparaitra qu'en relancant depuis le menu.
-            btn.classList.remove('is-active');
-            btn.classList.remove('auto-scroll-hidden');
         }
 
-        function showButton() {
-            btn.classList.remove('auto-scroll-hidden');
-            clearTimeout(hideTimer);
-            if (playing) scheduleHide();
-        }
+        // Meme technique de distinction tap-court/appui-long que
+        // setupBookmarkLongPress plus haut dans ce fichier (tolerance de
+        // mouvement, flag longPressFired lu par un handler "click" en
+        // phase de capture) - ici sur tout le document plutot qu'un
+        // element precis, et les deux issues (court/long) declenchent une
+        // action au lieu qu'une seule ne fasse quelque chose.
+        var pressTimer = null;
+        var longPressFired = false;
+        var startX = 0;
+        var startY = 0;
 
-        function scheduleHide() {
-            clearTimeout(hideTimer);
-            hideTimer = setTimeout(function() {
-                btn.classList.add('auto-scroll-hidden');
-            }, HIDE_DELAY_MS);
-        }
+        var cancelTimer = function() {
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+        };
 
-        btn.addEventListener('pointerdown', function() {
-            pressFired = false;
+        document.addEventListener('pointerdown', function(event) {
+            if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
+            startX = event.clientX;
+            startY = event.clientY;
+            longPressFired = false;
+            cancelTimer();
             pressTimer = setTimeout(function() {
                 pressTimer = null;
-                pressFired = true;
-                stop();
+                longPressFired = true;
+                if (playing) pause(); else play();
             }, LONG_PRESS_MS);
         });
 
-        btn.addEventListener('pointerup', function() {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
+        document.addEventListener('pointermove', function(event) {
+            if (!pressTimer) return;
+            var dx = event.clientX - startX;
+            var dy = event.clientY - startY;
+            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) cancelTimer();
+        });
+
+        document.addEventListener('pointerup', cancelTimer);
+        document.addEventListener('pointercancel', cancelTimer);
+
+        document.addEventListener('click', function(event) {
+            if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
+            if (longPressFired) {
+                // Deja gere par l'appui long ci-dessus - un tap court qui
+                // suit un appui prolonge ne doit pas AUSSI cycler la
+                // vitesse.
+                longPressFired = false;
+                return;
             }
-            if (pressFired) return;
             if (!playing) {
                 play();
             } else {
                 speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
             }
-            showButton();
         });
 
-        btn.addEventListener('pointercancel', function() {
-            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!playing) return;
-            if (event.target.closest && event.target.closest(TAP_EXCLUDE)) return;
-            showButton();
-        });
-
-        // Point d'entree unique du defilement automatique : demarre la
-        // lecture et referme le popover "..." (moreMenuPopover/moreMenuToggle
-        // declares plus haut dans cette meme fonction DOMContentLoaded,
-        // accessibles ici par fermeture) pour que le bouton flottant devienne
-        // immediatement visible/joignable au lieu de rester sous le menu.
-        menuRow.addEventListener('click', function() {
-            play();
-            if (moreMenuPopover) {
-                moreMenuPopover.hidden = true;
-                if (moreMenuToggle) moreMenuToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        // Permet au mode Traduction plein ecran (qui couvre tout l'ecran,
-        // z-index superieur) de stopper le defilement de la page derriere
-        // lui plutot que de le laisser tourner invisible - meme pattern de
-        // hook global que window.closeTranslationOverlay/__closeTahPopup
-        // deja utilise ailleurs dans ce fichier.
-        window.stopAutoScrollReading = stop;
+        // Le mode Traduction plein ecran (verse-num-tap, exclu ci-dessus)
+        // reste utilisable independamment - juste mis en pause le temps
+        // qu'il soit ouvert pour ne pas defiler invisiblement derriere.
+        window.stopAutoScrollReading = pause;
     })();
 
     var themeRow = document.querySelector('.theme-menu-row');
@@ -311,6 +291,27 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
             syncTheme();
+        });
+    }
+
+    // Interrupteur "Defilement automatique" - present UNIQUEMENT dans le
+    // menu de la page Bibliotheque (index.html, cf. toc_reset_controls
+    // cote Python), jamais sur les pages de lecture elles-memes. Reglage
+    // global : bascule juste le localStorage, la logique de defilement
+    // gestuel (setupAutoScrollReading) le relit a chaque page de lecture.
+    var autoScrollRow = document.querySelector('.auto-scroll-menu-row');
+    if (autoScrollRow) {
+        var syncAutoScrollRow = function() {
+            autoScrollRow.setAttribute('aria-checked', localStorage.getItem('bukaAMoromona:autoScrollMode') === '1' ? 'true' : 'false');
+        };
+        syncAutoScrollRow();
+        autoScrollRow.addEventListener('click', function() {
+            if (localStorage.getItem('bukaAMoromona:autoScrollMode') === '1') {
+                localStorage.removeItem('bukaAMoromona:autoScrollMode');
+            } else {
+                localStorage.setItem('bukaAMoromona:autoScrollMode', '1');
+            }
+            syncAutoScrollRow();
         });
     }
 
@@ -1079,7 +1080,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.__closeTahPopup = closePopup;
     }
 
-    setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
+    // Tap-to-translate desactive pendant le mode "Defilement automatique"
+    // (reglage global, cf. setupAutoScrollReading plus haut) - tout tap sur
+    // un mot/date sert alors a piloter le defilement (demarrer/vitesse) au
+    // lieu d'ouvrir la bulle de traduction, comme demande explicitement.
+    if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') {
+        setupTapToTranslate('.tah-word', '../tah_dict.json', '../tah_audio.json', '../tah_definitions.json');
+    }
 
     // Mode "Traduction" plein ecran : tap sur un numero de verset tahitien
     // (.verse-num-tap) -> overlay avec CE SEUL verset dans 2 panneaux
