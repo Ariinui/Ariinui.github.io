@@ -132,6 +132,148 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     })();
 
+    // Defilement automatique (bouton play flottant, pages de chapitre LdM +
+    // guides uniquement - cf. AUTO_SCROLL_BUTTON_HTML/with_auto_scroll_button
+    // cote Python, absent du DOM ailleurs donc no-op ici via le guard sur
+    // btn). Meme cycle de vitesses que Journal Ariinui, mais scroll de la
+    // FENETRE entiere (pas d'un div interne - ces pages n'ont pas de
+    // conteneur scrollable dedie) et masquage auto pendant la lecture
+    // (comme un lecteur video/liseuse pro : les controles s'estompent puis
+    // reapparaissent au tap) au lieu de rester visible en permanence.
+    (function setupAutoScrollReading() {
+        var btn = document.querySelector('.auto-scroll-toggle');
+        if (!btn) return;
+
+        var SPEEDS_PX_S = [8, 10, 15, 30];
+        var LONG_PRESS_MS = 600;
+        var HIDE_DELAY_MS = 2000;
+        // Elements deja tap-ables sur ces pages (mot tahitien/anglais,
+        // date en toutes lettres, numero de verset -> mode Traduction,
+        // bulle de traduction elle-meme, signets, liens, boutons) : un tap
+        // dessus ne doit jamais aussi basculer la visibilite du bouton -
+        // les deux systemes restent independants, comme sur Kindle (un mot
+        // reste cliquable meme barre masquee, pas besoin d'un 1er tap "a
+        // vide" pour la reafficher avant de pouvoir taper sur le mot).
+        var TAP_EXCLUDE = '.tah-word, .en-word, .verse-num-tap, .tah-date, .tah-popup, .bookmark, .auto-scroll-toggle, a, button, input, select, textarea';
+
+        var speedIndex = 0;
+        var playing = false;
+        var rafId = null;
+        var scrollPos = 0;
+        var lastTime = null;
+        var pressTimer = null;
+        var pressFired = false;
+        var hideTimer = null;
+
+        function maxScroll() {
+            return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        }
+
+        function step(ts) {
+            if (!playing) return;
+            // Resynchronisation si un scroll manuel a eu lieu entre-temps -
+            // comparaison directe au debut de chaque frame plutot qu'un
+            // flag pose par l'evenement scroll (timing/coalescence pas
+            // fiable, cf. incident Journal Ariinui deja documente).
+            if (Math.abs(window.scrollY - scrollPos) > 1) {
+                scrollPos = window.scrollY;
+            }
+            if (lastTime !== null) {
+                // Position flottante maintenue a part (jamais relue depuis
+                // window.scrollY pour l'increment) - un increment applique
+                // directement sur un scroll entier perdrait les fractions
+                // de pixel a chaque frame (arrondi navigateur).
+                scrollPos += SPEEDS_PX_S[speedIndex] * (ts - lastTime) / 1000;
+                var max = maxScroll();
+                if (scrollPos >= max) {
+                    window.scrollTo(0, max);
+                    stop();
+                    return;
+                }
+                window.scrollTo(0, scrollPos);
+            }
+            lastTime = ts;
+            rafId = requestAnimationFrame(step);
+        }
+
+        function updateIcon() {
+            btn.classList.toggle('is-playing', playing);
+        }
+
+        function play() {
+            if (maxScroll() - window.scrollY < 2) return;
+            playing = true;
+            lastTime = null;
+            scrollPos = window.scrollY;
+            updateIcon();
+            rafId = requestAnimationFrame(step);
+            scheduleHide();
+        }
+
+        function stop() {
+            if (!playing) return;
+            playing = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+            clearTimeout(hideTimer);
+            updateIcon();
+            showButton();
+        }
+
+        function showButton() {
+            btn.classList.remove('auto-scroll-hidden');
+            clearTimeout(hideTimer);
+            if (playing) scheduleHide();
+        }
+
+        function scheduleHide() {
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(function() {
+                btn.classList.add('auto-scroll-hidden');
+            }, HIDE_DELAY_MS);
+        }
+
+        btn.addEventListener('pointerdown', function() {
+            pressFired = false;
+            pressTimer = setTimeout(function() {
+                pressTimer = null;
+                pressFired = true;
+                stop();
+            }, LONG_PRESS_MS);
+        });
+
+        btn.addEventListener('pointerup', function() {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+            if (pressFired) return;
+            if (!playing) {
+                play();
+            } else {
+                speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
+            }
+            showButton();
+        });
+
+        btn.addEventListener('pointercancel', function() {
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!playing) return;
+            if (event.target.closest && event.target.closest(TAP_EXCLUDE)) return;
+            showButton();
+        });
+
+        // Permet au mode Traduction plein ecran (qui couvre tout l'ecran,
+        // z-index superieur) de stopper le defilement de la page derriere
+        // lui plutot que de le laisser tourner invisible - meme pattern de
+        // hook global que window.closeTranslationOverlay/__closeTahPopup
+        // deja utilise ailleurs dans ce fichier.
+        window.stopAutoScrollReading = stop;
+    })();
+
     var themeRow = document.querySelector('.theme-menu-row');
     if (themeRow) {
         var currentTheme = function() {
@@ -1077,6 +1219,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function openTranslation(num) {
             if (window.__closeTahPopup) window.__closeTahPopup();
+            if (window.stopAutoScrollReading) window.stopAutoScrollReading();
             if (!overlay) buildOverlay();
             renderVerse(num);
             overlay.style.display = 'flex';

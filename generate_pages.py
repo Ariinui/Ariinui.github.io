@@ -1794,6 +1794,22 @@ TEXT_SIZE_CONTROL = '''
                     </div>
 '''
 
+# Bouton flottant de defilement automatique (pages de chapitre LdM FR/TAH +
+# pages des guides d'etude uniquement - injecte apres coup via
+# with_auto_scroll_button() plutot qu'un placeholder PAGE_HEAD, pour ne pas
+# avoir a toucher les ~10 autres appels PAGE_HEAD.format() qui n'en ont pas
+# besoin). Un seul bouton (pas d'indicateur de vitesse separe, meme choix
+# que sur Journal Ariinui) : tap demarre/cycle les vitesses, appui long
+# arrete - logique cote JS dans setupAutoScrollReading().
+AUTO_SCROLL_BUTTON_HTML = '''<button type="button" class="auto-scroll-toggle" aria-label="Defilement automatique" title="Defilement automatique">
+                    <span class="icon-play" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+                    <span class="icon-pause" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg></span>
+                </button>
+                '''
+
+def with_auto_scroll_button(page_html):
+    return page_html.replace('<div class="more-menu">', AUTO_SCROLL_BUTTON_HTML + '<div class="more-menu">', 1)
+
 # Icone de signet partagee par les liens de signet (colores par type via
 # CSS, cf. .bookmark-guide/.bookmark-guide2) et leur controle
 # activer/desactiver - un futur type de signet (nouveau volume) reutilise
@@ -2704,7 +2720,7 @@ for book_idx, book in enumerate(bom_book_data, 1):
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
-        html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
+        html = with_auto_scroll_button(PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL))
         html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
         html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
@@ -2747,7 +2763,7 @@ if SITE_TAHITIEN:
             # + .chapter-title de cette page (jamais la forme francaise), pour
             # rester coherent avec la page d'origine.
             translation_ref = f'{book_display_title_tah(book["book_title"])}, Pene {chap_idx}'
-            html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
+            html = with_auto_scroll_button(PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL))
             html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
             html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona" data-translation-ref="{html_lib.escape(translation_ref)}">'
@@ -2813,7 +2829,7 @@ def write_guide_volume(chapters_by_bom_idx, folder, volume_key, volume_title, co
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if has_prev else ''
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if has_next else ''
 
-            html = PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL)
+            html = with_auto_scroll_button(PAGE_HEAD.format(title=title, styles_href='../../styles.css', script_href='../../script.js', lang=lang, extra_controls=TEXT_SIZE_CONTROL))
             html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR[volume_key]})">{GUIDE_BOOKMARK_LABELS[volume_key]}</h1>\n    <h2>{title}</h2>\n'
             html += f'<div class="guide-content" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-volume-key="{volume_key}" data-volume-title="{volume_title}">{content_html}</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -2828,7 +2844,7 @@ for n, item in enumerate(guide_intro_items, 1):
     prev_link = f'<a href="intro_{n-1}.html">Page precedente</a>' if n > 1 else ''
     next_link = f'<a href="intro_{n+1}.html">Page suivante</a>' if n < len(guide_intro_items) else ''
 
-    html = PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL)
+    html = with_auto_scroll_button(PAGE_HEAD.format(title=item['title'], styles_href='../../styles.css', script_href='../../script.js', lang='en', extra_controls=TEXT_SIZE_CONTROL))
     html += f'    <h1 style="color: var(--{GUIDE_COLOR_VAR["guide"]})">{GUIDE_BOOKMARK_LABELS["guide"]}</h1>\n    <h2>{item["title"]}</h2>\n'
     html += f'<div class="guide-content" data-volume-key="guide" data-volume-title="Book of Mormon Study Guide">{content_html}</div>'
     html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../../index.html')
@@ -3136,13 +3152,75 @@ nav a:hover {
     touch-action: manipulation;
 }
 
+/* Bouton flottant de defilement automatique - absent du DOM sur les pages
+   sans contenu de lecture (with_auto_scroll_button n'est applique qu'aux
+   chapitres LdM + guides), donc aucune regle ici n'affecte les autres
+   pages. position:fixed (pas absolute comme .page-controls) : .page-controls
+   scrolle AVEC le contenu (position:absolute dans .page, qui n'a pas de
+   scroll interne propre - toute la fenetre defile), donc un bouton cense
+   rester joignable PENDANT le defilement automatique doit rester ancre a
+   l'ecran independamment du scroll - bouton d'action flottant, separe du
+   menu "..." plutot qu'ajoute a cote de lui. Centre verticalement sur le
+   bord droit (PAS bas-droite) - teste et confirme par chevauchement reel
+   avec la barre de navigation Chapitre precedent/suivant en bas de page :
+   celle-ci vit dans le flux normal juste avant le padding-bottom de .page,
+   donc un fixed bas-droite la recouvre exactement au moment ou l'utilisateur
+   atteint la fin d'un chapitre (justement quand il defile jusqu'en bas) -
+   le centrage vertical evite ce chevauchement structurellement (aucun
+   contenu de ces pages ne vit jamais au milieu de l'ecran de facon fixe),
+   sans avoir besoin d'un listener de scroll pour repositionner dynamiquement.
+   Un seul bouton play/pause (pas d'indicateur de vitesse separe) : tap
+   demarre/cycle les vitesses, appui long arrete (setupAutoScrollReading
+   cote JS). Masquage automatique pendant la lecture (comme un lecteur
+   video/liseuse pro) : .auto-scroll-hidden est ajoutee apres un delai sans
+   interaction, retiree par n'importe quel tap "dans le vide" (en dehors
+   des mots tap-to-translate/liens/signets, geres separement) - jamais par
+   defaut a l'arret, la lecture terminee/stoppee reaffiche le bouton. */
+.auto-scroll-toggle {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    cursor: pointer;
+    touch-action: manipulation;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    transition: opacity 0.25s ease;
+}
+
+.auto-scroll-toggle.auto-scroll-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.auto-scroll-toggle .icon-pause {
+    display: none;
+}
+
+.auto-scroll-toggle.is-playing .icon-play {
+    display: none;
+}
+
+.auto-scroll-toggle.is-playing .icon-pause {
+    display: flex;
+}
+
 .more-menu-toggle::before {
     content: '';
     position: absolute;
     inset: -10px;
 }
 
-.more-menu-toggle:hover {
+.more-menu-toggle:hover, .auto-scroll-toggle:hover {
     background: var(--hover-bg);
 }
 
@@ -4665,6 +4743,148 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     })();
 
+    // Defilement automatique (bouton play flottant, pages de chapitre LdM +
+    // guides uniquement - cf. AUTO_SCROLL_BUTTON_HTML/with_auto_scroll_button
+    // cote Python, absent du DOM ailleurs donc no-op ici via le guard sur
+    // btn). Meme cycle de vitesses que Journal Ariinui, mais scroll de la
+    // FENETRE entiere (pas d'un div interne - ces pages n'ont pas de
+    // conteneur scrollable dedie) et masquage auto pendant la lecture
+    // (comme un lecteur video/liseuse pro : les controles s'estompent puis
+    // reapparaissent au tap) au lieu de rester visible en permanence.
+    (function setupAutoScrollReading() {
+        var btn = document.querySelector('.auto-scroll-toggle');
+        if (!btn) return;
+
+        var SPEEDS_PX_S = [8, 10, 15, 30];
+        var LONG_PRESS_MS = 600;
+        var HIDE_DELAY_MS = 2000;
+        // Elements deja tap-ables sur ces pages (mot tahitien/anglais,
+        // date en toutes lettres, numero de verset -> mode Traduction,
+        // bulle de traduction elle-meme, signets, liens, boutons) : un tap
+        // dessus ne doit jamais aussi basculer la visibilite du bouton -
+        // les deux systemes restent independants, comme sur Kindle (un mot
+        // reste cliquable meme barre masquee, pas besoin d'un 1er tap "a
+        // vide" pour la reafficher avant de pouvoir taper sur le mot).
+        var TAP_EXCLUDE = '.tah-word, .en-word, .verse-num-tap, .tah-date, .tah-popup, .bookmark, .auto-scroll-toggle, a, button, input, select, textarea';
+
+        var speedIndex = 0;
+        var playing = false;
+        var rafId = null;
+        var scrollPos = 0;
+        var lastTime = null;
+        var pressTimer = null;
+        var pressFired = false;
+        var hideTimer = null;
+
+        function maxScroll() {
+            return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        }
+
+        function step(ts) {
+            if (!playing) return;
+            // Resynchronisation si un scroll manuel a eu lieu entre-temps -
+            // comparaison directe au debut de chaque frame plutot qu'un
+            // flag pose par l'evenement scroll (timing/coalescence pas
+            // fiable, cf. incident Journal Ariinui deja documente).
+            if (Math.abs(window.scrollY - scrollPos) > 1) {
+                scrollPos = window.scrollY;
+            }
+            if (lastTime !== null) {
+                // Position flottante maintenue a part (jamais relue depuis
+                // window.scrollY pour l'increment) - un increment applique
+                // directement sur un scroll entier perdrait les fractions
+                // de pixel a chaque frame (arrondi navigateur).
+                scrollPos += SPEEDS_PX_S[speedIndex] * (ts - lastTime) / 1000;
+                var max = maxScroll();
+                if (scrollPos >= max) {
+                    window.scrollTo(0, max);
+                    stop();
+                    return;
+                }
+                window.scrollTo(0, scrollPos);
+            }
+            lastTime = ts;
+            rafId = requestAnimationFrame(step);
+        }
+
+        function updateIcon() {
+            btn.classList.toggle('is-playing', playing);
+        }
+
+        function play() {
+            if (maxScroll() - window.scrollY < 2) return;
+            playing = true;
+            lastTime = null;
+            scrollPos = window.scrollY;
+            updateIcon();
+            rafId = requestAnimationFrame(step);
+            scheduleHide();
+        }
+
+        function stop() {
+            if (!playing) return;
+            playing = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+            clearTimeout(hideTimer);
+            updateIcon();
+            showButton();
+        }
+
+        function showButton() {
+            btn.classList.remove('auto-scroll-hidden');
+            clearTimeout(hideTimer);
+            if (playing) scheduleHide();
+        }
+
+        function scheduleHide() {
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(function() {
+                btn.classList.add('auto-scroll-hidden');
+            }, HIDE_DELAY_MS);
+        }
+
+        btn.addEventListener('pointerdown', function() {
+            pressFired = false;
+            pressTimer = setTimeout(function() {
+                pressTimer = null;
+                pressFired = true;
+                stop();
+            }, LONG_PRESS_MS);
+        });
+
+        btn.addEventListener('pointerup', function() {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+            if (pressFired) return;
+            if (!playing) {
+                play();
+            } else {
+                speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
+            }
+            showButton();
+        });
+
+        btn.addEventListener('pointercancel', function() {
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!playing) return;
+            if (event.target.closest && event.target.closest(TAP_EXCLUDE)) return;
+            showButton();
+        });
+
+        // Permet au mode Traduction plein ecran (qui couvre tout l'ecran,
+        // z-index superieur) de stopper le defilement de la page derriere
+        // lui plutot que de le laisser tourner invisible - meme pattern de
+        // hook global que window.closeTranslationOverlay/__closeTahPopup
+        // deja utilise ailleurs dans ce fichier.
+        window.stopAutoScrollReading = stop;
+    })();
+
     var themeRow = document.querySelector('.theme-menu-row');
     if (themeRow) {
         var currentTheme = function() {
@@ -5610,6 +5830,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function openTranslation(num) {
             if (window.__closeTahPopup) window.__closeTahPopup();
+            if (window.stopAutoScrollReading) window.stopAutoScrollReading();
             if (!overlay) buildOverlay();
             renderVerse(num);
             overlay.style.display = 'flex';

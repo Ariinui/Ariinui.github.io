@@ -256,13 +256,75 @@ nav a:hover {
     touch-action: manipulation;
 }
 
+/* Bouton flottant de defilement automatique - absent du DOM sur les pages
+   sans contenu de lecture (with_auto_scroll_button n'est applique qu'aux
+   chapitres LdM + guides), donc aucune regle ici n'affecte les autres
+   pages. position:fixed (pas absolute comme .page-controls) : .page-controls
+   scrolle AVEC le contenu (position:absolute dans .page, qui n'a pas de
+   scroll interne propre - toute la fenetre defile), donc un bouton cense
+   rester joignable PENDANT le defilement automatique doit rester ancre a
+   l'ecran independamment du scroll - bouton d'action flottant, separe du
+   menu "..." plutot qu'ajoute a cote de lui. Centre verticalement sur le
+   bord droit (PAS bas-droite) - teste et confirme par chevauchement reel
+   avec la barre de navigation Chapitre precedent/suivant en bas de page :
+   celle-ci vit dans le flux normal juste avant le padding-bottom de .page,
+   donc un fixed bas-droite la recouvre exactement au moment ou l'utilisateur
+   atteint la fin d'un chapitre (justement quand il defile jusqu'en bas) -
+   le centrage vertical evite ce chevauchement structurellement (aucun
+   contenu de ces pages ne vit jamais au milieu de l'ecran de facon fixe),
+   sans avoir besoin d'un listener de scroll pour repositionner dynamiquement.
+   Un seul bouton play/pause (pas d'indicateur de vitesse separe) : tap
+   demarre/cycle les vitesses, appui long arrete (setupAutoScrollReading
+   cote JS). Masquage automatique pendant la lecture (comme un lecteur
+   video/liseuse pro) : .auto-scroll-hidden est ajoutee apres un delai sans
+   interaction, retiree par n'importe quel tap "dans le vide" (en dehors
+   des mots tap-to-translate/liens/signets, geres separement) - jamais par
+   defaut a l'arret, la lecture terminee/stoppee reaffiche le bouton. */
+.auto-scroll-toggle {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    cursor: pointer;
+    touch-action: manipulation;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    transition: opacity 0.25s ease;
+}
+
+.auto-scroll-toggle.auto-scroll-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.auto-scroll-toggle .icon-pause {
+    display: none;
+}
+
+.auto-scroll-toggle.is-playing .icon-play {
+    display: none;
+}
+
+.auto-scroll-toggle.is-playing .icon-pause {
+    display: flex;
+}
+
 .more-menu-toggle::before {
     content: '';
     position: absolute;
     inset: -10px;
 }
 
-.more-menu-toggle:hover {
+.more-menu-toggle:hover, .auto-scroll-toggle:hover {
     background: var(--hover-bg);
 }
 
