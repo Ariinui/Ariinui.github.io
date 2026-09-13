@@ -142,17 +142,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // localStorage : une fois active, s'applique automatiquement a
     // n'importe quelle page de lecture ouverte/rechargee ensuite, sans
     // reglage par page. Tant qu'il est actif sur une page de lecture :
-    // tap court = demarre si arrete, sinon cycle la vitesse ; appui long
-    // = bascule pause/reprise (jamais l'inverse - precision explicite de
-    // l'utilisateur). Le tap-to-translate est desactive en parallele
-    // (cf. le garde ajoute autour de l'appel setupTapToTranslate) puisque
-    // tout tap sert desormais a piloter le defilement.
+    // tap a 2 doigts (tap simultane, pas un appui prolonge) = bascule
+    // demarrer/pause dans les deux sens ; tap a 1 doigt = cycle la
+    // vitesse UNIQUEMENT pendant que ca defile deja, ne demarre plus rien
+    // tout seul (precision explicite de l'utilisateur - le demarrage
+    // passe desormais exclusivement par le geste a 2 doigts). Le
+    // tap-to-translate est desactive en parallele (cf. le garde ajoute
+    // autour de l'appel setupTapToTranslate) puisque tout tap sert
+    // desormais a piloter le defilement.
     (function setupAutoScrollReading() {
         if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
         if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
 
         var SPEEDS_PX_S = [8, 10, 15, 30];
-        var LONG_PRESS_MS = 600;
+        var TWO_FINGER_TAP_MAX_MS = 400;
+        var CLICK_SUPPRESS_MS = 500;
         var MOVE_TOLERANCE = 10;
         // Elements qui doivent garder leur propre comportement de tap -
         // navigation, signets (appui long deja dedie a l'epinglage,
@@ -215,58 +219,75 @@ document.addEventListener('DOMContentLoaded', function() {
             rafId = null;
         }
 
-        // Meme technique de distinction tap-court/appui-long que
-        // setupBookmarkLongPress plus haut dans ce fichier (tolerance de
-        // mouvement, flag longPressFired lu par un handler "click" en
-        // phase de capture) - ici sur tout le document plutot qu'un
-        // element precis, et les deux issues (court/long) declenchent une
-        // action au lieu qu'une seule ne fasse quelque chose.
-        var pressTimer = null;
-        var longPressFired = false;
-        var startX = 0;
-        var startY = 0;
+        // Geste play/pause a 2 doigts (tap simultane, pas un appui
+        // prolonge) - Pointer Events emet un pointerdown distinct par
+        // doigt en multi-touch, donc on suit chaque pointeur actif par
+        // son pointerId. Des que le 2e doigt se pose, la fenetre de
+        // detection s'arme ; si les deux se relevent rapidement (<
+        // TWO_FINGER_TAP_MAX_MS) sans deplacement notable (ecarte un
+        // pincer-zoomer ou un scroll a 2 doigts), on bascule play/pause -
+        // un seul geste pour demarrer ET arreter, jamais deux gestes
+        // distincts comme la version precedente (appui long).
+        var activePointers = {};
+        var twoFingerArmedAt = null;
+        var twoFingerMoved = false;
+        var twoFingerTriggered = false;
+        var suppressClickUntil = 0;
 
-        var cancelTimer = function() {
-            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        };
+        function activeCount() {
+            return Object.keys(activePointers).length;
+        }
 
         document.addEventListener('pointerdown', function(event) {
             if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
-            startX = event.clientX;
-            startY = event.clientY;
-            longPressFired = false;
-            cancelTimer();
-            pressTimer = setTimeout(function() {
-                pressTimer = null;
-                longPressFired = true;
-                if (playing) pause(); else play();
-            }, LONG_PRESS_MS);
+            activePointers[event.pointerId] = { x: event.clientX, y: event.clientY };
+            if (activeCount() === 2) {
+                twoFingerArmedAt = Date.now();
+                twoFingerMoved = false;
+                twoFingerTriggered = false;
+            }
         });
 
         document.addEventListener('pointermove', function(event) {
-            if (!pressTimer) return;
-            var dx = event.clientX - startX;
-            var dy = event.clientY - startY;
-            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) cancelTimer();
+            var p = activePointers[event.pointerId];
+            if (!p) return;
+            var dx = event.clientX - p.x;
+            var dy = event.clientY - p.y;
+            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) twoFingerMoved = true;
         });
 
-        document.addEventListener('pointerup', cancelTimer);
-        document.addEventListener('pointercancel', cancelTimer);
+        function releasePointer(event) {
+            var wasTwoFinger = activeCount() === 2;
+            delete activePointers[event.pointerId];
+            if (wasTwoFinger && !twoFingerMoved && !twoFingerTriggered && twoFingerArmedAt !== null &&
+                (Date.now() - twoFingerArmedAt) < TWO_FINGER_TAP_MAX_MS) {
+                twoFingerTriggered = true;
+                // Un "click" synthetique peut malgre tout suivre un tap
+                // multi-doigts selon le navigateur - ignore-le une fois
+                // pour ne pas AUSSI cycler la vitesse en meme temps que
+                // le play/pause.
+                suppressClickUntil = Date.now() + CLICK_SUPPRESS_MS;
+                if (playing) pause(); else play();
+            }
+            if (activeCount() === 0) {
+                twoFingerArmedAt = null;
+                twoFingerMoved = false;
+                twoFingerTriggered = false;
+            }
+        }
 
+        document.addEventListener('pointerup', releasePointer);
+        document.addEventListener('pointercancel', releasePointer);
+
+        // Tap a 1 doigt : reste dedie au changement de vitesse pendant
+        // que ca defile deja - ne demarre plus rien tout seul, le
+        // demarrage passe desormais exclusivement par le geste a 2
+        // doigts ci-dessus.
         document.addEventListener('click', function(event) {
             if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
-            if (longPressFired) {
-                // Deja gere par l'appui long ci-dessus - un tap court qui
-                // suit un appui prolonge ne doit pas AUSSI cycler la
-                // vitesse.
-                longPressFired = false;
-                return;
-            }
-            if (!playing) {
-                play();
-            } else {
-                speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
-            }
+            if (Date.now() < suppressClickUntil) return;
+            if (!playing) return;
+            speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
         });
 
         // Le mode Traduction plein ecran (verse-num-tap, exclu ci-dessus)
