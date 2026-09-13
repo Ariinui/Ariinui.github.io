@@ -2679,6 +2679,20 @@ for _book_idx_g, _book_g in enumerate(bom_book_data, 1):
         BOM_CHAPTER_GLOBAL_INDEX[(_book_idx_g, _chap_idx_g)] = _bom_running_chapter
 BOM_TOTAL_CHAPTERS = _bom_running_chapter
 
+def bom_next_chapter_file(book_idx, chap_idx):
+    # Chapitre suivant en traversant les limites de livre (contrairement a
+    # next_link, qui reste volontairement vide en fin de livre pour la
+    # navigation manuelle) - sert UNIQUEMENT au defilement automatique
+    # infini cote JS (data-next-chapter-href, cf. setupAutoScrollReading
+    # dans script.js), qui doit pouvoir enchainer ex. 1 Nephi 22 -> 2 Nephi 1
+    # sans jamais revenir a la Bibliotheque. None en toute fin de Moroni.
+    book = bom_book_data[book_idx - 1]
+    if chap_idx < len(book['chapters']):
+        return f'chapter_{book_idx}_{chap_idx + 1}.html'
+    if book_idx < len(bom_book_data):
+        return f'chapter_{book_idx + 1}_1.html'
+    return None
+
 # --- Volume 2 : Livre de Mormon francais seul, avec signets vers le guide ---
 
 for book_idx, book in enumerate(bom_book_data, 1):
@@ -2727,12 +2741,14 @@ for book_idx, book in enumerate(bom_book_data, 1):
 
         prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
         next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
+        next_chapter_file = bom_next_chapter_file(book_idx, chap_idx)
+        next_chapter_attr = f' data-next-chapter-href="{next_chapter_file}"' if next_chapter_file else ''
 
         display_chapter_title = chapter_display_title(book['book_title'], chapter['title'])
         html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='fr', extra_controls=TEXT_SIZE_CONTROL + BOOKMARK_FILTER_CONTROL)
         html += f'    <div class="chapter-book-name">{book_display_title(book["book_title"])}</div>\n'
         html += f'    <h2 class="chapter-title">Chapitre {chap_idx}</h2>\n'
-        html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="french" data-volume-title="Livre de Mormon (français)">'
+        html += f'<div class="verses-fr" data-book-idx="{book_idx}" data-chapter-idx="{chap_idx}" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="french" data-volume-title="Livre de Mormon (français)"{next_chapter_attr}>'
         html += introduction_html + verses_html
         html += '</div>'
         html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
@@ -2765,6 +2781,8 @@ if SITE_TAHITIEN:
 
             prev_link = f'<a href="chapter_{book_idx}_{chap_idx-1}.html">Chapitre precedent</a>' if chap_idx > 1 else ''
             next_link = f'<a href="chapter_{book_idx}_{chap_idx+1}.html">Chapitre suivant</a>' if chap_idx < len(book['chapters']) else ''
+            next_chapter_file = bom_next_chapter_file(book_idx, chap_idx)
+            next_chapter_attr = f' data-next-chapter-href="{next_chapter_file}"' if next_chapter_file else ''
 
             display_chapter_title = chapter_display_title_tah(book['book_title'], chapter['title'])
             # Reference tahitienne affichee en en-tete du mode Traduction plein
@@ -2775,17 +2793,21 @@ if SITE_TAHITIEN:
             html = PAGE_HEAD.format(title=display_chapter_title, styles_href='../styles.css', script_href='../script.js', lang='ty', extra_controls=TEXT_SIZE_CONTROL)
             html += f'    <div class="chapter-book-name">{book_display_title_tah(book["book_title"])}</div>\n'
             html += f'    <h2 class="chapter-title">Pene {chap_idx}</h2>\n'
-            html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona" data-translation-ref="{html_lib.escape(translation_ref)}">'
+            html += f'<div class="verses-tah" data-global-chapter="{BOM_CHAPTER_GLOBAL_INDEX[(book_idx, chap_idx)]}" data-volume-key="tahitian" data-volume-title="Te Buka a Moromona" data-translation-ref="{html_lib.escape(translation_ref)}"{next_chapter_attr}>'
             html += introduction_html + verses_html
-            html += '</div>'
             # Traduction francaise de chaque verset, embarquee en JSON inerte
             # (pas de fetch, pas de fichier separe - cf. mode Traduction plein
             # ecran dans script.js) - deja disponible ici (verse['francais']),
             # aucune nouvelle source de donnees. < echappe pour ne jamais
             # risquer de fermer prematurement ce <script> si un texte contenait
-            # litteralement "</script".
+            # litteralement "</script". Enfant de .verses-tah (pas simple
+            # frere) + classe plutot qu'id : recuperable via closest()+
+            # querySelector() sur CHAQUE chapitre, y compris ceux injectes par
+            # le defilement infini (id dupliquerait, getElementById ne
+            # renverrait toujours que le 1er chapitre charge).
             translation_json = json.dumps(translation_fr_verses, ensure_ascii=False).replace('<', '\\u003c')
-            html += f'<script type="application/json" id="translation-fr-verses">{translation_json}</script>'
+            html += f'<script type="application/json" class="translation-fr-verses">{translation_json}</script>'
+            html += '</div>'
             html += CHAPTER_NAV.format(prev_link=prev_link, next_link=next_link, index_href='../index.html')
             html += PAGE_TAIL
 
@@ -3107,6 +3129,16 @@ nav {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 24px;
+}
+
+/* Separateur entre deux chapitres enchaines par le defilement automatique
+   infini (cf. setupAutoScrollReading dans script.js) - marque visuellement
+   la transition avant le .chapter-book-name/.chapter-title du chapitre
+   suivant, injectes juste apres dans le DOM. */
+.chapter-chain-separator {
+    height: 1px;
+    margin: 40px 0 24px;
+    background: var(--border);
 }
 
 nav a {
@@ -4628,9 +4660,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var PINNED_KEY = 'bukaAMoromona:pinnedBookmarks';
         var pinned = {};
         try { pinned = JSON.parse(localStorage.getItem(PINNED_KEY)) || {}; } catch (e) {}
-        [].slice.call(document.querySelectorAll('.bookmark[data-bookmark-id]')).forEach(function(el) {
-            if (pinned[el.getAttribute('data-bookmark-id')]) el.classList.add('bookmark-pinned');
-        });
+        function applyPinnedIn(root) {
+            [].slice.call(root.querySelectorAll('.bookmark[data-bookmark-id]')).forEach(function(el) {
+                if (pinned[el.getAttribute('data-bookmark-id')]) el.classList.add('bookmark-pinned');
+            });
+        }
+        applyPinnedIn(document);
+        // Rappelee par le defilement automatique infini (cf.
+        // setupAutoScrollReading) sur chaque chapitre injecte apres coup -
+        // sans ca un signet deja epingle apparaitrait "non epingle" tant
+        // qu'on ne le retape pas.
+        window.__bukaApplyPinnedBookmarks = applyPinnedIn;
 
         var LONG_PRESS_MS = 1000;
         var MOVE_TOLERANCE = 10;
@@ -4710,7 +4750,74 @@ document.addEventListener('DOMContentLoaded', function() {
     // tap sert desormais a piloter le defilement.
     (function setupAutoScrollReading() {
         if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
-        if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
+        var chapterRoot = document.querySelector('.verses-fr, .verses-tah, .guide-content');
+        if (!chapterRoot) return;
+
+        // Enchainement automatique sur le chapitre suivant (Livre de Mormon
+        // fr/tah uniquement, jamais les guides) une fois le bas de la page
+        // atteint, au lieu de s'arreter - cf. data-next-chapter-href pose
+        // par generate_pages.py (BOM_CHAPTER_GLOBAL_INDEX/bom_next_chapter_
+        // file), qui traverse aussi les limites de livre (1 Nephi 22 -> 2
+        // Nephi 1). Le <nav> (Chapitre precedent/suivant/Accueil) de la
+        // page d'origine est masque tant que ce mode est actif : redondant
+        // une fois l'enchainement automatique en place, et ses liens
+        // deviendraient trompeurs des qu'on a defile au-dela.
+        var chainingEnabled = chapterRoot.matches('.verses-fr, .verses-tah');
+        var navEl = chainingEnabled ? document.querySelector('nav') : null;
+        if (navEl) navEl.style.display = 'none';
+        var chapterBlocks = [{ el: chapterRoot, href: location.pathname, title: document.title }];
+        var activeChapterIdx = 0;
+        var nextChapterHref = chainingEnabled ? (chapterRoot.getAttribute('data-next-chapter-href') || null) : null;
+        var fetchingNextChapter = false;
+
+        function preloadNextChapterIfNeeded() {
+            if (!chainingEnabled || fetchingNextChapter || !nextChapterHref) return;
+            if (maxScroll() - scrollPos > window.innerHeight * 3) return;
+            fetchingNextChapter = true;
+            var hrefToFetch = nextChapterHref;
+            fetch(hrefToFetch).then(function(response) {
+                return response.text();
+            }).then(function(htmlText) {
+                var doc = new DOMParser().parseFromString(htmlText, 'text/html');
+                var newRoot = doc.querySelector('.verses-fr, .verses-tah');
+                if (!newRoot) { nextChapterHref = null; fetchingNextChapter = false; return; }
+                var bookNameEl = doc.querySelector('.chapter-book-name');
+                var chapterTitleEl = doc.querySelector('.chapter-title');
+                var frag = document.createDocumentFragment();
+                var separator = document.createElement('div');
+                separator.className = 'chapter-chain-separator';
+                frag.appendChild(separator);
+                if (bookNameEl) frag.appendChild(document.importNode(bookNameEl, true));
+                if (chapterTitleEl) frag.appendChild(document.importNode(chapterTitleEl, true));
+                var importedRoot = document.importNode(newRoot, true);
+                frag.appendChild(importedRoot);
+                navEl.parentNode.insertBefore(frag, navEl);
+                if (window.__bukaApplyPinnedBookmarks) window.__bukaApplyPinnedBookmarks(importedRoot);
+                chapterBlocks.push({ el: importedRoot, href: hrefToFetch, title: doc.title });
+                nextChapterHref = importedRoot.getAttribute('data-next-chapter-href') || null;
+                fetchingNextChapter = false;
+            }).catch(function() {
+                // Nouvelle tentative a la frame suivante, avec un court
+                // delai pour ne pas marteler le reseau en cas de panne.
+                setTimeout(function() { fetchingNextChapter = false; }, 1000);
+            });
+        }
+
+        function updateActiveChapter() {
+            if (chapterBlocks.length < 2) return;
+            var HEADER_OFFSET = 100;
+            var newActiveIdx = 0;
+            for (var i = 0; i < chapterBlocks.length; i++) {
+                if (chapterBlocks[i].el.getBoundingClientRect().top <= HEADER_OFFSET) newActiveIdx = i;
+                else break;
+            }
+            if (newActiveIdx === activeChapterIdx) return;
+            activeChapterIdx = newActiveIdx;
+            var active = chapterBlocks[activeChapterIdx];
+            if (window.history && window.history.replaceState) history.replaceState(null, '', active.href);
+            document.title = active.title;
+            if (window.__bukaSetActiveReadingTrack) window.__bukaSetActiveReadingTrack(active.el);
+        }
 
         // Echelle progressive (plus de crans, increments doux) plutot que
         // les 4 paliers d'origine a gros ecarts (8/10/15/30, saut de 15
@@ -4764,10 +4871,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 var max = maxScroll();
                 if (scrollPos >= max) {
                     window.scrollTo(0, max);
-                    playing = false;
-                    return;
+                    if (chainingEnabled) preloadNextChapterIfNeeded();
+                    // Chapitre suivant deja annonce (data-next-chapter-href)
+                    // mais pas encore appende au DOM (fetch en cours ou pas
+                    // encore declenche) - on patiente ici, playing reste
+                    // true, plutot que de s'arreter : max grandira des que
+                    // le fetch aboutit et la lecture reprendra seule. Arret
+                    // reel seulement si le chainage est desactive (guides)
+                    // ou en toute fin de Moroni (nextChapterHref null).
+                    if (!chainingEnabled || !nextChapterHref) {
+                        playing = false;
+                        return;
+                    }
+                } else {
+                    window.scrollTo(0, scrollPos);
+                    if (chainingEnabled) preloadNextChapterIfNeeded();
                 }
-                window.scrollTo(0, scrollPos);
+                if (chainingEnabled) updateActiveChapter();
             }
             lastTime = ts;
             rafId = requestAnimationFrame(step);
@@ -5706,21 +5826,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // (tahitien/francais) qui defilent en synchronisation proportionnelle
     // (memes % de progression - pas la meme longueur de texte dans les 2
     // langues). Traduction francaise deja embarquee en JSON inerte par
-    // generate_pages.py (#translation-fr-verses), aucun fetch. Absent sur
-    // toute page sans ce bloc (francais, guides...) - tout le reste de cette
-    // IIFE ne s'execute donc que sur les pages tahitiennes.
+    // generate_pages.py (.translation-fr-verses, enfant de .verses-tah),
+    // aucun fetch. Absent sur toute page sans ce bloc (francais, guides...)
+    // - tout le reste de cette IIFE ne s'execute donc que sur les pages
+    // tahitiennes. Resolu PAR TAP (versesContainer/translationFr/
+    // translationRef recalcules a chaque ouverture depuis le plus proche
+    // .verses-tah du numero de verset tape, pas une seule fois au chargement
+    // de la page) + listener delegue sur document (pas un par
+    // .verse-num-tap) : le defilement automatique infini (cf.
+    // setupAutoScrollReading) injecte d'autres chapitres tahitiens dans le
+    // DOM apres coup, chacun avec son propre bloc traduction/reference -
+    // sans ca, seul le tout premier chapitre charge resterait utilisable.
     (function() {
-        var frDataEl = document.getElementById('translation-fr-verses');
-        if (!frDataEl) return;
-        var translationFr = {};
-        try { translationFr = JSON.parse(frDataEl.textContent) || {}; } catch (e) {}
-        var verseNums = Object.keys(translationFr).map(Number).sort(function(a, b) { return a - b; });
-        if (!verseNums.length) return;
-
-        var versesContainer = document.querySelector('.verses-tah');
-        var translationRef = versesContainer ? versesContainer.getAttribute('data-translation-ref') : '';
+        if (!document.querySelector('.verses-tah')) return;
 
         var overlay = null, tahPane = null, frPane = null, prevBtn = null, nextBtn = null;
+        var translationFr = {};
+        var verseNums = [];
+        var translationRef = '';
+        var versesContainer = null;
         var currentVerse = null;
         var syncing = false;
 
@@ -5858,11 +5982,25 @@ document.addEventListener('DOMContentLoaded', function() {
             renderVerse(verseNums[nextIdx]);
         }
 
-        function openTranslation(num) {
+        function openTranslation(tapEl) {
+            var container = tapEl.closest('.verses-tah');
+            if (!container) return;
+            var frDataEl = container.querySelector('.translation-fr-verses');
+            var fr = {};
+            try { fr = frDataEl ? (JSON.parse(frDataEl.textContent) || {}) : {}; } catch (e) {}
+            var nums = Object.keys(fr).map(Number).sort(function(a, b) { return a - b; });
+            if (!nums.length) return;
+            versesContainer = container;
+            translationFr = fr;
+            verseNums = nums;
+            translationRef = container.getAttribute('data-translation-ref') || '';
+
             if (window.__closeTahPopup) window.__closeTahPopup();
             if (window.stopAutoScrollReading) window.stopAutoScrollReading();
             if (!overlay) buildOverlay();
-            renderVerse(num);
+            var refEl = overlay.querySelector('.translation-ref');
+            if (refEl) refEl.textContent = translationRef;
+            renderVerse(tapEl.getAttribute('data-verse-tap'));
             overlay.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             if (window.history && window.history.pushState) {
@@ -5883,11 +6021,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.key === 'Escape') closeOverlay();
         });
 
-        document.querySelectorAll('.verse-num-tap').forEach(function(el) {
-            el.addEventListener('click', function(event) {
-                event.stopPropagation();
-                openTranslation(el.getAttribute('data-verse-tap'));
-            });
+        document.addEventListener('click', function(event) {
+            var el = event.target.closest('.verse-num-tap');
+            if (!el) return;
+            event.stopPropagation();
+            openTranslation(el);
         });
     })();
 
@@ -5902,6 +6040,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (readingTrack) {
         var volumeKey = readingTrack.getAttribute('data-volume-key');
         var volumeTitle = readingTrack.getAttribute('data-volume-title');
+        // Rappelee par le defilement automatique infini (cf.
+        // setupAutoScrollReading) des que le chapitre injecte affiche a
+        // l'ecran change - sans ca, readingTrack resterait fige sur le tout
+        // premier chapitre charge et "Continuer"/le badge % ne suivraient
+        // jamais la vraie position atteinte.
+        window.__bukaSetActiveReadingTrack = function(newTrack) {
+            readingTrack = newTrack;
+            volumeKey = newTrack.getAttribute('data-volume-key');
+            volumeTitle = newTrack.getAttribute('data-volume-title');
+        };
         var saveTimer = null;
         // Un simple coup d'oeil (page ouverte puis quittee sans defiler) ne
         // doit pas creer d'entree "Continuer" - seul un vrai defilement

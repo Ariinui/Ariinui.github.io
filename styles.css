@@ -204,6 +204,16 @@ nav {
     margin-top: 24px;
 }
 
+/* Separateur entre deux chapitres enchaines par le defilement automatique
+   infini (cf. setupAutoScrollReading dans script.js) - marque visuellement
+   la transition avant le .chapter-book-name/.chapter-title du chapitre
+   suivant, injectes juste apres dans le DOM. */
+.chapter-chain-separator {
+    height: 1px;
+    margin: 40px 0 24px;
+    background: var(--border);
+}
+
 nav a {
     /* grow (remplit l'espace restant sur sa ligne, ex. seul sur une 2e
        ligne = prend toute la largeur) + shrink, base 140px avant
