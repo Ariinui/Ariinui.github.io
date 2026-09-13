@@ -143,33 +143,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // n'importe quelle page de lecture ouverte/rechargee ensuite, sans
     // reglage par page. Tant qu'il est actif sur une page de lecture :
     // tap a 2 doigts (tap simultane, pas un appui prolonge) = bascule
-    // demarrer/pause dans les deux sens ; glisser 1 doigt vers le
-    // haut/bas (instantane, des le premier mouvement reel) regle la
-    // vitesse en continu avec une bulle "Vitesse : NN%". Le
+    // demarrer/pause dans les deux sens ; tap a 1 doigt = cycle la
+    // vitesse UNIQUEMENT pendant que ca defile deja, ne demarre plus rien
+    // tout seul (precision explicite de l'utilisateur - le demarrage
+    // passe desormais exclusivement par le geste a 2 doigts). Le
     // tap-to-translate est desactive en parallele (cf. le garde ajoute
-    // autour de l'appel setupTapToTranslate) puisque tout geste sert
+    // autour de l'appel setupTapToTranslate) puisque tout tap sert
     // desormais a piloter le defilement.
     (function setupAutoScrollReading() {
         if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
         if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
 
-        // touch-action doit etre coupe UNE FOIS POUR TOUTE LA PAGE, pas
-        // reactivement au moment du toucher (essaye d'abord ainsi) - sur
-        // un vrai mobile, le compositeur du navigateur decide DES le
-        // premier contact (avant meme que le JS ne s'execute) s'il doit
-        // faire defiler nativement, en se basant sur le touch-action deja
-        // en vigueur a cet instant. Le changer dans le handler
-        // pointerdown arrive trop tard (rien a corriger cote JS, marchait
-        // bien en desktop car teste avec des PointerEvent synthetiques
-        // qui ne passent jamais par ce chemin de decision du compositeur -
-        // seul un vrai test tactile sur un vrai telephone l'a revele).
-        document.documentElement.style.touchAction = 'none';
-
-        var MIN_SPEED_PX_S = 8;
-        var MAX_SPEED_PX_S = 30;
+        var SPEEDS_PX_S = [8, 10, 15, 30];
         var TWO_FINGER_TAP_MAX_MS = 400;
+        var CLICK_SUPPRESS_MS = 500;
         var MOVE_TOLERANCE = 10;
-        var SPEED_PERCENT_KEY = 'bukaAMoromona:autoScrollSpeedPercent';
         // Elements qui doivent garder leur propre comportement de tap -
         // navigation, signets (appui long deja dedie a l'epinglage,
         // setupBookmarkLongPress plus haut), menu, mode Traduction plein
@@ -178,22 +166,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // desactive) sert a piloter le defilement.
         var GESTURE_EXCLUDE = '.verse-num-tap, .bookmark, .more-menu, a, button, input, select, textarea';
 
+        var speedIndex = 0;
         var playing = false;
         var rafId = null;
         var scrollPos = 0;
         var lastTime = null;
-
-        // Vitesse continue (0-100%, façon Moon Reader) plutot que les 4
-        // paliers fixes d'origine - persistee pour rester la meme d'une
-        // page/session a l'autre, comme le reste des reglages du site.
-        var speedPercent = (function() {
-            var v = parseFloat(localStorage.getItem(SPEED_PERCENT_KEY));
-            return isNaN(v) ? 0 : Math.min(100, Math.max(0, v));
-        })();
-
-        function currentSpeedPxS() {
-            return MIN_SPEED_PX_S + (MAX_SPEED_PX_S - MIN_SPEED_PX_S) * (speedPercent / 100);
-        }
 
         function maxScroll() {
             return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
@@ -213,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // window.scrollY pour l'increment) - un increment applique
                 // directement sur un scroll entier perdrait les fractions
                 // de pixel a chaque frame (arrondi navigateur).
-                scrollPos += currentSpeedPxS() * (ts - lastTime) / 1000;
+                scrollPos += SPEEDS_PX_S[speedIndex] * (ts - lastTime) / 1000;
                 var max = maxScroll();
                 if (scrollPos >= max) {
                     window.scrollTo(0, max);
@@ -255,52 +232,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var twoFingerArmedAt = null;
         var twoFingerMoved = false;
         var twoFingerTriggered = false;
-
-        // Reglage de vitesse par maintien + glissement (façon Moon
-        // Reader) : un doigt reste immobile ~LONG_PRESS_MS avant que le
-        // glissement ne soit interprete comme un reglage de vitesse -
-        // un tap/swipe rapide (scroll manuel normal) n'est jamais
-        // intercepte, seul un VRAI maintien l'est. Marche a l'arret
-        // comme pendant la lecture (currentSpeedPxS est relue par
-        // step() a la prochaine frame le cas echeant). Instantane -
-        // aucun delai de temps avant l'armement (contrairement a la
-        // 1ere version qui exigeait ~450ms d'immobilite) : le geste
-        // s'arme des le premier mouvement reel du doigt (au-dela de
-        // MOVE_TOLERANCE), pas apres une duree fixe. Consequence
-        // assumee (confirmee par l'utilisateur) : plus de scroll manuel
-        // au doigt possible tant que le mode est actif, tout glissement
-        // sert au reglage de vitesse.
-        var holdArmed = false;
-        var holdPointerId = null;
-        var holdBaselineY = 0;
-        var holdBaselinePercent = 0;
-        var pendingPointerId = null;
-        var pendingBaselineY = 0;
-        var pendingBaselinePercent = 0;
-        var speedBubble = null;
+        var suppressClickUntil = 0;
 
         function activeCount() {
             return Object.keys(activePointers).length;
-        }
-
-        function showSpeedBubble(percent) {
-            if (!speedBubble) {
-                speedBubble = document.createElement('div');
-                speedBubble.className = 'auto-scroll-speed-bubble';
-                document.body.appendChild(speedBubble);
-            }
-            speedBubble.textContent = 'Vitesse : ' + Math.round(percent) + '%';
-            speedBubble.classList.add('show');
-        }
-
-        function hideSpeedBubble() {
-            if (speedBubble) speedBubble.classList.remove('show');
-        }
-
-        function disarmHold() {
-            holdArmed = false;
-            holdPointerId = null;
-            hideSpeedBubble();
         }
 
         document.addEventListener('pointerdown', function(event) {
@@ -310,14 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 twoFingerArmedAt = Date.now();
                 twoFingerMoved = false;
                 twoFingerTriggered = false;
-                // Un 2e doigt qui se pose annule tout maintien en cours -
-                // le geste devient un tap a 2 doigts (play/pause).
-                pendingPointerId = null;
-                if (holdArmed) disarmHold();
-            } else if (activeCount() === 1) {
-                pendingPointerId = event.pointerId;
-                pendingBaselineY = event.clientY;
-                pendingBaselinePercent = speedPercent;
             }
         });
 
@@ -327,41 +254,21 @@ document.addEventListener('DOMContentLoaded', function() {
             var dx = event.clientX - p.x;
             var dy = event.clientY - p.y;
             if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) twoFingerMoved = true;
-            // Arme au tout premier mouvement reel (pas de delai de temps) -
-            // un tap sans bouger ne declenche jamais rien.
-            if (!holdArmed && event.pointerId === pendingPointerId && activeCount() === 1 &&
-                Math.abs(pendingBaselineY - event.clientY) > MOVE_TOLERANCE) {
-                holdArmed = true;
-                holdPointerId = pendingPointerId;
-                holdBaselineY = pendingBaselineY;
-                holdBaselinePercent = pendingBaselinePercent;
-                showSpeedBubble(pendingBaselinePercent);
-            }
-            if (holdArmed && event.pointerId === holdPointerId) {
-                event.preventDefault();
-                var deltaY = holdBaselineY - event.clientY;
-                var sensitivity = window.innerHeight * 0.6;
-                var percent = holdBaselinePercent + (deltaY / sensitivity) * 100;
-                percent = Math.min(100, Math.max(0, percent));
-                speedPercent = percent;
-                showSpeedBubble(percent);
-            }
-        }, { passive: false });
+        });
 
         function releasePointer(event) {
             var wasTwoFinger = activeCount() === 2;
-            var wasHoldPointer = holdArmed && event.pointerId === holdPointerId;
             delete activePointers[event.pointerId];
             if (wasTwoFinger && !twoFingerMoved && !twoFingerTriggered && twoFingerArmedAt !== null &&
                 (Date.now() - twoFingerArmedAt) < TWO_FINGER_TAP_MAX_MS) {
                 twoFingerTriggered = true;
+                // Un "click" synthetique peut malgre tout suivre un tap
+                // multi-doigts selon le navigateur - ignore-le une fois
+                // pour ne pas AUSSI cycler la vitesse en meme temps que
+                // le play/pause.
+                suppressClickUntil = Date.now() + CLICK_SUPPRESS_MS;
                 if (playing) pause(); else play();
             }
-            if (wasHoldPointer) {
-                localStorage.setItem(SPEED_PERCENT_KEY, String(speedPercent));
-                disarmHold();
-            }
-            if (event.pointerId === pendingPointerId) pendingPointerId = null;
             if (activeCount() === 0) {
                 twoFingerArmedAt = null;
                 twoFingerMoved = false;
@@ -371,6 +278,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.addEventListener('pointerup', releasePointer);
         document.addEventListener('pointercancel', releasePointer);
+
+        // Tap a 1 doigt : reste dedie au changement de vitesse pendant
+        // que ca defile deja - ne demarre plus rien tout seul, le
+        // demarrage passe desormais exclusivement par le geste a 2
+        // doigts ci-dessus.
+        document.addEventListener('click', function(event) {
+            if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
+            if (Date.now() < suppressClickUntil) return;
+            if (!playing) return;
+            speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
+        });
 
         // Le mode Traduction plein ecran (verse-num-tap, exclu ci-dessus)
         // reste utilisable independamment - juste mis en pause le temps

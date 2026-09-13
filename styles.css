@@ -1480,28 +1480,6 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
     opacity: 1;
 }
 
-.auto-scroll-speed-bubble {
-    position: fixed;
-    top: 55%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(20, 20, 20, 0.85);
-    color: #ffffff;
-    padding: 14px 28px;
-    border-radius: 14px;
-    font-size: 20px;
-    font-weight: 600;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-    z-index: 1500;
-    white-space: nowrap;
-}
-
-.auto-scroll-speed-bubble.show {
-    opacity: 1;
-}
-
 .guide-content h4,
 .guide-content h3.conf-subhead {
     margin: 1.4em 0 0.4em;
