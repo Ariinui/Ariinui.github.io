@@ -143,20 +143,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // n'importe quelle page de lecture ouverte/rechargee ensuite, sans
     // reglage par page. Tant qu'il est actif sur une page de lecture :
     // tap a 2 doigts (tap simultane, pas un appui prolonge) = bascule
-    // demarrer/pause dans les deux sens ; tap a 1 doigt = cycle la
-    // vitesse UNIQUEMENT pendant que ca defile deja, ne demarre plus rien
-    // tout seul (precision explicite de l'utilisateur - le demarrage
-    // passe desormais exclusivement par le geste a 2 doigts). Le
-    // tap-to-translate est desactive en parallele (cf. le garde ajoute
-    // autour de l'appel setupTapToTranslate) puisque tout tap sert
-    // desormais a piloter le defilement.
+    // demarrer/pause dans les deux sens ; tap simple a 1 doigt = avance
+    // d'un cran de vitesse, deux taps successifs rapproches = recule d'un
+    // cran - UNIQUEMENT pendant que ca defile deja, ne demarre plus rien
+    // tout seul (le demarrage passe exclusivement par le geste a 2
+    // doigts). Le tap-to-translate est desactive en parallele (cf. le
+    // garde ajoute autour de l'appel setupTapToTranslate) puisque tout
+    // tap sert desormais a piloter le defilement.
     (function setupAutoScrollReading() {
         if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
         if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
 
-        var SPEEDS_PX_S = [8, 10, 15, 30];
+        // Echelle progressive (plus de crans, increments doux) plutot que
+        // les 4 paliers d'origine a gros ecarts (8/10/15/30, saut de 15
+        // entre les 2 derniers) - demande explicite de l'utilisateur.
+        var SPEEDS_PX_S = [6, 8, 10, 13, 16, 20, 25, 30];
         var TWO_FINGER_TAP_MAX_MS = 400;
         var CLICK_SUPPRESS_MS = 500;
+        var DOUBLE_TAP_MS = 350;
         var MOVE_TOLERANCE = 10;
         // Elements qui doivent garder leur propre comportement de tap -
         // navigation, signets (appui long deja dedie a l'epinglage,
@@ -282,12 +286,32 @@ document.addEventListener('DOMContentLoaded', function() {
         // Tap a 1 doigt : reste dedie au changement de vitesse pendant
         // que ca defile deja - ne demarre plus rien tout seul, le
         // demarrage passe desormais exclusivement par le geste a 2
-        // doigts ci-dessus.
+        // doigts ci-dessus. Un tap simple avance d'un cran (applique
+        // apres un court delai, le temps de voir si un 2e tap suit) ;
+        // deux taps rapproches (< DOUBLE_TAP_MS) annulent l'avance en
+        // attente et reculent d'un cran a la place - reaction immediate
+        // pour le retour en arriere, seule l'avance a besoin d'attendre.
+        var pendingAdvanceTimer = null;
+        var lastTapAt = 0;
+
         document.addEventListener('click', function(event) {
             if (event.target.closest && event.target.closest(GESTURE_EXCLUDE)) return;
             if (Date.now() < suppressClickUntil) return;
             if (!playing) return;
-            speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
+
+            var now = Date.now();
+            if (pendingAdvanceTimer && (now - lastTapAt) < DOUBLE_TAP_MS) {
+                clearTimeout(pendingAdvanceTimer);
+                pendingAdvanceTimer = null;
+                lastTapAt = 0;
+                speedIndex = (speedIndex - 1 + SPEEDS_PX_S.length) % SPEEDS_PX_S.length;
+                return;
+            }
+            lastTapAt = now;
+            pendingAdvanceTimer = setTimeout(function() {
+                pendingAdvanceTimer = null;
+                speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
+            }, DOUBLE_TAP_MS);
         });
 
         // Le mode Traduction plein ecran (verse-num-tap, exclu ci-dessus)

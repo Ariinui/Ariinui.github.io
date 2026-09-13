@@ -36,7 +36,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
       "id": "build_embark_supplement_py",
-      "community": 12,
+      "community": 10,
       "norm_label": "build_embark_supplement.py"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "build_embark_supplement.py",
       "source_location": "L49",
       "id": "build_embark_supplement_normalize",
-      "community": 12,
+      "community": 10,
       "norm_label": "normalize()"
     },
     {
@@ -53,7 +53,7 @@
       "file_type": "rationale",
       "source_file": "build_embark_supplement.py",
       "source_location": "L1",
-      "community": 12,
+      "community": 10,
       "norm_label": "one-off: extracts embark_supplement.json (single-word tahitian -> french gloss)",
       "id": "build_embark_supplement_rationale_1"
     },
@@ -63,7 +63,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L1",
       "id": "build_farevanaa_definitions_py",
-      "community": 6,
+      "community": 8,
       "norm_label": "build_farevanaa_definitions.py"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L43",
       "id": "build_farevanaa_definitions_structured_definition_for_window",
-      "community": 6,
+      "community": 8,
       "norm_label": "structured_definition_for_window()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L88",
       "id": "build_farevanaa_definitions_structured_definition_for_word",
-      "community": 6,
+      "community": 8,
       "norm_label": "structured_definition_for_word()"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L131",
       "id": "build_farevanaa_definitions_main",
-      "community": 6,
+      "community": 8,
       "norm_label": "main()"
     },
     {
@@ -98,7 +98,7 @@
       "file_type": "rationale",
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L1",
-      "community": 6,
+      "community": 8,
       "norm_label": "bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta",
       "id": "build_farevanaa_definitions_rationale_1"
     },
@@ -107,7 +107,7 @@
       "file_type": "rationale",
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L44",
-      "community": 6,
+      "community": 8,
       "norm_label": "list of (word_text, structured_text) for every headword entry found     in this",
       "id": "build_farevanaa_definitions_rationale_44"
     },
@@ -116,7 +116,7 @@
       "file_type": "rationale",
       "source_file": "build_farevanaa_definitions.py",
       "source_location": "L89",
-      "community": 6,
+      "community": 8,
       "norm_label": "queries farevanaa.pf for `word` (already normalized) and returns the     merged",
       "id": "build_farevanaa_definitions_rationale_89"
     },
@@ -162,7 +162,7 @@
       "source_file": "build_reo_pf_primary.py",
       "source_location": "L122",
       "id": "build_reo_pf_primary_apply_to_tah_dict",
-      "community": 0,
+      "community": 5,
       "norm_label": "apply_to_tah_dict()"
     },
     {
@@ -179,7 +179,7 @@
       "file_type": "rationale",
       "source_file": "build_reo_pf_primary.py",
       "source_location": "L123",
-      "community": 0,
+      "community": 5,
       "norm_label": "merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen",
       "id": "build_reo_pf_primary_rationale_123"
     },
@@ -324,7 +324,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L1",
       "id": "fetch_farevanaa_phrases_py",
-      "community": 5,
+      "community": 6,
       "norm_label": "fetch_farevanaa_phrases.py"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L42",
       "id": "fetch_farevanaa_phrases_locutions_in_window",
-      "community": 5,
+      "community": 6,
       "norm_label": "locutions_in_window()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L70",
       "id": "fetch_farevanaa_phrases_locutions_for_word",
-      "community": 5,
+      "community": 6,
       "norm_label": "locutions_for_word()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L103",
       "id": "fetch_farevanaa_phrases_build_real_ngrams",
-      "community": 5,
+      "community": 6,
       "norm_label": "build_real_ngrams()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L127",
       "id": "fetch_farevanaa_phrases_main",
-      "community": 5,
+      "community": 6,
       "norm_label": "main()"
     },
     {
@@ -368,7 +368,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L1",
-      "community": 5,
+      "community": 6,
       "norm_label": "one-off: harvests tahitian multi-word expressions (locutions) from the academie",
       "id": "fetch_farevanaa_phrases_rationale_1"
     },
@@ -377,7 +377,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L43",
-      "community": 5,
+      "community": 6,
       "norm_label": "list of (locution_text, definition) found in this html window - a     locution h",
       "id": "fetch_farevanaa_phrases_rationale_43"
     },
@@ -386,7 +386,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L71",
-      "community": 5,
+      "community": 6,
       "norm_label": "comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr",
       "id": "fetch_farevanaa_phrases_rationale_71"
     },
@@ -395,7 +395,7 @@
       "file_type": "rationale",
       "source_file": "fetch_farevanaa_phrases.py",
       "source_location": "L104",
-      "community": 5,
+      "community": 6,
       "norm_label": "toute sequence de 2 a max_phrase_words mots reellement adjacents     (separes pa",
       "id": "fetch_farevanaa_phrases_rationale_104"
     },
@@ -612,7 +612,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L36",
       "id": "generate_pages_to_superscript",
-      "community": 0,
+      "community": 5,
       "norm_label": "to_superscript()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L883",
       "id": "generate_pages_student_manual_parse_citation",
-      "community": 8,
+      "community": 0,
       "norm_label": "student_manual_parse_citation()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L909",
       "id": "generate_pages_student_manual_body_nodes",
-      "community": 8,
+      "community": 0,
       "norm_label": "student_manual_body_nodes()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L946",
       "id": "generate_pages_parse_student_manual_source",
-      "community": 8,
+      "community": 0,
       "norm_label": "parse_student_manual_source()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1307",
       "id": "generate_pages_parse_evidence_scripture_reference",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse_evidence_scripture_reference()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1357",
       "id": "generate_pages_clean_evidence_body",
-      "community": 10,
+      "community": 0,
       "norm_label": "clean_evidence_body()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1418",
       "id": "generate_pages_parse_evidence_source",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse_evidence_source()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L1935",
       "id": "generate_pages_write",
-      "community": 0,
+      "community": 5,
       "norm_label": "write()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2377",
       "id": "generate_pages_slugify",
-      "community": 0,
+      "community": 5,
       "norm_label": "slugify()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2512",
       "id": "generate_pages_conference_analogy_card_html",
-      "community": 0,
+      "community": 5,
       "norm_label": "conference_analogy_card_html()"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2531",
       "id": "generate_pages_write_conference_analogy_talk_page",
-      "community": 0,
+      "community": 5,
       "norm_label": "write_conference_analogy_talk_page()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2552",
       "id": "generate_pages_write_conference_analogy_theme_page",
-      "community": 0,
+      "community": 5,
       "norm_label": "write_conference_analogy_theme_page()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "generate_pages.py",
       "source_location": "L2794",
       "id": "generate_pages_write_guide_volume",
-      "community": 0,
+      "community": 5,
       "norm_label": "write_guide_volume()"
     },
     {
@@ -1169,7 +1169,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L884",
-      "community": 8,
+      "community": 0,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_884"
     },
@@ -1178,7 +1178,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L910",
-      "community": 8,
+      "community": 0,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_910"
     },
@@ -1187,7 +1187,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1308",
-      "community": 10,
+      "community": 0,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1308"
     },
@@ -1196,7 +1196,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1358",
-      "community": 10,
+      "community": 0,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1358"
     },
@@ -1259,7 +1259,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2795",
-      "community": 0,
+      "community": 5,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2795"
     },
@@ -1276,7 +1276,7 @@
       "label": "maxScroll()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L175",
+      "source_location": "L179",
       "id": "script_maxscroll",
       "community": 1,
       "norm_label": "maxscroll()"
@@ -1285,7 +1285,7 @@
       "label": "step()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L179",
+      "source_location": "L183",
       "id": "script_step",
       "community": 1,
       "norm_label": "step()"
@@ -1294,7 +1294,7 @@
       "label": "play()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L206",
+      "source_location": "L210",
       "id": "script_play",
       "community": 1,
       "norm_label": "play()"
@@ -1303,7 +1303,7 @@
       "label": "pause()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L215",
+      "source_location": "L219",
       "id": "script_pause",
       "community": 1,
       "norm_label": "pause()"
@@ -1312,7 +1312,7 @@
       "label": "activeCount()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L237",
+      "source_location": "L241",
       "id": "script_activecount",
       "community": 1,
       "norm_label": "activecount()"
@@ -1321,7 +1321,7 @@
       "label": "releasePointer()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L259",
+      "source_location": "L263",
       "id": "script_releasepointer",
       "community": 1,
       "norm_label": "releasepointer()"
@@ -1330,7 +1330,7 @@
       "label": "wireToggle()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L399",
+      "source_location": "L423",
       "id": "script_wiretoggle",
       "community": 1,
       "norm_label": "wiretoggle()"
@@ -1339,7 +1339,7 @@
       "label": "clearContinueForThisGuide()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L426",
+      "source_location": "L450",
       "id": "script_clearcontinueforthisguide",
       "community": 1,
       "norm_label": "clearcontinueforthisguide()"
@@ -1348,7 +1348,7 @@
       "label": "markGuideExitLink()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L439",
+      "source_location": "L463",
       "id": "script_markguideexitlink",
       "community": 1,
       "norm_label": "markguideexitlink()"
@@ -1357,7 +1357,7 @@
       "label": "showEntry()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L457",
+      "source_location": "L481",
       "id": "script_showentry",
       "community": 1,
       "norm_label": "showentry()"
@@ -1366,7 +1366,7 @@
       "label": "goToEntry()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L467",
+      "source_location": "L491",
       "id": "script_gotoentry",
       "community": 1,
       "norm_label": "gotoentry()"
@@ -1375,7 +1375,7 @@
       "label": "entryParts()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L472",
+      "source_location": "L496",
       "id": "script_entryparts",
       "community": 1,
       "norm_label": "entryparts()"
@@ -1384,7 +1384,7 @@
       "label": "todayLong()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L504",
+      "source_location": "L528",
       "id": "script_todaylong",
       "community": 1,
       "norm_label": "todaylong()"
@@ -1393,7 +1393,7 @@
       "label": "underline()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L510",
+      "source_location": "L534",
       "id": "script_underline",
       "community": 1,
       "norm_label": "underline()"
@@ -1402,7 +1402,7 @@
       "label": "stripParenRefs()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L519",
+      "source_location": "L543",
       "id": "script_stripparenrefs",
       "community": 1,
       "norm_label": "stripparenrefs()"
@@ -1411,7 +1411,7 @@
       "label": "splitLongBlock()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L533",
+      "source_location": "L557",
       "id": "script_splitlongblock",
       "community": 1,
       "norm_label": "splitlongblock()"
@@ -1420,7 +1420,7 @@
       "label": "entryBlocks()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L547",
+      "source_location": "L571",
       "id": "script_entryblocks",
       "community": 1,
       "norm_label": "entryblocks()"
@@ -1429,7 +1429,7 @@
       "label": "entryFullText()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L569",
+      "source_location": "L593",
       "id": "script_entryfulltext",
       "community": 1,
       "norm_label": "entryfulltext()"
@@ -1438,7 +1438,7 @@
       "label": "entryTextParts()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L575",
+      "source_location": "L599",
       "id": "script_entrytextparts",
       "community": 1,
       "norm_label": "entrytextparts()"
@@ -1447,7 +1447,7 @@
       "label": "showToast()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L608",
+      "source_location": "L632",
       "id": "script_showtoast",
       "community": 1,
       "norm_label": "showtoast()"
@@ -1456,7 +1456,7 @@
       "label": "refsHidden()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L708",
+      "source_location": "L732",
       "id": "script_refshidden",
       "community": 1,
       "norm_label": "refshidden()"
@@ -1465,7 +1465,7 @@
       "label": "updateRefsToggleUI()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L714",
+      "source_location": "L738",
       "id": "script_updaterefstoggleui",
       "community": 1,
       "norm_label": "updaterefstoggleui()"
@@ -1474,7 +1474,7 @@
       "label": "setupTapToTranslate()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L857",
+      "source_location": "L881",
       "id": "script_setuptaptotranslate",
       "community": 1,
       "norm_label": "setuptaptotranslate()"
@@ -1483,7 +1483,7 @@
       "label": "buildOverlay()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1135",
+      "source_location": "L1159",
       "id": "script_buildoverlay",
       "community": 1,
       "norm_label": "buildoverlay()"
@@ -1492,7 +1492,7 @@
       "label": "syncScroll()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1215",
+      "source_location": "L1239",
       "id": "script_syncscroll",
       "community": 1,
       "norm_label": "syncscroll()"
@@ -1501,7 +1501,7 @@
       "label": "renderVerse()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1231",
+      "source_location": "L1255",
       "id": "script_renderverse",
       "community": 1,
       "norm_label": "renderverse()"
@@ -1510,7 +1510,7 @@
       "label": "gotoVerse()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1262",
+      "source_location": "L1286",
       "id": "script_gotoverse",
       "community": 1,
       "norm_label": "gotoverse()"
@@ -1519,7 +1519,7 @@
       "label": "openTranslation()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1269",
+      "source_location": "L1293",
       "id": "script_opentranslation",
       "community": 1,
       "norm_label": "opentranslation()"
@@ -1528,7 +1528,7 @@
       "label": "closeOverlay()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1281",
+      "source_location": "L1305",
       "id": "script_closeoverlay",
       "community": 1,
       "norm_label": "closeoverlay()"
@@ -1537,7 +1537,7 @@
       "label": "saveReadingPosition()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1360",
+      "source_location": "L1384",
       "id": "script_savereadingposition",
       "community": 1,
       "norm_label": "savereadingposition()"
@@ -1546,7 +1546,7 @@
       "label": "formatReadingTime()",
       "file_type": "code",
       "source_file": "script.js",
-      "source_location": "L1491",
+      "source_location": "L1515",
       "id": "script_formatreadingtime",
       "community": 1,
       "norm_label": "formatreadingtime()"
@@ -1557,7 +1557,7 @@
       "source_file": "sw.js",
       "source_location": "L1",
       "id": "sw_js",
-      "community": 13,
+      "community": 12,
       "norm_label": "sw.js"
     },
     {
@@ -1565,7 +1565,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2204",
-      "community": 14,
+      "community": 13,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2204"
     },
@@ -1574,7 +1574,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2216",
-      "community": 15,
+      "community": 14,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2216"
     },
@@ -1583,7 +1583,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2237",
-      "community": 16,
+      "community": 15,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2237"
     },
@@ -1592,7 +1592,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2395",
-      "community": 17,
+      "community": 16,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2395"
     },
@@ -1601,7 +1601,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2802",
-      "community": 18,
+      "community": 17,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2802"
     },
@@ -1610,7 +1610,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2201",
-      "community": 19,
+      "community": 18,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2201"
     },
@@ -1619,7 +1619,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2213",
-      "community": 20,
+      "community": 19,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2213"
     },
@@ -1628,7 +1628,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2234",
-      "community": 21,
+      "community": 20,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2234"
     },
@@ -1637,7 +1637,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2392",
-      "community": 22,
+      "community": 21,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2392"
     },
@@ -1646,7 +1646,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2799",
-      "community": 23,
+      "community": 22,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2799"
     },
@@ -1655,7 +1655,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2195",
-      "community": 24,
+      "community": 23,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2195"
     },
@@ -1664,7 +1664,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2207",
-      "community": 25,
+      "community": 24,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2207"
     },
@@ -1673,7 +1673,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2228",
-      "community": 26,
+      "community": 25,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2228"
     },
@@ -1682,7 +1682,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2386",
-      "community": 27,
+      "community": 26,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2386"
     },
@@ -1691,7 +1691,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2793",
-      "community": 28,
+      "community": 27,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2793"
     },
@@ -1700,7 +1700,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2798",
-      "community": 29,
+      "community": 28,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2798"
     },
@@ -1709,7 +1709,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2189",
-      "community": 30,
+      "community": 29,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2189"
     },
@@ -1718,7 +1718,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2222",
-      "community": 31,
+      "community": 30,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2222"
     },
@@ -1727,7 +1727,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2380",
-      "community": 32,
+      "community": 31,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2380"
     },
@@ -1736,7 +1736,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2786",
-      "community": 33,
+      "community": 32,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2786"
     },
@@ -1745,7 +1745,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2173",
-      "community": 34,
+      "community": 33,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2173"
     },
@@ -1754,7 +1754,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2185",
-      "community": 35,
+      "community": 34,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2185"
     },
@@ -1763,7 +1763,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2206",
-      "community": 36,
+      "community": 35,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2206"
     },
@@ -1772,7 +1772,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2364",
-      "community": 37,
+      "community": 36,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2364"
     },
@@ -1781,7 +1781,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2770",
-      "community": 38,
+      "community": 37,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2770"
     },
@@ -1790,7 +1790,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2168",
-      "community": 39,
+      "community": 38,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2168"
     },
@@ -1799,7 +1799,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2180",
-      "community": 40,
+      "community": 39,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2180"
     },
@@ -1808,7 +1808,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2359",
-      "community": 41,
+      "community": 40,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2359"
     },
@@ -1817,7 +1817,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2765",
-      "community": 42,
+      "community": 41,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2765"
     },
@@ -1826,7 +1826,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2159",
-      "community": 43,
+      "community": 42,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2159"
     },
@@ -1835,7 +1835,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2171",
-      "community": 44,
+      "community": 43,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2171"
     },
@@ -1844,7 +1844,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2192",
-      "community": 45,
+      "community": 44,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2192"
     },
@@ -1853,7 +1853,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2350",
-      "community": 46,
+      "community": 45,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2350"
     },
@@ -1862,7 +1862,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2754",
-      "community": 47,
+      "community": 46,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2754"
     },
@@ -1871,7 +1871,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L275",
-      "community": 48,
+      "community": 47,
       "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
       "id": "generate_pages_rationale_275"
     },
@@ -1880,7 +1880,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L304",
-      "community": 49,
+      "community": 48,
       "norm_label": "meme logique que chapter_display_title, mais traduit aussi 'chapitre'     en 'pe",
       "id": "generate_pages_rationale_304"
     },
@@ -1889,7 +1889,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L418",
-      "community": 50,
+      "community": 49,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_418"
     },
@@ -1898,7 +1898,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L584",
-      "community": 51,
+      "community": 50,
       "norm_label": "html interne d'une section guide2 : les paires question/reponse (une     par <di",
       "id": "generate_pages_rationale_584"
     },
@@ -1907,7 +1907,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L832",
-      "community": 52,
+      "community": 51,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_832"
     },
@@ -1916,7 +1916,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L858",
-      "community": 53,
+      "community": 52,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p>",
       "id": "generate_pages_rationale_858"
     },
@@ -1925,7 +1925,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1256",
-      "community": 54,
+      "community": 53,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1256"
     },
@@ -1934,7 +1934,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1306",
-      "community": 55,
+      "community": 54,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux nett",
       "id": "generate_pages_rationale_1306"
     },
@@ -1943,7 +1943,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1500",
-      "community": 56,
+      "community": 55,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une page",
       "id": "generate_pages_rationale_1500"
     },
@@ -1952,7 +1952,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1644",
-      "community": 57,
+      "community": 56,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1644"
     },
@@ -1961,7 +1961,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2107",
-      "community": 58,
+      "community": 57,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2107"
     },
@@ -1970,7 +1970,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2119",
-      "community": 59,
+      "community": 58,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2119"
     },
@@ -1979,7 +1979,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2140",
-      "community": 60,
+      "community": 59,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2140"
     },
@@ -1988,7 +1988,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2298",
-      "community": 61,
+      "community": 60,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2298"
     },
@@ -1997,7 +1997,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2701",
-      "community": 62,
+      "community": 61,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2701"
     },
@@ -2006,7 +2006,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2097",
-      "community": 63,
+      "community": 62,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html b",
       "id": "generate_pages_rationale_2097"
     },
@@ -2015,7 +2015,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2109",
-      "community": 64,
+      "community": 63,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur)",
       "id": "generate_pages_rationale_2109"
     },
@@ -2024,7 +2024,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2130",
-      "community": 65,
+      "community": 64,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles (",
       "id": "generate_pages_rationale_2130"
     },
@@ -2033,7 +2033,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2288",
-      "community": 66,
+      "community": 65,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '19",
       "id": "generate_pages_rationale_2288"
     },
@@ -2042,7 +2042,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2675",
-      "community": 67,
+      "community": 66,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2675"
     },
@@ -2051,7 +2051,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2272",
-      "community": 68,
+      "community": 67,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '19",
       "id": "generate_pages_rationale_2272"
     },
@@ -2060,7 +2060,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2636",
-      "community": 69,
+      "community": 68,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2636"
     },
@@ -2069,7 +2069,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L99",
-      "community": 70,
+      "community": 69,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_99"
     },
@@ -2078,7 +2078,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L133",
-      "community": 71,
+      "community": 70,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_133"
     },
@@ -2087,7 +2087,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L210",
-      "community": 72,
+      "community": 71,
       "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
       "id": "generate_pages_rationale_210"
     },
@@ -2096,7 +2096,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L239",
-      "community": 73,
+      "community": 72,
       "norm_label": "meme logique que chapter_display_title, mais traduit aussi 'chapitre'     en 'p",
       "id": "generate_pages_rationale_239"
     },
@@ -2105,7 +2105,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L353",
-      "community": 74,
+      "community": 73,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_353"
     },
@@ -2114,7 +2114,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L519",
-      "community": 75,
+      "community": 74,
       "norm_label": "html interne d'une section guide2 : les paires question/reponse (une     par <d",
       "id": "generate_pages_rationale_519"
     },
@@ -2123,7 +2123,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L767",
-      "community": 76,
+      "community": 75,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_767"
     },
@@ -2132,7 +2132,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L793",
-      "community": 77,
+      "community": 76,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_793"
     },
@@ -2141,7 +2141,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1191",
-      "community": 78,
+      "community": 77,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1191"
     },
@@ -2150,7 +2150,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1241",
-      "community": 79,
+      "community": 78,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1241"
     },
@@ -2159,7 +2159,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1435",
-      "community": 80,
+      "community": 79,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1435"
     },
@@ -2168,7 +2168,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1579",
-      "community": 81,
+      "community": 80,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1579"
     },
@@ -2177,7 +2177,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2032",
-      "community": 82,
+      "community": 81,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2032"
     },
@@ -2186,7 +2186,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2044",
-      "community": 83,
+      "community": 82,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2044"
     },
@@ -2195,7 +2195,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2065",
-      "community": 84,
+      "community": 83,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2065"
     },
@@ -2204,7 +2204,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2571",
-      "community": 85,
+      "community": 84,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2571"
     },
@@ -2213,7 +2213,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L762",
-      "community": 86,
+      "community": 85,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_762"
     },
@@ -2222,7 +2222,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L788",
-      "community": 87,
+      "community": 86,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_788"
     },
@@ -2231,7 +2231,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1186",
-      "community": 88,
+      "community": 87,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1186"
     },
@@ -2240,7 +2240,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1236",
-      "community": 89,
+      "community": 88,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1236"
     },
@@ -2249,7 +2249,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1430",
-      "community": 90,
+      "community": 89,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1430"
     },
@@ -2258,7 +2258,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1574",
-      "community": 91,
+      "community": 90,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1574"
     },
@@ -2267,7 +2267,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2027",
-      "community": 92,
+      "community": 91,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_2027"
     },
@@ -2276,7 +2276,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2039",
-      "community": 93,
+      "community": 92,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_2039"
     },
@@ -2285,7 +2285,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2060",
-      "community": 94,
+      "community": 93,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_2060"
     },
@@ -2294,7 +2294,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2202",
-      "community": 95,
+      "community": 94,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2202"
     },
@@ -2303,7 +2303,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2566",
-      "community": 96,
+      "community": 95,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2566"
     },
@@ -2312,7 +2312,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L452",
-      "community": 97,
+      "community": 96,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_452"
     },
@@ -2321,7 +2321,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L693",
-      "community": 98,
+      "community": 97,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_693"
     },
@@ -2330,7 +2330,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L719",
-      "community": 99,
+      "community": 98,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_719"
     },
@@ -2339,7 +2339,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1117",
-      "community": 100,
+      "community": 99,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1117"
     },
@@ -2348,7 +2348,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1167",
-      "community": 101,
+      "community": 100,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1167"
     },
@@ -2357,7 +2357,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1361",
-      "community": 102,
+      "community": 101,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1361"
     },
@@ -2366,7 +2366,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1505",
-      "community": 103,
+      "community": 102,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1505"
     },
@@ -2375,7 +2375,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1958",
-      "community": 104,
+      "community": 103,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1958"
     },
@@ -2384,7 +2384,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1970",
-      "community": 105,
+      "community": 104,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1970"
     },
@@ -2393,7 +2393,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1991",
-      "community": 106,
+      "community": 105,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1991"
     },
@@ -2402,7 +2402,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2133",
-      "community": 107,
+      "community": 106,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2133"
     },
@@ -2411,7 +2411,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2497",
-      "community": 108,
+      "community": 107,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2497"
     },
@@ -2420,7 +2420,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1091",
-      "community": 109,
+      "community": 108,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1091"
     },
@@ -2429,7 +2429,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1141",
-      "community": 110,
+      "community": 109,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1141"
     },
@@ -2438,7 +2438,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1335",
-      "community": 111,
+      "community": 110,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1335"
     },
@@ -2447,7 +2447,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1479",
-      "community": 112,
+      "community": 111,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1479"
     },
@@ -2456,7 +2456,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1932",
-      "community": 113,
+      "community": 112,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1932"
     },
@@ -2465,7 +2465,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1944",
-      "community": 114,
+      "community": 113,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1944"
     },
@@ -2474,7 +2474,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1965",
-      "community": 115,
+      "community": 114,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1965"
     },
@@ -2483,7 +2483,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2471",
-      "community": 116,
+      "community": 115,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2471"
     },
@@ -2492,7 +2492,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L668",
-      "community": 117,
+      "community": 116,
       "norm_label": "cherche une reference livre chapitre[-chapitre][:verset[-verset]]     n'importe",
       "id": "generate_pages_rationale_668"
     },
@@ -2501,7 +2501,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L694",
-      "community": 118,
+      "community": 117,
       "norm_label": "extrait les enfants directs de sec (hors header). chaque <li>     devient un <p",
       "id": "generate_pages_rationale_694"
     },
@@ -2510,7 +2510,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1066",
-      "community": 119,
+      "community": 118,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_1066"
     },
@@ -2519,7 +2519,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1116",
-      "community": 120,
+      "community": 119,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_1116"
     },
@@ -2528,7 +2528,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1310",
-      "community": 121,
+      "community": 120,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1310"
     },
@@ -2537,7 +2537,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1454",
-      "community": 122,
+      "community": 121,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1454"
     },
@@ -2546,7 +2546,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1907",
-      "community": 123,
+      "community": 122,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1907"
     },
@@ -2555,7 +2555,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1919",
-      "community": 124,
+      "community": 123,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1919"
     },
@@ -2564,7 +2564,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1940",
-      "community": 125,
+      "community": 124,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1940"
     },
@@ -2573,7 +2573,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2082",
-      "community": 126,
+      "community": 125,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_2082"
     },
@@ -2582,7 +2582,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2446",
-      "community": 127,
+      "community": 126,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2446"
     },
@@ -2591,7 +2591,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L945",
-      "community": 128,
+      "community": 127,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_945"
     },
@@ -2600,7 +2600,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L995",
-      "community": 129,
+      "community": 128,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_995"
     },
@@ -2609,7 +2609,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1189",
-      "community": 130,
+      "community": 129,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1189"
     },
@@ -2618,7 +2618,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1333",
-      "community": 131,
+      "community": 130,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1333"
     },
@@ -2627,7 +2627,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1786",
-      "community": 132,
+      "community": 131,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1786"
     },
@@ -2636,7 +2636,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1798",
-      "community": 133,
+      "community": 132,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1798"
     },
@@ -2645,7 +2645,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1819",
-      "community": 134,
+      "community": 133,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1819"
     },
@@ -2654,7 +2654,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1961",
-      "community": 135,
+      "community": 134,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1961"
     },
@@ -2663,7 +2663,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2325",
-      "community": 136,
+      "community": 135,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2325"
     },
@@ -2672,7 +2672,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L931",
-      "community": 137,
+      "community": 136,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_931"
     },
@@ -2681,7 +2681,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L981",
-      "community": 138,
+      "community": 137,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_981"
     },
@@ -2690,7 +2690,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1175",
-      "community": 139,
+      "community": 138,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1175"
     },
@@ -2699,7 +2699,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1319",
-      "community": 140,
+      "community": 139,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1319"
     },
@@ -2708,7 +2708,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1772",
-      "community": 141,
+      "community": 140,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1772"
     },
@@ -2717,7 +2717,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1784",
-      "community": 142,
+      "community": 141,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1784"
     },
@@ -2726,7 +2726,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1805",
-      "community": 143,
+      "community": 142,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1805"
     },
@@ -2735,7 +2735,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1947",
-      "community": 144,
+      "community": 143,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1947"
     },
@@ -2744,7 +2744,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2311",
-      "community": 145,
+      "community": 144,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2311"
     },
@@ -2753,7 +2753,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1753",
-      "community": 146,
+      "community": 145,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1753"
     },
@@ -2762,7 +2762,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1765",
-      "community": 147,
+      "community": 146,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1765"
     },
@@ -2771,7 +2771,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1928",
-      "community": 148,
+      "community": 147,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1928"
     },
@@ -2780,7 +2780,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2289",
-      "community": 149,
+      "community": 148,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2289"
     },
@@ -2789,7 +2789,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2277",
-      "community": 150,
+      "community": 149,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2277"
     },
@@ -2798,7 +2798,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1744",
-      "community": 151,
+      "community": 150,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1744"
     },
@@ -2807,7 +2807,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1756",
-      "community": 152,
+      "community": 151,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1756"
     },
@@ -2816,7 +2816,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1777",
-      "community": 153,
+      "community": 152,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1777"
     },
@@ -2825,7 +2825,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2268",
-      "community": 154,
+      "community": 153,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2268"
     },
@@ -2834,7 +2834,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L323",
-      "community": 155,
+      "community": 154,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_323"
     },
@@ -2843,7 +2843,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L422",
-      "community": 156,
+      "community": 155,
       "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "id": "generate_pages_rationale_422"
     },
@@ -2852,7 +2852,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L901",
-      "community": 157,
+      "community": 156,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_901"
     },
@@ -2861,7 +2861,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L951",
-      "community": 158,
+      "community": 157,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_951"
     },
@@ -2870,7 +2870,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1145",
-      "community": 159,
+      "community": 158,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1145"
     },
@@ -2879,7 +2879,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1289",
-      "community": 160,
+      "community": 159,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1289"
     },
@@ -2888,7 +2888,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1711",
-      "community": 161,
+      "community": 160,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1711"
     },
@@ -2897,7 +2897,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1723",
-      "community": 162,
+      "community": 161,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1723"
     },
@@ -2906,7 +2906,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1886",
-      "community": 163,
+      "community": 162,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1886"
     },
@@ -2915,7 +2915,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2231",
-      "community": 164,
+      "community": 163,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2231"
     },
@@ -2924,7 +2924,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1710",
-      "community": 165,
+      "community": 164,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1710"
     },
@@ -2933,7 +2933,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1722",
-      "community": 166,
+      "community": 165,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1722"
     },
@@ -2942,7 +2942,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1743",
-      "community": 167,
+      "community": 166,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1743"
     },
@@ -2951,7 +2951,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1885",
-      "community": 168,
+      "community": 167,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1885"
     },
@@ -2960,7 +2960,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1703",
-      "community": 169,
+      "community": 168,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1703"
     },
@@ -2969,7 +2969,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1715",
-      "community": 170,
+      "community": 169,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1715"
     },
@@ -2978,7 +2978,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1736",
-      "community": 171,
+      "community": 170,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1736"
     },
@@ -2987,7 +2987,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1878",
-      "community": 172,
+      "community": 171,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1878"
     },
@@ -2996,7 +2996,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2223",
-      "community": 173,
+      "community": 172,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2223"
     },
@@ -3005,7 +3005,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L91",
-      "community": 174,
+      "community": 173,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_91"
     },
@@ -3014,7 +3014,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L125",
-      "community": 175,
+      "community": 174,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_125"
     },
@@ -3023,7 +3023,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L202",
-      "community": 176,
+      "community": 175,
       "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
       "id": "generate_pages_rationale_202"
     },
@@ -3032,7 +3032,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L315",
-      "community": 177,
+      "community": 176,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_315"
     },
@@ -3041,7 +3041,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L414",
-      "community": 178,
+      "community": 177,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_414"
     },
@@ -3050,7 +3050,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L893",
-      "community": 179,
+      "community": 178,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_893"
     },
@@ -3059,7 +3059,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L943",
-      "community": 180,
+      "community": 179,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_943"
     },
@@ -3068,7 +3068,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1137",
-      "community": 181,
+      "community": 180,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1137"
     },
@@ -3077,7 +3077,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1281",
-      "community": 182,
+      "community": 181,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1281"
     },
@@ -3086,7 +3086,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1624",
-      "community": 183,
+      "community": 182,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1624"
     },
@@ -3095,7 +3095,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1636",
-      "community": 184,
+      "community": 183,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1636"
     },
@@ -3104,7 +3104,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1657",
-      "community": 185,
+      "community": 184,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1657"
     },
@@ -3113,7 +3113,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1799",
-      "community": 186,
+      "community": 185,
       "norm_label": "3 avril 1971' ou '6 octobre 1972 (reunion de la pretrise)' ->     (issue_key '1",
       "id": "generate_pages_rationale_1799"
     },
@@ -3122,7 +3122,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2144",
-      "community": 187,
+      "community": 186,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2144"
     },
@@ -3131,7 +3131,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L2131",
-      "community": 188,
+      "community": 187,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_2131"
     },
@@ -3140,7 +3140,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L88",
-      "community": 189,
+      "community": 188,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_88"
     },
@@ -3149,7 +3149,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L122",
-      "community": 190,
+      "community": 189,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_122"
     },
@@ -3158,7 +3158,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L199",
-      "community": 191,
+      "community": 190,
       "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
       "id": "generate_pages_rationale_199"
     },
@@ -3167,7 +3167,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L312",
-      "community": 192,
+      "community": 191,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_312"
     },
@@ -3176,7 +3176,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L411",
-      "community": 193,
+      "community": 192,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_411"
     },
@@ -3185,7 +3185,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L890",
-      "community": 194,
+      "community": 193,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_890"
     },
@@ -3194,7 +3194,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L940",
-      "community": 195,
+      "community": 194,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_940"
     },
@@ -3203,7 +3203,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1134",
-      "community": 196,
+      "community": 195,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1134"
     },
@@ -3212,7 +3212,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1278",
-      "community": 197,
+      "community": 196,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1278"
     },
@@ -3221,7 +3221,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1621",
-      "community": 198,
+      "community": 197,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1621"
     },
@@ -3230,7 +3230,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1633",
-      "community": 199,
+      "community": 198,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1633"
     },
@@ -3239,7 +3239,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1654",
-      "community": 200,
+      "community": 199,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1654"
     },
@@ -3248,7 +3248,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1872",
-      "community": 201,
+      "community": 200,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1872"
     },
@@ -3257,7 +3257,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L69",
-      "community": 202,
+      "community": 201,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_69"
     },
@@ -3266,7 +3266,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L103",
-      "community": 203,
+      "community": 202,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_103"
     },
@@ -3275,7 +3275,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L180",
-      "community": 204,
+      "community": 203,
       "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
       "id": "generate_pages_rationale_180"
     },
@@ -3284,7 +3284,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L293",
-      "community": 205,
+      "community": 204,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_293"
     },
@@ -3293,7 +3293,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L392",
-      "community": 206,
+      "community": 205,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_392"
     },
@@ -3302,7 +3302,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L871",
-      "community": 207,
+      "community": 206,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_871"
     },
@@ -3311,7 +3311,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L921",
-      "community": 208,
+      "community": 207,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_921"
     },
@@ -3320,7 +3320,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1115",
-      "community": 209,
+      "community": 208,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1115"
     },
@@ -3329,7 +3329,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1259",
-      "community": 210,
+      "community": 209,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1259"
     },
@@ -3338,7 +3338,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1601",
-      "community": 211,
+      "community": 210,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1601"
     },
@@ -3347,7 +3347,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1613",
-      "community": 212,
+      "community": 211,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1613"
     },
@@ -3356,7 +3356,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1634",
-      "community": 213,
+      "community": 212,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1634"
     },
@@ -3365,7 +3365,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1842",
-      "community": 214,
+      "community": 213,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1842"
     },
@@ -3374,7 +3374,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1594",
-      "community": 215,
+      "community": 214,
       "norm_label": "certains champs de la source (ex. le nom d'une entree) contiennent du     html",
       "id": "generate_pages_rationale_1594"
     },
@@ -3383,7 +3383,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1606",
-      "community": 216,
+      "community": 215,
       "norm_label": "la description (contrairement au texte d'analyse, deja extrait en     texte pur",
       "id": "generate_pages_rationale_1606"
     },
@@ -3392,7 +3392,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1627",
-      "community": 217,
+      "community": 216,
       "norm_label": "une entree top-level (personne/concept) peut avoir plusieurs     sous-articles",
       "id": "generate_pages_rationale_1627"
     },
@@ -3401,7 +3401,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1835",
-      "community": 218,
+      "community": 217,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1835"
     },
@@ -3410,7 +3410,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L68",
-      "community": 219,
+      "community": 218,
       "norm_label": "renvoie (numero_de_verset, texte_sans_le_numero) ou (none, texte) si pas de nume",
       "id": "generate_pages_rationale_68"
     },
@@ -3419,7 +3419,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L102",
-      "community": 220,
+      "community": 219,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_102"
     },
@@ -3428,7 +3428,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L179",
-      "community": 221,
+      "community": 220,
       "norm_label": "raw_title est toujours '{book_title} chapitre n' (source) - ne     remplace que",
       "id": "generate_pages_rationale_179"
     },
@@ -3437,7 +3437,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L292",
-      "community": 222,
+      "community": 221,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_292"
     },
@@ -3446,7 +3446,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L391",
-      "community": 223,
+      "community": 222,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_391"
     },
@@ -3455,7 +3455,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L870",
-      "community": 224,
+      "community": 223,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_870"
     },
@@ -3464,7 +3464,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L920",
-      "community": 225,
+      "community": 224,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_920"
     },
@@ -3473,7 +3473,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1114",
-      "community": 226,
+      "community": 225,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1114"
     },
@@ -3482,7 +3482,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1258",
-      "community": 227,
+      "community": 226,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1258"
     },
@@ -3491,7 +3491,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1693",
-      "community": 228,
+      "community": 227,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1693"
     },
@@ -3500,7 +3500,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1088",
-      "community": 229,
+      "community": 228,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1088"
     },
@@ -3509,7 +3509,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1232",
-      "community": 230,
+      "community": 229,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1232"
     },
@@ -3518,7 +3518,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1667",
-      "community": 231,
+      "community": 230,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1667"
     },
@@ -3527,7 +3527,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L260",
-      "community": 232,
+      "community": 231,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_260"
     },
@@ -3536,7 +3536,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L358",
-      "community": 233,
+      "community": 232,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_358"
     },
@@ -3545,7 +3545,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L837",
-      "community": 234,
+      "community": 233,
       "norm_label": "1 nephi 13:29; alma 41:14-16' -> [('1 nephi', 13, 29, 29), ('alma', 41, 14, 16)]",
       "id": "generate_pages_rationale_837"
     },
@@ -3554,7 +3554,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L887",
-      "community": 235,
+      "community": 234,
       "norm_label": "parse le html de l'article et retourne un fragment pret a inserer.     deux net",
       "id": "generate_pages_rationale_887"
     },
@@ -3563,7 +3563,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1055",
-      "community": 236,
+      "community": 235,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1055"
     },
@@ -3572,7 +3572,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1199",
-      "community": 237,
+      "community": 236,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1199"
     },
@@ -3581,7 +3581,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1048",
-      "community": 238,
+      "community": 237,
       "norm_label": "1 nephi 4' -> ('1 nephi', 4) - donne le livre/chapitre par defaut     d'une pag",
       "id": "generate_pages_rationale_1048"
     },
@@ -3590,7 +3590,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1610",
-      "community": 239,
+      "community": 238,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1610"
     },
@@ -3599,7 +3599,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1602",
-      "community": 240,
+      "community": 239,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1602"
     },
@@ -3608,7 +3608,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1023",
-      "community": 241,
+      "community": 240,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_1023"
     },
@@ -3617,7 +3617,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1439",
-      "community": 242,
+      "community": 241,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1439"
     },
@@ -3626,7 +3626,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L817",
-      "community": 243,
+      "community": 242,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_817"
     },
@@ -3635,7 +3635,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1213",
-      "community": 244,
+      "community": 243,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1213"
     },
@@ -3644,7 +3644,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L633",
-      "community": 245,
+      "community": 244,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_633"
     },
@@ -3653,7 +3653,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L1011",
-      "community": 246,
+      "community": 245,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_1011"
     },
@@ -3662,7 +3662,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L542",
-      "community": 247,
+      "community": 246,
       "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "id": "generate_pages_rationale_542"
     },
@@ -3671,7 +3671,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L896",
-      "community": 248,
+      "community": 247,
       "norm_label": "genere les pages chapitre d'un volume de commentaire lie au livre de     mormon",
       "id": "generate_pages_rationale_896"
     },
@@ -3680,7 +3680,7 @@
       "file_type": "rationale",
       "source_file": "build_en_dict.py",
       "source_location": "L1",
-      "community": 249,
+      "community": 248,
       "norm_label": "construit en_dict.json (glossaire anglais->francais pour le tap-to-translate des",
       "id": "build_en_dict_rationale_1"
     },
@@ -3689,7 +3689,7 @@
       "file_type": "rationale",
       "source_file": "build_en_dict.py",
       "source_location": "L115",
-      "community": 250,
+      "community": 249,
       "norm_label": "vocabulaire reel de tous les livres anglais deja importes - pas les     dizaines",
       "id": "build_en_dict_rationale_115"
     },
@@ -3698,7 +3698,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L176",
-      "community": 251,
+      "community": 250,
       "norm_label": "entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     comp",
       "id": "generate_pages_rationale_176"
     },
@@ -3707,7 +3707,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L309",
-      "community": 252,
+      "community": 251,
       "norm_label": "html interne d'une section de guide, sans son <h2> ni le lien 'back to top'.",
       "id": "generate_pages_rationale_309"
     },
@@ -3716,7 +3716,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L407",
-      "community": 253,
+      "community": 252,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_407"
     },
@@ -3725,7 +3725,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L604",
-      "community": 254,
+      "community": 253,
       "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "id": "generate_pages_rationale_604"
     },
@@ -3734,7 +3734,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L625",
-      "community": 255,
+      "community": 254,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_625"
     },
@@ -3743,7 +3743,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L642",
-      "community": 256,
+      "community": 255,
       "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "id": "generate_pages_rationale_642"
     },
@@ -3752,7 +3752,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L703",
-      "community": 257,
+      "community": 256,
       "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "id": "generate_pages_rationale_703"
     },
@@ -3761,7 +3761,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L727",
-      "community": 258,
+      "community": 257,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_727"
     },
@@ -3770,7 +3770,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L408",
-      "community": 259,
+      "community": 258,
       "norm_label": "html interne d'une section guide2 : uniquement les paires     question/reponse",
       "id": "generate_pages_rationale_408"
     },
@@ -3779,7 +3779,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L454",
-      "community": 260,
+      "community": 259,
       "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "id": "generate_pages_rationale_454"
     },
@@ -3788,7 +3788,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L475",
-      "community": 261,
+      "community": 260,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_475"
     },
@@ -3797,7 +3797,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L492",
-      "community": 262,
+      "community": 261,
       "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "id": "generate_pages_rationale_492"
     },
@@ -3806,7 +3806,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L553",
-      "community": 263,
+      "community": 262,
       "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "id": "generate_pages_rationale_553"
     },
@@ -3815,7 +3815,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L577",
-      "community": 264,
+      "community": 263,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_577"
     },
@@ -3824,7 +3824,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L395",
-      "community": 265,
+      "community": 264,
       "norm_label": "html interne d'une section guide2, sans son <p class=\"chapter-number\">     (dej",
       "id": "generate_pages_rationale_395"
     },
@@ -3833,7 +3833,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L443",
-      "community": 266,
+      "community": 265,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_443"
     },
@@ -3842,7 +3842,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L464",
-      "community": 267,
+      "community": 266,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_464"
     },
@@ -3851,7 +3851,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L481",
-      "community": 268,
+      "community": 267,
       "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "id": "generate_pages_rationale_481"
     },
@@ -3860,7 +3860,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L566",
-      "community": 269,
+      "community": 268,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_566"
     },
@@ -3869,7 +3869,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L460",
-      "community": 270,
+      "community": 269,
       "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "id": "generate_pages_rationale_460"
     },
@@ -3878,7 +3878,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L521",
-      "community": 271,
+      "community": 270,
       "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "id": "generate_pages_rationale_521"
     },
@@ -3887,7 +3887,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L545",
-      "community": 272,
+      "community": 271,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_545"
     },
@@ -3896,7 +3896,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L338",
-      "community": 273,
+      "community": 272,
       "norm_label": "equivalent anglais de wrap_tah_words() - pas de detection de groupes     de mot",
       "id": "generate_pages_rationale_338"
     },
@@ -3905,7 +3905,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L359",
-      "community": 274,
+      "community": 273,
       "norm_label": "enveloppe chaque mot connu de en_dict dans un <span> tappable, en ne     toucha",
       "id": "generate_pages_rationale_359"
     },
@@ -3914,7 +3914,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L376",
-      "community": 275,
+      "community": 274,
       "norm_label": "un <section id=...> de premier niveau sans div.body-block est un     separateur",
       "id": "generate_pages_rationale_376"
     },
@@ -3923,7 +3923,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L437",
-      "community": 276,
+      "community": 275,
       "norm_label": "forme attendue par render_volume_block : un 'livre' par numero de     conferenc",
       "id": "generate_pages_rationale_437"
     },
@@ -3932,7 +3932,7 @@
       "file_type": "rationale",
       "source_file": "generate_pages.py",
       "source_location": "L461",
-      "community": 277,
+      "community": 276,
       "norm_label": "books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book_idx, chap_",
       "id": "generate_pages_rationale_461"
     }
@@ -6246,7 +6246,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L175",
+      "source_location": "L179",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_maxscroll",
@@ -6258,7 +6258,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L179",
+      "source_location": "L183",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_step",
@@ -6270,7 +6270,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L206",
+      "source_location": "L210",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_play",
@@ -6282,7 +6282,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L215",
+      "source_location": "L219",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_pause",
@@ -6294,7 +6294,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L237",
+      "source_location": "L241",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_activecount",
@@ -6306,7 +6306,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L259",
+      "source_location": "L263",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_releasepointer",
@@ -6318,7 +6318,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L399",
+      "source_location": "L423",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_wiretoggle",
@@ -6330,7 +6330,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L426",
+      "source_location": "L450",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_clearcontinueforthisguide",
@@ -6342,7 +6342,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L439",
+      "source_location": "L463",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_markguideexitlink",
@@ -6354,7 +6354,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L457",
+      "source_location": "L481",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_showentry",
@@ -6366,7 +6366,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L467",
+      "source_location": "L491",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_gotoentry",
@@ -6378,7 +6378,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L472",
+      "source_location": "L496",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entryparts",
@@ -6390,7 +6390,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L504",
+      "source_location": "L528",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_todaylong",
@@ -6402,7 +6402,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L510",
+      "source_location": "L534",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_underline",
@@ -6414,7 +6414,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L519",
+      "source_location": "L543",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_stripparenrefs",
@@ -6426,7 +6426,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L533",
+      "source_location": "L557",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_splitlongblock",
@@ -6438,7 +6438,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L547",
+      "source_location": "L571",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entryblocks",
@@ -6450,7 +6450,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L569",
+      "source_location": "L593",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entryfulltext",
@@ -6462,7 +6462,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L575",
+      "source_location": "L599",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_entrytextparts",
@@ -6474,7 +6474,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L608",
+      "source_location": "L632",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_showtoast",
@@ -6486,7 +6486,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L708",
+      "source_location": "L732",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_refshidden",
@@ -6498,7 +6498,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L714",
+      "source_location": "L738",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_updaterefstoggleui",
@@ -6510,7 +6510,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L857",
+      "source_location": "L881",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_setuptaptotranslate",
@@ -6522,7 +6522,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1135",
+      "source_location": "L1159",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_buildoverlay",
@@ -6534,7 +6534,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1215",
+      "source_location": "L1239",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_syncscroll",
@@ -6546,7 +6546,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1231",
+      "source_location": "L1255",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_renderverse",
@@ -6558,7 +6558,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1262",
+      "source_location": "L1286",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_gotoverse",
@@ -6570,7 +6570,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1269",
+      "source_location": "L1293",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_opentranslation",
@@ -6582,7 +6582,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1281",
+      "source_location": "L1305",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_closeoverlay",
@@ -6594,7 +6594,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1360",
+      "source_location": "L1384",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_savereadingposition",
@@ -6606,7 +6606,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1491",
+      "source_location": "L1515",
       "weight": 1.0,
       "_src": "script_js",
       "_tgt": "script_formatreadingtime",
@@ -6618,7 +6618,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L194",
+      "source_location": "L198",
       "weight": 1.0,
       "_src": "script_step",
       "_tgt": "script_maxscroll",
@@ -6630,7 +6630,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L208",
+      "source_location": "L212",
       "weight": 1.0,
       "_src": "script_play",
       "_tgt": "script_maxscroll",
@@ -6642,7 +6642,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L270",
+      "source_location": "L274",
       "weight": 1.0,
       "_src": "script_releasepointer",
       "_tgt": "script_play",
@@ -6654,7 +6654,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L270",
+      "source_location": "L274",
       "weight": 1.0,
       "_src": "script_releasepointer",
       "_tgt": "script_pause",
@@ -6666,7 +6666,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L260",
+      "source_location": "L264",
       "weight": 1.0,
       "_src": "script_releasepointer",
       "_tgt": "script_activecount",
@@ -6678,7 +6678,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L468",
+      "source_location": "L492",
       "weight": 1.0,
       "_src": "script_gotoentry",
       "_tgt": "script_showentry",
@@ -6690,7 +6690,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L548",
+      "source_location": "L572",
       "weight": 1.0,
       "_src": "script_entryblocks",
       "_tgt": "script_entryparts",
@@ -6702,7 +6702,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L552",
+      "source_location": "L576",
       "weight": 1.0,
       "_src": "script_entryblocks",
       "_tgt": "script_todaylong",
@@ -6714,7 +6714,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L549",
+      "source_location": "L573",
       "weight": 1.0,
       "_src": "script_entryblocks",
       "_tgt": "script_underline",
@@ -6726,7 +6726,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L581",
+      "source_location": "L605",
       "weight": 1.0,
       "_src": "script_entrytextparts",
       "_tgt": "script_splitlongblock",
@@ -6738,7 +6738,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L570",
+      "source_location": "L594",
       "weight": 1.0,
       "_src": "script_entryfulltext",
       "_tgt": "script_entryblocks",
@@ -6750,7 +6750,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L576",
+      "source_location": "L600",
       "weight": 1.0,
       "_src": "script_entrytextparts",
       "_tgt": "script_entryblocks",
@@ -6762,7 +6762,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L715",
+      "source_location": "L739",
       "weight": 1.0,
       "_src": "script_updaterefstoggleui",
       "_tgt": "script_refshidden",
@@ -6774,7 +6774,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1193",
+      "source_location": "L1217",
       "weight": 1.0,
       "_src": "script_buildoverlay",
       "_tgt": "script_gotoverse",
@@ -6786,7 +6786,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1203",
+      "source_location": "L1227",
       "weight": 1.0,
       "_src": "script_buildoverlay",
       "_tgt": "script_syncscroll",
@@ -6798,7 +6798,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1272",
+      "source_location": "L1296",
       "weight": 1.0,
       "_src": "script_opentranslation",
       "_tgt": "script_buildoverlay",
@@ -6810,7 +6810,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1266",
+      "source_location": "L1290",
       "weight": 1.0,
       "_src": "script_gotoverse",
       "_tgt": "script_renderverse",
@@ -6822,7 +6822,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "script.js",
-      "source_location": "L1273",
+      "source_location": "L1297",
       "weight": 1.0,
       "_src": "script_opentranslation",
       "_tgt": "script_renderverse",
