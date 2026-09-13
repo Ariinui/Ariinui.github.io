@@ -4730,16 +4730,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // n'importe quelle page de lecture ouverte/rechargee ensuite, sans
     // reglage par page. Tant qu'il est actif sur une page de lecture :
     // tap a 2 doigts (tap simultane, pas un appui prolonge) = bascule
-    // demarrer/pause dans les deux sens ; tap a 1 doigt = cycle la
-    // vitesse UNIQUEMENT pendant que ca defile deja, ne demarre plus rien
-    // tout seul (precision explicite de l'utilisateur - le demarrage
-    // passe desormais exclusivement par le geste a 2 doigts). Le
+    // demarrer/pause dans les deux sens ; glisser 1 doigt vers le
+    // haut/bas (instantane, des le premier mouvement reel) regle la
+    // vitesse en continu avec une bulle "Vitesse : NN%". Le
     // tap-to-translate est desactive en parallele (cf. le garde ajoute
-    // autour de l'appel setupTapToTranslate) puisque tout tap sert
+    // autour de l'appel setupTapToTranslate) puisque tout geste sert
     // desormais a piloter le defilement.
     (function setupAutoScrollReading() {
         if (localStorage.getItem('bukaAMoromona:autoScrollMode') !== '1') return;
         if (!document.querySelector('.verses-fr, .verses-tah, .guide-content')) return;
+
+        // touch-action doit etre coupe UNE FOIS POUR TOUTE LA PAGE, pas
+        // reactivement au moment du toucher (essaye d'abord ainsi) - sur
+        // un vrai mobile, le compositeur du navigateur decide DES le
+        // premier contact (avant meme que le JS ne s'execute) s'il doit
+        // faire defiler nativement, en se basant sur le touch-action deja
+        // en vigueur a cet instant. Le changer dans le handler
+        // pointerdown arrive trop tard (rien a corriger cote JS, marchait
+        // bien en desktop car teste avec des PointerEvent synthetiques
+        // qui ne passent jamais par ce chemin de decision du compositeur -
+        // seul un vrai test tactile sur un vrai telephone l'a revele).
+        document.documentElement.style.touchAction = 'none';
 
         var MIN_SPEED_PX_S = 8;
         var MAX_SPEED_PX_S = 30;
@@ -4891,11 +4902,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 pendingPointerId = null;
                 if (holdArmed) disarmHold();
             } else if (activeCount() === 1) {
-                // Coupe le scroll natif DES la pose du doigt (pas apres
-                // coup dans pointermove) - sinon le compositeur peut deja
-                // avoir commence un scroll natif avant que JS ne reagisse,
-                // meme avec un preventDefault() ensuite.
-                document.documentElement.style.touchAction = 'none';
                 pendingPointerId = event.pointerId;
                 pendingBaselineY = event.clientY;
                 pendingBaselinePercent = speedPercent;
@@ -4947,7 +4953,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 twoFingerArmedAt = null;
                 twoFingerMoved = false;
                 twoFingerTriggered = false;
-                document.documentElement.style.touchAction = '';
             }
         }
 
