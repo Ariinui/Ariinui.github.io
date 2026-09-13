@@ -158,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var MAX_SPEED_PX_S = 30;
         var TWO_FINGER_TAP_MAX_MS = 400;
         var MOVE_TOLERANCE = 10;
-        var LONG_PRESS_MS = 450;
         var SPEED_PERCENT_KEY = 'bukaAMoromona:autoScrollSpeedPercent';
         // Elements qui doivent garder leur propre comportement de tap -
         // navigation, signets (appui long deja dedie a l'epinglage,
@@ -252,23 +251,25 @@ document.addEventListener('DOMContentLoaded', function() {
         // un tap/swipe rapide (scroll manuel normal) n'est jamais
         // intercepte, seul un VRAI maintien l'est. Marche a l'arret
         // comme pendant la lecture (currentSpeedPxS est relue par
-        // step() a la prochaine frame le cas echeant).
-        var holdTimer = null;
+        // step() a la prochaine frame le cas echeant). Instantane -
+        // aucun delai de temps avant l'armement (contrairement a la
+        // 1ere version qui exigeait ~450ms d'immobilite) : le geste
+        // s'arme des le premier mouvement reel du doigt (au-dela de
+        // MOVE_TOLERANCE), pas apres une duree fixe. Consequence
+        // assumee (confirmee par l'utilisateur) : plus de scroll manuel
+        // au doigt possible tant que le mode est actif, tout glissement
+        // sert au reglage de vitesse.
         var holdArmed = false;
         var holdPointerId = null;
         var holdBaselineY = 0;
         var holdBaselinePercent = 0;
+        var pendingPointerId = null;
+        var pendingBaselineY = 0;
+        var pendingBaselinePercent = 0;
         var speedBubble = null;
 
         function activeCount() {
             return Object.keys(activePointers).length;
-        }
-
-        function cancelHoldTimer() {
-            if (holdTimer) {
-                clearTimeout(holdTimer);
-                holdTimer = null;
-            }
         }
 
         function showSpeedBubble(percent) {
@@ -289,7 +290,6 @@ document.addEventListener('DOMContentLoaded', function() {
             holdArmed = false;
             holdPointerId = null;
             hideSpeedBubble();
-            document.documentElement.style.touchAction = '';
         }
 
         document.addEventListener('pointerdown', function(event) {
@@ -301,28 +301,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 twoFingerTriggered = false;
                 // Un 2e doigt qui se pose annule tout maintien en cours -
                 // le geste devient un tap a 2 doigts (play/pause).
-                cancelHoldTimer();
+                pendingPointerId = null;
                 if (holdArmed) disarmHold();
             } else if (activeCount() === 1) {
-                cancelHoldTimer();
-                var pid = event.pointerId;
-                var y0 = event.clientY;
-                holdTimer = setTimeout(function() {
-                    holdTimer = null;
-                    if (activeCount() === 1 && activePointers[pid]) {
-                        holdArmed = true;
-                        holdPointerId = pid;
-                        holdBaselineY = y0;
-                        holdBaselinePercent = speedPercent;
-                        // Coupe le scroll natif AVANT le premier
-                        // pointermove - appeler preventDefault() dans le
-                        // handler pointermove seul arrive trop tard (le
-                        // compositeur peut deja avoir commence un scroll
-                        // natif, meme avec preventDefault ensuite).
-                        document.documentElement.style.touchAction = 'none';
-                        showSpeedBubble(speedPercent);
-                    }
-                }, LONG_PRESS_MS);
+                // Coupe le scroll natif DES la pose du doigt (pas apres
+                // coup dans pointermove) - sinon le compositeur peut deja
+                // avoir commence un scroll natif avant que JS ne reagisse,
+                // meme avec un preventDefault() ensuite.
+                document.documentElement.style.touchAction = 'none';
+                pendingPointerId = event.pointerId;
+                pendingBaselineY = event.clientY;
+                pendingBaselinePercent = speedPercent;
             }
         });
 
@@ -331,12 +320,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!p) return;
             var dx = event.clientX - p.x;
             var dy = event.clientY - p.y;
-            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) {
-                twoFingerMoved = true;
-                // Un deplacement avant que le maintien ne soit arme =
-                // scroll manuel normal, pas un maintien - on annule le
-                // timer pour ne jamais intercepter le scroll natif.
-                if (!holdArmed) cancelHoldTimer();
+            if (Math.sqrt(dx * dx + dy * dy) > MOVE_TOLERANCE) twoFingerMoved = true;
+            // Arme au tout premier mouvement reel (pas de delai de temps) -
+            // un tap sans bouger ne declenche jamais rien.
+            if (!holdArmed && event.pointerId === pendingPointerId && activeCount() === 1 &&
+                Math.abs(pendingBaselineY - event.clientY) > MOVE_TOLERANCE) {
+                holdArmed = true;
+                holdPointerId = pendingPointerId;
+                holdBaselineY = pendingBaselineY;
+                holdBaselinePercent = pendingBaselinePercent;
+                showSpeedBubble(pendingBaselinePercent);
             }
             if (holdArmed && event.pointerId === holdPointerId) {
                 event.preventDefault();
@@ -358,17 +351,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 twoFingerTriggered = true;
                 if (playing) pause(); else play();
             }
-            if (event.pointerId === holdPointerId) {
-                cancelHoldTimer();
-                if (wasHoldPointer) {
-                    localStorage.setItem(SPEED_PERCENT_KEY, String(speedPercent));
-                    disarmHold();
-                }
+            if (wasHoldPointer) {
+                localStorage.setItem(SPEED_PERCENT_KEY, String(speedPercent));
+                disarmHold();
             }
+            if (event.pointerId === pendingPointerId) pendingPointerId = null;
             if (activeCount() === 0) {
                 twoFingerArmedAt = null;
                 twoFingerMoved = false;
                 twoFingerTriggered = false;
+                document.documentElement.style.touchAction = '';
             }
         }
 
