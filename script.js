@@ -169,8 +169,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // tahitiens, desormais libres puisque le tap-to-translate est
         // desactive) sert a piloter le defilement.
         var GESTURE_EXCLUDE = '.verse-num-tap, .bookmark, .more-menu, a, button, input, select, textarea';
+        var SPEED_INDEX_KEY = 'bukaAMoromona:autoScrollSpeedIndex';
 
-        var speedIndex = 0;
+        // Persistee (comme le reste des reglages du site) pour rester la
+        // meme d'une page/session a l'autre - ne revient plus a l'index 0
+        // a chaque ouverture. Clamp au cas ou SPEEDS_PX_S changerait de
+        // taille plus tard (evite un index hors bornes).
+        var speedIndex = (function() {
+            var v = parseInt(localStorage.getItem(SPEED_INDEX_KEY), 10);
+            return (isNaN(v) || v < 0 || v >= SPEEDS_PX_S.length) ? 0 : v;
+        })();
         var playing = false;
         var rafId = null;
         var scrollPos = 0;
@@ -305,12 +313,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 pendingAdvanceTimer = null;
                 lastTapAt = 0;
                 speedIndex = (speedIndex - 1 + SPEEDS_PX_S.length) % SPEEDS_PX_S.length;
+                localStorage.setItem(SPEED_INDEX_KEY, String(speedIndex));
                 return;
             }
             lastTapAt = now;
             pendingAdvanceTimer = setTimeout(function() {
                 pendingAdvanceTimer = null;
                 speedIndex = (speedIndex + 1) % SPEEDS_PX_S.length;
+                localStorage.setItem(SPEED_INDEX_KEY, String(speedIndex));
             }, DOUBLE_TAP_MS);
         });
 
