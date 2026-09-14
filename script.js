@@ -1600,6 +1600,21 @@ document.addEventListener('DOMContentLoaded', function() {
             saveTimer = setTimeout(saveReadingPosition, 400);
         });
         window.addEventListener('pagehide', saveReadingPosition);
+        // pagehide seul n'est pas fiable pour capturer la sortie sur mobile
+        // (balayage bord-gauche vers l'accueil, mise en arriere-plan/
+        // fermeture de l'app) - meme raison que commitReadingTime plus haut,
+        // qui utilise deja ce signal. Sans ca, pendant le defilement
+        // automatique continu (readingTrack change de chapitre sans jamais
+        // declencher de scroll "final" propre), une sortie via ce chemin
+        // pouvait laisser "Continuer" sur la derniere position debattue
+        // (potentiellement plusieurs chapitres en retard) plutot que le
+        // verset reellement atteint.
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                clearTimeout(saveTimer);
+                saveReadingPosition();
+            }
+        });
         // Delai pour laisser le navigateur finir son scroll natif vers
         // l'ancre #vN (ex. arrivee via "Continuer la lecture") avant de
         // capturer/ecraser la position - sinon on lit "haut de page" trop tot.
