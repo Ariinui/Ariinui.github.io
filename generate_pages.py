@@ -5023,6 +5023,11 @@ document.addEventListener('DOMContentLoaded', function() {
             var next = currentTheme() === 'dark' ? 'light' : 'dark';
             localStorage.setItem('bukaAMoromona:theme', next);
             document.documentElement.setAttribute('data-theme', next);
+            // Force un reflow synchrone : certains tres vieux WebKit iOS
+            // (Safari et Chrome iOS, meme moteur) ne repeignent pas tout
+            // le document apres un changement de variable CSS sur <html>,
+            // seul l'element interagi (qui a recu le clic) se redessine.
+            void document.documentElement.offsetHeight;
             syncTheme();
         });
     }
@@ -5112,6 +5117,12 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             var isOpen = content.classList.toggle('show');
             button.setAttribute('aria-expanded', String(isOpen));
+            // Force un reflow synchrone sur le contenu revele : meme bug de
+            // repeinture que le theme (vieux WebKit iOS) - sans ca, le
+            // display:block reste applique en interne sans jamais
+            // apparaitre visuellement tant qu'aucun autre declencheur
+            // (scroll, rotation...) ne force un repaint.
+            void content.offsetHeight;
         });
     }
 

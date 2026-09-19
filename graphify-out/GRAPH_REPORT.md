@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-09-19)
 
 ## Corpus Check
-- 12 files · ~424,827 words
+- 12 files · ~425,017 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -302,8 +302,6 @@
 10. `cameo_render_entry()` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `structured_definition_for_word()` --calls--> `tahitien_window()`  [INFERRED]
-  build_farevanaa_definitions.py → fetch_farevanaa_supplement.py
 - `structured_definition_for_word()` --calls--> `normalize()`  [INFERRED]
   build_farevanaa_definitions.py → fetch_reo_pf_supplement.py
 - `locutions_for_word()` --calls--> `tahitien_window()`  [INFERRED]
@@ -312,40 +310,42 @@
   fetch_farevanaa_phrases.py → fetch_reo_pf_supplement.py
 - `main()` --calls--> `normalize()`  [INFERRED]
   fetch_farevanaa_phrases.py → fetch_reo_pf_supplement.py
+- `normalize()` --calls--> `slugify()`  [INFERRED]
+  fetch_reo_pf_supplement.py → generate_pages.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
 Cohesion: 0.04
-Nodes (37): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), clean_evidence_body(), conf_analogy_lien_with_lang(), disambiguate_sense(), guide2_section_content_html() (+29 more)
+Nodes (37): book_display_title(), book_display_title_tah(), chapter_display_title(), chapter_display_title_tah(), clean_evidence_body(), conf_analogy_lien_with_lang(), guide2_section_content_html(), guide_section_content_html() (+29 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.09
 Nodes (24): activeCount(), buildOverlay(), entryBlocks(), entryFullText(), entryParts(), entryTextParts(), goToEntry(), gotoVerse() (+16 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.19
-Nodes (14): audio_url_for_word(), main(), One-off: harvests Tahitian word pronunciation (mp3) URLs from the Academie Tahit, dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize() (+6 more)
-
-### Community 3 - "Community 3"
 Cohesion: 0.23
 Nodes (13): Bulk-builds reo_pf_primary.json: for every one of the ~2318 words already in tah, scrape(), structured_lines_for_lexeme(), structured_text_for_word(), dereduplicate_candidates(), get_token(), glosses_from_lexeme_page(), main() (+5 more)
+
+### Community 3 - "Community 3"
+Cohesion: 0.19
+Nodes (11): main(), Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta, List of (word_text, structured_text) for every headword entry found     in this, Queries farevanaa.pf for `word` (already normalized) and returns the     merged, structured_definition_for_window(), structured_definition_for_word(), audio_url_for_word(), main() (+3 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.27
 Nodes (9): content_stem(), dereduplicate_candidates(), fr_words(), normalize(), part_stem(), One-off extraction: builds tah_dict.json (word -> short French gloss) from the R, Un mot forme en redoublant un bloc de 2 lettres adjacent (ex.     "maitatai" = ", strip_accents() (+1 more)
 
 ### Community 5 - "Community 5"
+Cohesion: 0.33
+Nodes (9): dereduplicate_candidates(), entries_in_window(), glosses_for_word(), main(), normalize(), One-off: for every Tahitian word in the Livre de Mormon text still without a Fre, List of (word_text, definitions[]) for every headword found in this     HTML win, Queries the dictionary for `word` (already normalized) and returns     a merged, (+1 more)
+
+### Community 6 - "Community 6"
 Cohesion: 0.22
 Nodes (10): apply_to_tah_dict(), Merges reo_pf_primary.json into tah_dict.json via targeted string     replacemen, conference_analogy_card_html(), Genere les pages chapitre d'un volume de commentaire lie au Livre de     Mormon, slugify(), to_superscript(), write(), write_conference_analogy_talk_page() (+2 more)
 
-### Community 6 - "Community 6"
+### Community 7 - "Community 7"
 Cohesion: 0.31
 Nodes (8): build_real_ngrams(), locutions_for_word(), locutions_in_window(), main(), One-off: harvests Tahitian multi-word expressions (locutions) from the Académie, Toute sequence de 2 a MAX_PHRASE_WORDS mots reellement adjacents     (separes pa, List of (locution_text, definition) found in this HTML window - a     locution h, Comme fv.glosses_for_word, mais recolte les locutions plutot que la     glose pr
-
-### Community 7 - "Community 7"
-Cohesion: 0.38
-Nodes (6): main(), Bulk-builds tah_definitions.json: for every one of the ~2318 words already in ta, List of (word_text, structured_text) for every headword entry found     in this, Queries farevanaa.pf for `word` (already normalized) and returns the     merged, structured_definition_for_window(), structured_definition_for_word()
 
 ### Community 8 - "Community 8"
 Cohesion: 0.33
@@ -353,7 +353,7 @@ Nodes (7): cameo_clean_field(), cameo_render_entry(), cameo_render_paragraphs(),
 
 ### Community 9 - "Community 9"
 Cohesion: 0.4
-Nodes (5): parse_student_manual_source(), Cherche une reference Livre chapitre[-chapitre][:verset[-verset]]     n'importe, Extrait les enfants directs de sec (hors header). Chaque <li>     devient un <p, student_manual_body_nodes(), student_manual_parse_citation()
+Nodes (5): disambiguate_sense(), Si `gloss` a plusieurs sens (plusieurs lignes, ex. reo.pf "vt: battre,     frapp, Entoure chaque mot (ou groupe de 2 a 5 mots adjacents formant un verbe     compo, tah_normalize(), wrap_tah_words()
 
 ### Community 10 - "Community 10"
 Cohesion: 0.67
@@ -1966,11 +1966,11 @@ Nodes (1): books: liste de {'book_title', 'chapters': [...]} ; chapter_href(book
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `normalize()` connect `Community 3` to `Community 5`, `Community 6`, `Community 7`?**
+- **Why does `normalize()` connect `Community 2` to `Community 3`, `Community 6`, `Community 7`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `slugify()` connect `Community 5` to `Community 0`, `Community 3`?**
+- **Why does `slugify()` connect `Community 6` to `Community 0`, `Community 2`?**
   _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `structured_definition_for_word()` connect `Community 7` to `Community 2`, `Community 3`?**
+- **Why does `structured_definition_for_word()` connect `Community 3` to `Community 2`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `normalize()` (e.g. with `structured_definition_for_word()` and `build_real_ngrams()`) actually correct?**
   _`normalize()` has 4 INFERRED edges - model-reasoned connections that need verification._
