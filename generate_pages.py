@@ -5110,7 +5110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function wireToggle(button, content) {
         button.addEventListener('click', function() {
-            const isOpen = content.classList.toggle('show');
+            var isOpen = content.classList.toggle('show');
             button.setAttribute('aria-expanded', String(isOpen));
         });
     }
