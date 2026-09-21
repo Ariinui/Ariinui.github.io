@@ -5,7 +5,7 @@
         document.documentElement.setAttribute('data-theme', stored);
     }
     var storedSize = localStorage.getItem('bukaAMoromona:textSize');
-    var validSizes = ['xsmall', 'small', 'large', 'xlarge', 'xxlarge'];
+    var validSizes = ['xsmall', 'small', 'large', 'xlarge', 'xxlarge', 'xxxlarge'];
     if (validSizes.indexOf(storedSize) !== -1) {
         document.documentElement.setAttribute('data-text-size', storedSize);
     }
@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var textSizeRow = document.querySelector('.text-size-row');
     if (textSizeRow) {
-        var sizes = ['xsmall', 'small', 'normal', 'large', 'xlarge', 'xxlarge'];
+        var sizes = ['xsmall', 'small', 'normal', 'large', 'xlarge', 'xxlarge', 'xxxlarge'];
         var steps = [].slice.call(textSizeRow.querySelectorAll('.text-size-step'));
         var shrinkBtn = steps[0];
         var growBtn = steps[1];

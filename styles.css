@@ -60,6 +60,10 @@
     --reading-font-size: 25px;
 }
 
+:root[data-text-size="xxxlarge"] {
+    --reading-font-size: 28px;
+}
+
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
         --bg: #000000;
