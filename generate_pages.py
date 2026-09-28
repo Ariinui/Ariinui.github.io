@@ -2365,7 +2365,10 @@ CONF_ANALOGY_TEXT_RE = re.compile(r"L'analogie\s*:\s*(.+?)\s*" + CONF_ANALOGY_FI
 CONF_ANALOGY_SIGNIF_RE = re.compile(r'Signification\s*:\s*(.+?)\s*' + CONF_ANALOGY_FIELD_BOUNDARY, re.DOTALL)
 CONF_ANALOGY_LIEN_RE = re.compile(r'Lien\s*:\s*(\S+)')
 CONF_ANALOGY_DASH_LINE_RE = re.compile(r'^(.+?)\s+[–—‐―-]\s+(.+?)\s*$')
-CONF_ANALOGY_KNOWN_PREFIXES = ('Conf', 'Thème', 'Theme', "L'analogie", 'Signification', 'Lien')
+CONF_ANALOGY_KNOWN_PREFIXES = ('Conf', 'Thème', 'Theme', "L'analogie", 'Signification', 'Lien',
+                                   # Phrases de conclusion/preambule de l'IA d'extraction qui contiennent un
+                                   # tiret long et ressemblent donc a une ligne 'Orateur - Titre'
+                                   "Fin de l'analyse", "L'analyse", 'ARR', 'Voici', 'Remarque')
 
 CONF_ANALOGY_MONTH_FR = {
     'janvier': '01', 'fevrier': '02', 'février': '02', 'mars': '03', 'avril': '04',
@@ -2387,7 +2390,9 @@ def slugify(text):
 def parse_conference_issue_date(date_raw):
     """'3 avril 1971' ou '6 octobre 1972 (Reunion de la Pretrise)' ->
     (issue_key '1971-04', issue_label 'Avril 1971', session_label ou None)."""
-    m = re.match(r'\s*\d+\s+([^\d\s]+)\s+(\d{4})\s*(?:\(([^)]+)\))?', date_raw)
+    # Plage "30 septembre et 1er octobre 1989" : seul le dernier mois (celui de
+    # l'edition officielle) compte. Les jours ordinaux "1er"/"1ᵉʳ" sont acceptes.
+    m = re.match(r'\s*\d+\S*\s+(?:[^\d\s]+\s+et\s+\d+\S*\s+)?([^\d\s]+)\s+(\d{4})\s*(?:\(([^)]+)\))?', date_raw)
     if not m:
         return None, None, None
     month_word, year, session = m.groups()
@@ -2399,7 +2404,7 @@ def parse_conference_issue_date(date_raw):
     # edition "mars"/"septembre" distincte - sans ce rattachement, ces
     # sessions se retrouvent scindees en un faux numero separe (trouve sur
     # le fichier 1978-1989 : 10 numeros casses en 2 avant ce fix).
-    month_key = {'septembre': 'octobre', 'mars': 'avril'}.get(month_key, month_key)
+    month_key = {'septembre': 'octobre', 'mars': 'avril', 'fevrier': 'avril', 'février': 'avril'}.get(month_key, month_key)
     month_num = CONF_ANALOGY_MONTH_FR.get(month_key)
     if not month_num:
         return None, None, None
@@ -2412,6 +2417,7 @@ def parse_conference_analogies_sources(folder):
     if not os.path.isdir(folder):
         return []
     entries = []
+    seen_entries = set()
     for fname in sorted(os.listdir(folder)):
         if not fname.lower().endswith('.txt'):
             continue
@@ -2453,20 +2459,32 @@ def parse_conference_analogies_sources(folder):
                     last_issue_key, last_issue_label, last_session = issue_key, issue_label, session
 
             speaker = title = None
-            for line in block.split('\n'):
-                s = line.strip()
+            # On garde la DERNIERE ligne Orateur-Titre valide avant le champ Theme : les notes
+            # parasites de l'IA d'extraction (recap, en-tete de session) precedent toujours la vraie ligne.
+            for line in block[:theme_m.start()].split('\n'):
+                s = line.strip().lstrip('#> ').strip()  # titres markdown parasites (## Orateur - Titre)
                 if not s or s.startswith(CONF_ANALOGY_KNOWN_PREFIXES):
                     continue
                 stm = CONF_ANALOGY_DASH_LINE_RE.match(s)
                 if stm:
-                    speaker, title = stm.group(1).strip(), stm.group(2).strip()
-                    break
+                    cand_speaker, cand_title = stm.group(1).strip(), stm.group(2).strip()
+                    # Ecarte les notes/en-tetes de l'IA d'extraction a tiret long
+                    # ("1. Octobre 1991 - a completer", "REUNION GENERALE ... - 23
+                    # septembre 2000") qui precedent parfois la vraie ligne Orateur-Titre.
+                    if (cand_speaker[0].isdigit() or cand_speaker.isupper() or len(cand_speaker) > 60
+                            or re.search(r'(?:janvier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[ée]cembre)\s+\d{4}\s*$', cand_title, re.I)):
+                        continue
+                    speaker, title = cand_speaker, cand_title
             if speaker:
                 last_speaker, last_title = speaker, title
 
             if not last_issue_key or not last_speaker:
                 continue  # bloc orphelin sans contexte connu - ignore plutot que planter
 
+            dedupe_key = (last_issue_key, last_speaker, last_title, theme_m.group(1).strip(), analogie_m.group(1).strip())
+            if dedupe_key in seen_entries:
+                continue  # meme analogie livree dans 2 fichiers (numero redonne en double) - jamais legitime
+            seen_entries.add(dedupe_key)
             entries.append({
                 'issue_key': last_issue_key, 'issue_label': last_issue_label, 'session_label': last_session,
                 'speaker': last_speaker, 'title': last_title,
