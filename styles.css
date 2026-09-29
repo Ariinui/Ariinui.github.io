@@ -1657,3 +1657,103 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
         font-size: 19px;
     }
 }
+
+/* Audit mobile mesure (puppeteer 320/360/412) : toute cible tactile >= 44px
+   (norme Apple/Google) et aucun texte < 12px. S'applique sous 640px ET sur
+   tout ecran tactile (iPad > 640px de large). Place en dernier pour gagner
+   sur les regles precedentes de meme specificite. */
+@media (max-width: 640px), (pointer: coarse) {
+    .text-size-step {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+
+    .text-size-stepper {
+        gap: 8px;
+    }
+
+    .menu-row {
+        min-height: 44px;
+    }
+
+    .more-menu-popover {
+        width: min(292px, calc(100vw - 24px));
+    }
+
+    .chapter-grid {
+        gap: 10px;
+    }
+
+    nav a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 12px;
+    }
+
+    .cameo-back a,
+    .analogy-back a,
+    .analogy-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+    }
+
+    .cameo-back,
+    .analogy-back {
+        margin-bottom: 0.4em;
+    }
+
+    .analogy-link {
+        margin-top: 0;
+    }
+
+    .bookmark {
+        position: relative;
+    }
+
+    .bookmark::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+    }
+
+    .verse-fr sup {
+        font-size: max(0.65em, 12px);
+    }
+
+    .verse-num-tap {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        margin-top: -12px;
+        margin-bottom: -12px;
+    }
+
+    .tah-popup-audio-btn,
+    .tah-popup-info-btn {
+        position: relative;
+    }
+
+    .tah-popup-audio-btn::before,
+    .tah-popup-info-btn::before {
+        content: '';
+        position: absolute;
+        inset: -7px -2px;
+    }
+
+    .translation-close {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .translation-nav-btn {
+        min-height: 48px;
+    }
+
+    .entry-card-nav button,
+    .entry-card-actions button {
+        min-height: 44px;
+    }
+}
