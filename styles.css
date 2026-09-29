@@ -1757,3 +1757,132 @@ html[data-hide-bookmark-guide8] .bookmark-guide8 { display: none; }
         min-height: 44px;
     }
 }
+
+/* Passe de lisibilite visible : echelle unique d'espacements (8/12/16/24) et
+   de coins (12px blocs/boutons, 999px pastilles), textes de boutons et bulle
+   de traduction plus grands. Place en dernier pour gagner sur les regles
+   precedentes (y compris @media max-width:640px). */
+.volume { margin-bottom: 16px; }
+
+.volume-toggle {
+    gap: 14px;
+    padding: 16px 18px;
+    font-size: 20px;
+    border-radius: 12px;
+}
+
+.accordion-button {
+    padding: 14px 18px;
+    font-size: 17px;
+    border-radius: 12px;
+}
+
+.volume-cover {
+    width: 60px;
+    height: 86px;
+    border-radius: 6px;
+}
+
+.volume-content { margin-top: 12px; }
+
+.accordion { gap: 10px; }
+
+.accordion-content { margin-top: -10px; }
+
+.accordion-button[aria-expanded="true"] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.accordion-content {
+    padding: 16px 18px 18px;
+    border-radius: 0 0 12px 12px;
+}
+
+.continue-reading {
+    gap: 12px;
+    margin: 0 0 12px;
+    padding: 16px 18px;
+    font-size: 17px;
+    border-radius: 12px;
+}
+
+.continue-reading-badge {
+    min-width: 44px;
+    height: 44px;
+    font-size: 15px;
+}
+
+.chapter-grid {
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 12px;
+}
+
+.chapter-link {
+    border-radius: 10px;
+    font-size: 17px;
+}
+
+.cameo-home-button,
+.analogy-home-button {
+    padding: 18px 20px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+
+.cameo-category-tile,
+.analogy-theme-tile,
+.analogy-card {
+    border-radius: 12px;
+}
+
+.cameo-tile {
+    min-height: 60px;
+    border-radius: 12px;
+    font-size: 15px;
+}
+
+nav a {
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.more-menu-popover { border-radius: 12px; }
+
+.menu-row { font-size: 16px; }
+
+/* Bulle de traduction tahitien : nettement plus grande et lisible. */
+.tah-popup {
+    min-width: 240px;
+    max-width: min(380px, calc(100vw - 24px));
+    padding: 20px 22px 18px;
+    border-radius: 20px;
+    font-size: 18px;
+    line-height: 1.55;
+}
+
+.tah-popup-header { padding: 0 44px; margin-bottom: 8px; }
+
+.tah-popup-title { font-size: 22px; }
+
+.tah-popup-phonetic { font-size: 16px; margin-top: 4px; }
+
+.tah-popup-icons { right: -12px; top: -6px; gap: 0; }
+
+.tah-popup-audio-btn,
+.tah-popup-info-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+}
+
+.tah-popup-definition {
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.tah-popup-definition-source { font-size: 13px; }
