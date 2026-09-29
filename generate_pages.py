@@ -1152,6 +1152,14 @@ JWW_NOISE_RE = re.compile(
     re.IGNORECASE
 )
 
+JWW_FURTHER_READING_RE = re.compile(r'^Further Reading(?: and References)?$', re.IGNORECASE)
+JWW_CAPTION_RE = re.compile(r'^(?:Figure|Fig\.|Table|Chart|Map)\s*\d+', re.IGNORECASE)
+
+
+def title_is_table(title):
+    return title.startswith('Order Passage Name')
+
+
 def parse_jww_source(path):
     with open(path, 'r', encoding='utf-8') as file:
         soup = BeautifulSoup(file, 'html.parser')
@@ -1177,12 +1185,56 @@ def parse_jww_source(path):
     # rencontrer une ponctuation terminale - sinon chaque ligne de ~15-20 mots
     # devient un <p> isole (illisible, surtout visible sur mobile ou le
     # rendu casse plus fort entre blocs qu'en desktop).
-    state = {'current_entry': None, 'buffer': None}
+    # 'hdr' : le dernier paragraphe significatif etait un en-tete de verset (ou
+    # sa suite) - un en-tete bold-only qui suit est la 2e/3e ligne du MEME
+    # titre coupe par la mise en page ("...Loftiness of the" / "Branches"),
+    # pas une nouvelle section. 'fr' : dans un bloc "Further Reading" (liste
+    # bibliographique exclue) de l'entree courante - seules les figures
+    # (images + legendes "Figure N") qui suivent y sont conservees, elles
+    # appartiennent a cette entree. 'cap' : legende de figure en cours.
+    #
+    # 'art' : section "article" hors verset (apercu de chapitres, tableau,
+    # chronologie...) en cours de lecture - conservee UNIQUEMENT si elle
+    # contient au moins une image (sinon jetee comme avant), rattachee au
+    # chapitre nomme dans son titre ("1 Nephi 11-14 - Overview" -> chapitre 11)
+    # ou, sans nom de chapitre, au chapitre du prochain verset ('deferred').
+    # 'zone_skip' : introduction (Title Page) et Celebrating the Restoration/
+    # Easter Reflections, hors scope, jusqu'au prochain en-tete de verset.
+    state = {'current_entry': None, 'buffer': None, 'hdr': False, 'fr': False, 'cap': False,
+             'art': None, 'deferred': [], 'zone_skip': True}
 
     def flush_buffer():
         if state['buffer'] is not None and state['current_entry'] is not None:
             state['current_entry'].append(state['buffer'])
         state['buffer'] = None
+
+    def commit_article():
+        art = state['art']
+        state['art'] = None
+        if art is None or not art['has_img']:
+            return
+        title = JWW_WHITESPACE_RE.sub(' ', art['title']).strip()
+        if title_is_table(title):
+            # Tableau de noms Jarédites en une cellule par ligne (illisible
+            # une fois recolle) : on ne garde que la phrase qui presente le
+            # graphique de synthese et le graphique lui-meme.
+            title = 'The Jaredite Kings in Both Orders'
+            keep = [c for c in art['node'].children if getattr(c, 'name', None) == 'p'
+                    and (c.find('img') or c.get_text(strip=True).startswith('The following graphic'))]
+            art['node'].clear()
+            for c in keep:
+                art['node'].append(c)
+        head = soup.new_tag('h4')
+        head['class'] = 'student-manual-head'
+        head.string = GUIDE2_DASH_RE.sub('-', title).replace(' - ', ' — ')
+        art['node'].insert(0, head)
+        m = JWW_BOOK_PREFIX_RE.match(title)
+        cm = re.match(r'(\d+)', m.group(2)) if m else None
+        if m and cm:
+            get_chapter_section(m.group(1), int(cm.group(1))).append(art['node'])
+            print(f"JWW article rattache a {m.group(1)} {cm.group(1)} : {title[:70]}")
+        else:
+            state['deferred'].append((title, art['node']))
 
     for p in soup.find_all('p'):
         children = [c for c in p.children if getattr(c, 'name', None) or (hasattr(c, 'strip') and c.strip())]
@@ -1196,12 +1248,36 @@ def parse_jww_source(path):
                 text = text[1:-1].strip()
             text = GUIDE2_DASH_RE.sub('-', text)
 
+            if JWW_FURTHER_READING_RE.match(text):
+                flush_buffer()
+                state['hdr'] = False
+                state['cap'] = False
+                state['fr'] = state['current_entry'] is not None
+                continue
+
             m = JWW_BOOK_PREFIX_RE.match(text)
             vm = VERSE_REF_RE.search(m.group(2)) if m else None
             if not m or ':' not in m.group(2) or not vm:
+                if state['hdr'] and state['current_entry'] is not None:
+                    if state['art'] is not None and not state['art']['body']:
+                        state['art']['title'] += ' ' + text
+                    continue
                 flush_buffer()
+                commit_article()
                 state['current_entry'] = None
+                state['fr'] = False
+                state['cap'] = False
+                state['hdr'] = False
+                if not state['zone_skip']:
+                    art_node = soup.new_tag('div')
+                    art_node['class'] = 'guide-entry'
+                    state['art'] = {'title': text, 'node': art_node, 'has_img': False, 'body': False}
+                    state['current_entry'] = art_node
+                    state['hdr'] = True
                 continue
+            state['hdr'] = True
+            state['fr'] = False
+            state['cap'] = False
 
             book_name = m.group(1)
             chap_num = int(vm.group(1))
@@ -1214,6 +1290,12 @@ def parse_jww_source(path):
             n = seen[v_start]
             anchor_id = f'v{v_start}' if n == 1 else f'v{v_start}-{n}'
             flush_buffer()
+            commit_article()
+            for art_title, art_node in state['deferred']:
+                section.append(art_node)
+                print(f"JWW article rattache a {book_name} {chap_num} (chapitre du verset suivant) : {art_title[:70]}")
+            state['deferred'] = []
+            state['zone_skip'] = False
             wrapper = soup.new_tag('div')
             wrapper['class'] = 'guide-entry'
             wrapper['id'] = anchor_id
@@ -1242,6 +1324,30 @@ def parse_jww_source(path):
             continue
         if body_text and JWW_NOISE_RE.match(body_text):
             continue
+        if body_text == 'CELEBRATING THE RESTORATION':
+            # Debut de la section hors-scope "Celebrating the Restoration" /
+            # "Easter Reflections" (pied de page en majuscules) : plus aucune
+            # entree courante, donc ses Further Reading/figures ne se
+            # rattachent a rien jusqu'au prochain en-tete de verset.
+            flush_buffer()
+            commit_article()
+            state['current_entry'] = None
+            state['fr'] = False
+            state['hdr'] = False
+            state['zone_skip'] = True
+            continue
+        if state['fr'] and not has_img:
+            # Bloc Further Reading : on ne garde que les legendes de figure
+            # (ligne "Figure N ..." + ses lignes suivantes toutes en italique).
+            if JWW_CAPTION_RE.match(body_text):
+                state['cap'] = True
+            elif not (state['cap'] and p.get_text(strip=True) == ''.join(i.get_text() for i in p.find_all('i')).strip()):
+                state['cap'] = False
+                flush_buffer()
+                continue
+        state['hdr'] = False
+        if state['art'] is not None:
+            state['art']['body'] = True
         node = p.extract()
         for a in node.find_all('a'):
             a.unwrap()
@@ -1261,6 +1367,8 @@ def parse_jww_source(path):
                     if img.has_attr(attr):
                         del img[attr]
             state['current_entry'].append(node)
+            if state['art'] is not None:
+                state['art']['has_img'] = True
             continue
         if state['buffer'] is None:
             state['buffer'] = soup.new_tag('p')
@@ -1270,8 +1378,12 @@ def parse_jww_source(path):
             state['buffer'].append(child.extract())
         if JWW_TERMINAL_RE.search(body_text):
             flush_buffer()
+            state['cap'] = False
 
     flush_buffer()
+    commit_article()
+    for art_title, art_node in state['deferred']:
+        print(f"ATTENTION: article JWW sans chapitre cible, ignore : {art_title[:70]}")
 
     return books_by_name, verse_index_by_name
 
