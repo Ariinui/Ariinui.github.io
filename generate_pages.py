@@ -2504,7 +2504,7 @@ def parse_conference_issue_date(date_raw):
     (issue_key '1971-04', issue_label 'Avril 1971', session_label ou None)."""
     # Plage "30 septembre et 1er octobre 1989" : seul le dernier mois (celui de
     # l'edition officielle) compte. Les jours ordinaux "1er"/"1ᵉʳ" sont acceptes.
-    m = re.match(r'\s*\d+\S*\s+(?:[^\d\s]+\s+et\s+\d+\S*\s+)?([^\d\s]+)\s+(\d{4})\s*(?:\(([^)]+)\))?', date_raw)
+    m = re.match(r'\s*(?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+)?\d+\S*\s+(?:[^\d\s]+\s+et\s+\d+\S*\s+)?([^\d\s]+)\s+(\d{4})\s*(?:\(([^)]+)\))?', date_raw)
     if not m:
         return None, None, None
     month_word, year, session = m.groups()
