@@ -1803,6 +1803,150 @@ document.addEventListener('DOMContentLoaded', function() {
             continueAnalogySlot.appendChild(analogyLink);
         }
     }
+
+    // Recherche plein texte "Conference generale analogie" : index JSON charge
+    // a la premiere interaction, ET entre termes, insensible aux accents/casse.
+    var analogySearchRoot = document.getElementById('analogy-search');
+    if (analogySearchRoot) {
+        var asInput = document.getElementById('analogy-search-input');
+        var asClear = document.getElementById('analogy-search-clear');
+        var asFilters = document.getElementById('analogy-search-filters');
+        var asScope = document.getElementById('analogy-search-scope');
+        var asSort = document.getElementById('analogy-search-sort');
+        var asStatus = document.getElementById('analogy-search-status');
+        var asResults = document.getElementById('analogy-search-results');
+        var asMore = document.getElementById('analogy-search-more');
+        var asBrowse = document.getElementById('analogy-browse');
+        var asData = null, asLoading = false, asMatches = [], asShown = 0, asTerms = [], asTimer = null;
+        var AS_PAGE = 30;
+
+        function asNorm(t) {
+            return String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/œ/g, 'oe').replace(/æ/g, 'ae');
+        }
+        function asEsc(t) {
+            return String(t).replace(/[&<>"]/g, function(c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]; });
+        }
+        // Surligne les termes en gardant le texte d'origine : on normalise
+        // caractere par caractere et on garde une table normalise -> original.
+        function asHighlight(text) {
+            if (!asTerms.length) return asEsc(text);
+            var map = [], norm = '';
+            for (var i = 0; i < text.length; i++) {
+                var n = asNorm(text.charAt(i));
+                for (var j = 0; j < n.length; j++) { norm += n.charAt(j); map.push(i); }
+            }
+            var flags = new Array(text.length + 1).fill(false);
+            asTerms.forEach(function(term) {
+                var from = 0, at;
+                while ((at = norm.indexOf(term, from)) !== -1) {
+                    for (var k = at; k < at + term.length; k++) flags[map[k]] = true;
+                    from = at + term.length;
+                }
+            });
+            var out = '', open = false;
+            for (var c = 0; c < text.length; c++) {
+                if (flags[c] && !open) { out += '<mark>'; open = true; }
+                if (!flags[c] && open) { out += '</mark>'; open = false; }
+                out += asEsc(text.charAt(c));
+            }
+            if (open) out += '</mark>';
+            return out;
+        }
+        function asLoad(cb) {
+            if (asData) { cb(); return; }
+            if (asLoading) { asPending = cb; return; }
+            asLoading = true;
+            asStatus.textContent = 'Chargement de l’index…';
+            fetch(analogySearchRoot.getAttribute('data-index')).then(function(r) { return r.json(); }).then(function(rows) {
+                rows.forEach(function(r, idx) {
+                    r.n = idx;
+                    r.fa = asNorm(r.a); r.fg = asNorm(r.g);
+                    r.fs = asNorm(r.s + ' ' + r.t + ' ' + r.i); r.fh = asNorm(r.h);
+                });
+                asData = rows; asLoading = false; asStatus.textContent = '';
+                var next = asPending; asPending = null;
+                cb(); if (next && next !== cb) next();
+            }).catch(function() {
+                asLoading = false;
+                asStatus.textContent = 'Impossible de charger l’index de recherche (hors ligne ?).';
+            });
+        }
+        var asPending = null;
+        function asRun() {
+            var q = asInput.value.trim();
+            asClear.hidden = !q;
+            asTerms = asNorm(q).split(/\s+/).filter(function(t) { return t.length > 0; });
+            if (!asTerms.length) {
+                asFilters.hidden = true; asResults.innerHTML = ''; asMore.hidden = true;
+                asStatus.textContent = ''; asBrowse.hidden = false; return;
+            }
+            asLoad(asCompute);
+        }
+        function asCompute() {
+            var q = asInput.value.trim();
+            if (!asTerms.length) return;
+            var scope = asScope.value;
+            var phrase = asTerms.join(' ');
+            asMatches = [];
+            asData.forEach(function(r) {
+                var hay = scope === 'analogie' ? r.fa : scope === 'signif' ? r.fg : scope === 'speaker' ? r.fs
+                    : scope === 'theme' ? r.fh : (r.fh + ' ' + r.fa + ' ' + r.fg + ' ' + r.fs);
+                for (var i = 0; i < asTerms.length; i++) if (hay.indexOf(asTerms[i]) === -1) return;
+                var score = 0;
+                if (r.fh.indexOf(phrase) !== -1) score += 6;
+                if (r.fs.indexOf(phrase) !== -1) score += 4;
+                if (r.fa.indexOf(phrase) !== -1) score += 3;
+                if (r.fg.indexOf(phrase) !== -1) score += 2;
+                asTerms.forEach(function(t) {
+                    if (r.fh.indexOf(t) !== -1) score += 2;
+                    if (r.fa.indexOf(t) !== -1) score += 1;
+                });
+                asMatches.push({r: r, s: score});
+            });
+            var sort = asSort.value;
+            asMatches.sort(function(x, y) {
+                if (sort === 'new') return y.r.k.localeCompare(x.r.k) || x.r.n - y.r.n;
+                if (sort === 'old') return x.r.k.localeCompare(y.r.k) || x.r.n - y.r.n;
+                return y.s - x.s || y.r.k.localeCompare(x.r.k) || x.r.n - y.r.n;
+            });
+            asFilters.hidden = false; asBrowse.hidden = true;
+            asResults.innerHTML = ''; asShown = 0;
+            asStatus.textContent = asMatches.length === 0 ? 'Aucun résultat pour « ' + q + ' ».'
+                : asMatches.length + ' résultat' + (asMatches.length > 1 ? 's' : '');
+            asRender();
+        }
+        function asRender() {
+            var end = Math.min(asShown + AS_PAGE, asMatches.length), html = '';
+            for (var i = asShown; i < end; i++) {
+                var r = asMatches[i].r;
+                html += '<div class="analogy-card"><span class="analogy-theme-tag">' + asHighlight(r.h) + '</span>'
+                    + '<p class="analogy-meta">' + asEsc(r.i) + ' — ' + asHighlight(r.s) + ' · ' + asHighlight(r.t) + '</p>'
+                    + '<p class="analogy-text"><strong>L’analogie :</strong> ' + asHighlight(r.a) + '</p>'
+                    + '<p class="analogy-signif"><strong>Signification :</strong> ' + asHighlight(r.g) + '</p>'
+                    + '<a class="analogy-link" href="' + asEsc(r.l) + '" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>'
+                    + '<a class="analogy-search-open" href="' + asEsc(r.u) + '">Ouvrir dans le recueil</a></div>';
+            }
+            asResults.insertAdjacentHTML('beforeend', html);
+            asShown = end;
+            asMore.hidden = asShown >= asMatches.length;
+            if (!asMore.hidden) asMore.textContent = 'Afficher plus (' + (asMatches.length - asShown) + ' restants)';
+        }
+        asInput.addEventListener('focus', function() { asLoad(function() {}); }, {once: true});
+        asInput.addEventListener('input', function() { clearTimeout(asTimer); asTimer = setTimeout(asRun, 180); });
+        asInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { asInput.value = ''; asRun(); }
+            if (e.key === 'Enter') { clearTimeout(asTimer); asRun(); }
+        });
+        asScope.addEventListener('change', asRun);
+        asSort.addEventListener('change', asRun);
+        asMore.addEventListener('click', asRender);
+        asClear.addEventListener('click', function() { asInput.value = ''; asRun(); asInput.focus(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+                e.preventDefault(); asInput.focus();
+            }
+        });
+    }
 });
 
 if ('serviceWorker' in navigator) {

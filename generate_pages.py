@@ -2705,12 +2705,19 @@ if conf_analogy_issues:
     shutil.rmtree('conference-analogies', ignore_errors=True)
     analogy_book_data = []
     analogy_issue_keys = []
+    analogy_search_index = []
     for issue_key, issue in conf_analogy_issues.items():
         analogy_issue_keys.append(issue_key)
         chapters = []
         talks = list(issue['talks'].values())
         for talk_idx, talk in enumerate(talks, 1):
             write_conference_analogy_talk_page(issue_key, issue['label'], talk_idx, talk, len(talks))
+            for e in talk['analogies']:
+                analogy_search_index.append({
+                    'i': issue['label'], 'k': issue_key, 's': talk['speaker'], 't': talk['title'],
+                    'h': e['theme'], 'a': e['analogie'], 'g': e['signification'], 'l': e['lien'],
+                    'u': f'conference-analogies/{issue_key}/talk_{talk_idx}.html',
+                })
             chapters.append({'title': f"{talk['speaker']} – {talk['title']}"})
         analogy_book_data.append({'book_title': issue['label'], 'chapters': chapters})
 
@@ -2734,16 +2741,48 @@ if conf_analogy_issues:
         '    <p class="analogy-intro">Analogies profanes et personnelles utilisées par les orateurs '
         'de la Conférence générale.</p>\n'
     )
+    analogy_landing += (
+        '    <div class="analogy-search" id="analogy-search" role="search" data-index="conference-analogies-search.json">\n'
+        '      <div class="analogy-search-field">\n'
+        '        <svg class="analogy-search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">'
+        '<circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>'
+        '<path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>\n'
+        '        <input type="search" id="analogy-search-input" class="analogy-search-input" '
+        'placeholder="Rechercher une analogie, un orateur, un thème…" aria-label="Rechercher dans la Conférence générale" '
+        'autocomplete="off" spellcheck="false" enterkeyhint="search">\n'
+        '        <button type="button" id="analogy-search-clear" class="analogy-search-clear" '
+        'aria-label="Effacer la recherche" hidden>×</button>\n'
+        '      </div>\n'
+        '      <div class="analogy-search-filters" id="analogy-search-filters" hidden>\n'
+        '        <label>Dans <select id="analogy-search-scope" aria-label="Portée de la recherche">'
+        '<option value="all">Tout</option><option value="analogie">Analogie</option>'
+        '<option value="signif">Signification</option><option value="speaker">Orateur / discours</option>'
+        '<option value="theme">Thème</option></select></label>\n'
+        '        <label>Trier <select id="analogy-search-sort" aria-label="Tri des résultats">'
+        '<option value="rel">Pertinence</option><option value="new">Plus récent</option>'
+        '<option value="old">Plus ancien</option></select></label>\n'
+        '      </div>\n'
+        '      <p class="analogy-search-status" id="analogy-search-status" role="status" aria-live="polite"></p>\n'
+        '      <div class="analogy-search-results" id="analogy-search-results"></div>\n'
+        '      <button type="button" id="analogy-search-more" class="analogy-search-more" hidden>Afficher plus de résultats</button>\n'
+        '    </div>\n'
+    )
+    analogy_landing += '    <div id="analogy-browse">\n'
     analogy_landing += render_volume_block('Par numéro de Conférence', analogy_book_data, analogy_chapter_href)
     analogy_landing += '    <div id="continue-analogy-slot"></div>\n'
     analogy_landing += '    <h2 class="analogy-section-title">Par thème</h2>\n'
     analogy_landing += f'    <div class="analogy-theme-grid">{analogy_theme_tiles}</div>\n'
+    analogy_landing += '    </div>\n'
     analogy_landing += PAGE_TAIL
     write('conference-analogies.html', analogy_landing)
+    with open('conference-analogies-search.json', 'w', encoding='utf-8') as f:
+        json.dump(analogy_search_index, f, ensure_ascii=False, separators=(',', ':'))
 else:
     shutil.rmtree('conference-analogies', ignore_errors=True)
     if os.path.exists('conference-analogies.html'):
         os.remove('conference-analogies.html')
+    if os.path.exists('conference-analogies-search.json'):
+        os.remove('conference-analogies-search.json')
 
 # --- index.html : bibliotheque -----------------------------------------
 #
@@ -3964,6 +4003,43 @@ nav a:hover {
 .analogy-link:hover {
     text-decoration: underline;
 }
+
+/* Recherche Conference generale analogie */
+.analogy-search { margin: 0 0 1.8em; max-width: 68ch; }
+.analogy-search-field { position: relative; display: flex; align-items: center; }
+.analogy-search-icon { position: absolute; left: 14px; color: var(--text-muted); pointer-events: none; }
+.analogy-search-input {
+    width: 100%; box-sizing: border-box; min-height: 48px;
+    padding: 12px 44px 12px 42px; font: inherit; font-size: 16px;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    -webkit-appearance: none; appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.analogy-search-input::-webkit-search-cancel-button { display: none; }
+.analogy-search-input:focus { outline: none; border-color: var(--analogy-accent); box-shadow: 0 0 0 3px rgba(181, 84, 31, 0.18); }
+.analogy-search-clear {
+    position: absolute; right: 6px; width: 36px; height: 36px; border: 0; border-radius: 8px;
+    background: transparent; color: var(--text-muted); font-size: 22px; line-height: 1; cursor: pointer;
+}
+.analogy-search-clear:hover, .analogy-search-clear:focus-visible { background: var(--hover-bg); color: var(--text); }
+.analogy-search-filters { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; font-size: 13px; color: var(--text-muted); }
+.analogy-search-filters select {
+    margin-left: 4px; padding: 6px 8px; font: inherit; font-size: 13px; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+}
+.analogy-search-status { margin: 10px 0 0; min-height: 1.2em; font-size: 13px; color: var(--text-muted); }
+.analogy-search-results { margin-top: 12px; }
+.analogy-search-results .analogy-card { margin-bottom: 14px; }
+.analogy-search-results mark { background: rgba(181, 84, 31, 0.22); color: inherit; border-radius: 3px; padding: 0 1px; }
+.analogy-search-more {
+    display: block; width: 100%; min-height: 44px; margin-top: 4px; padding: 10px 16px;
+    font: inherit; font-size: 15px; font-weight: 600; color: var(--analogy-accent);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+}
+.analogy-search-more:hover, .analogy-search-more:focus-visible { border-color: var(--analogy-accent); }
+.analogy-search-open { display: inline-block; margin-left: 14px; font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+.analogy-search-open:hover { color: var(--analogy-accent); }
 
 .analogy-talk-title {
     margin-top: 0;
@@ -6755,6 +6831,150 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             continueAnalogySlot.appendChild(analogyLink);
         }
+    }
+
+    // Recherche plein texte "Conference generale analogie" : index JSON charge
+    // a la premiere interaction, ET entre termes, insensible aux accents/casse.
+    var analogySearchRoot = document.getElementById('analogy-search');
+    if (analogySearchRoot) {
+        var asInput = document.getElementById('analogy-search-input');
+        var asClear = document.getElementById('analogy-search-clear');
+        var asFilters = document.getElementById('analogy-search-filters');
+        var asScope = document.getElementById('analogy-search-scope');
+        var asSort = document.getElementById('analogy-search-sort');
+        var asStatus = document.getElementById('analogy-search-status');
+        var asResults = document.getElementById('analogy-search-results');
+        var asMore = document.getElementById('analogy-search-more');
+        var asBrowse = document.getElementById('analogy-browse');
+        var asData = null, asLoading = false, asMatches = [], asShown = 0, asTerms = [], asTimer = null;
+        var AS_PAGE = 30;
+
+        function asNorm(t) {
+            return String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/œ/g, 'oe').replace(/æ/g, 'ae');
+        }
+        function asEsc(t) {
+            return String(t).replace(/[&<>"]/g, function(c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]; });
+        }
+        // Surligne les termes en gardant le texte d'origine : on normalise
+        // caractere par caractere et on garde une table normalise -> original.
+        function asHighlight(text) {
+            if (!asTerms.length) return asEsc(text);
+            var map = [], norm = '';
+            for (var i = 0; i < text.length; i++) {
+                var n = asNorm(text.charAt(i));
+                for (var j = 0; j < n.length; j++) { norm += n.charAt(j); map.push(i); }
+            }
+            var flags = new Array(text.length + 1).fill(false);
+            asTerms.forEach(function(term) {
+                var from = 0, at;
+                while ((at = norm.indexOf(term, from)) !== -1) {
+                    for (var k = at; k < at + term.length; k++) flags[map[k]] = true;
+                    from = at + term.length;
+                }
+            });
+            var out = '', open = false;
+            for (var c = 0; c < text.length; c++) {
+                if (flags[c] && !open) { out += '<mark>'; open = true; }
+                if (!flags[c] && open) { out += '</mark>'; open = false; }
+                out += asEsc(text.charAt(c));
+            }
+            if (open) out += '</mark>';
+            return out;
+        }
+        function asLoad(cb) {
+            if (asData) { cb(); return; }
+            if (asLoading) { asPending = cb; return; }
+            asLoading = true;
+            asStatus.textContent = 'Chargement de l’index…';
+            fetch(analogySearchRoot.getAttribute('data-index')).then(function(r) { return r.json(); }).then(function(rows) {
+                rows.forEach(function(r, idx) {
+                    r.n = idx;
+                    r.fa = asNorm(r.a); r.fg = asNorm(r.g);
+                    r.fs = asNorm(r.s + ' ' + r.t + ' ' + r.i); r.fh = asNorm(r.h);
+                });
+                asData = rows; asLoading = false; asStatus.textContent = '';
+                var next = asPending; asPending = null;
+                cb(); if (next && next !== cb) next();
+            }).catch(function() {
+                asLoading = false;
+                asStatus.textContent = 'Impossible de charger l’index de recherche (hors ligne ?).';
+            });
+        }
+        var asPending = null;
+        function asRun() {
+            var q = asInput.value.trim();
+            asClear.hidden = !q;
+            asTerms = asNorm(q).split(/\\s+/).filter(function(t) { return t.length > 0; });
+            if (!asTerms.length) {
+                asFilters.hidden = true; asResults.innerHTML = ''; asMore.hidden = true;
+                asStatus.textContent = ''; asBrowse.hidden = false; return;
+            }
+            asLoad(asCompute);
+        }
+        function asCompute() {
+            var q = asInput.value.trim();
+            if (!asTerms.length) return;
+            var scope = asScope.value;
+            var phrase = asTerms.join(' ');
+            asMatches = [];
+            asData.forEach(function(r) {
+                var hay = scope === 'analogie' ? r.fa : scope === 'signif' ? r.fg : scope === 'speaker' ? r.fs
+                    : scope === 'theme' ? r.fh : (r.fh + ' ' + r.fa + ' ' + r.fg + ' ' + r.fs);
+                for (var i = 0; i < asTerms.length; i++) if (hay.indexOf(asTerms[i]) === -1) return;
+                var score = 0;
+                if (r.fh.indexOf(phrase) !== -1) score += 6;
+                if (r.fs.indexOf(phrase) !== -1) score += 4;
+                if (r.fa.indexOf(phrase) !== -1) score += 3;
+                if (r.fg.indexOf(phrase) !== -1) score += 2;
+                asTerms.forEach(function(t) {
+                    if (r.fh.indexOf(t) !== -1) score += 2;
+                    if (r.fa.indexOf(t) !== -1) score += 1;
+                });
+                asMatches.push({r: r, s: score});
+            });
+            var sort = asSort.value;
+            asMatches.sort(function(x, y) {
+                if (sort === 'new') return y.r.k.localeCompare(x.r.k) || x.r.n - y.r.n;
+                if (sort === 'old') return x.r.k.localeCompare(y.r.k) || x.r.n - y.r.n;
+                return y.s - x.s || y.r.k.localeCompare(x.r.k) || x.r.n - y.r.n;
+            });
+            asFilters.hidden = false; asBrowse.hidden = true;
+            asResults.innerHTML = ''; asShown = 0;
+            asStatus.textContent = asMatches.length === 0 ? 'Aucun résultat pour « ' + q + ' ».'
+                : asMatches.length + ' résultat' + (asMatches.length > 1 ? 's' : '');
+            asRender();
+        }
+        function asRender() {
+            var end = Math.min(asShown + AS_PAGE, asMatches.length), html = '';
+            for (var i = asShown; i < end; i++) {
+                var r = asMatches[i].r;
+                html += '<div class="analogy-card"><span class="analogy-theme-tag">' + asHighlight(r.h) + '</span>'
+                    + '<p class="analogy-meta">' + asEsc(r.i) + ' — ' + asHighlight(r.s) + ' · ' + asHighlight(r.t) + '</p>'
+                    + '<p class="analogy-text"><strong>L’analogie :</strong> ' + asHighlight(r.a) + '</p>'
+                    + '<p class="analogy-signif"><strong>Signification :</strong> ' + asHighlight(r.g) + '</p>'
+                    + '<a class="analogy-link" href="' + asEsc(r.l) + '" target="_blank" rel="noopener noreferrer">Voir le discours ↗</a>'
+                    + '<a class="analogy-search-open" href="' + asEsc(r.u) + '">Ouvrir dans le recueil</a></div>';
+            }
+            asResults.insertAdjacentHTML('beforeend', html);
+            asShown = end;
+            asMore.hidden = asShown >= asMatches.length;
+            if (!asMore.hidden) asMore.textContent = 'Afficher plus (' + (asMatches.length - asShown) + ' restants)';
+        }
+        asInput.addEventListener('focus', function() { asLoad(function() {}); }, {once: true});
+        asInput.addEventListener('input', function() { clearTimeout(asTimer); asTimer = setTimeout(asRun, 180); });
+        asInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { asInput.value = ''; asRun(); }
+            if (e.key === 'Enter') { clearTimeout(asTimer); asRun(); }
+        });
+        asScope.addEventListener('change', asRun);
+        asSort.addEventListener('change', asRun);
+        asMore.addEventListener('click', asRender);
+        asClear.addEventListener('click', function() { asInput.value = ''; asRun(); asInput.focus(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+                e.preventDefault(); asInput.focus();
+            }
+        });
     }
 });
 

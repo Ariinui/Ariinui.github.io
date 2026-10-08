@@ -908,6 +908,43 @@ nav a:hover {
     text-decoration: underline;
 }
 
+/* Recherche Conference generale analogie */
+.analogy-search { margin: 0 0 1.8em; max-width: 68ch; }
+.analogy-search-field { position: relative; display: flex; align-items: center; }
+.analogy-search-icon { position: absolute; left: 14px; color: var(--text-muted); pointer-events: none; }
+.analogy-search-input {
+    width: 100%; box-sizing: border-box; min-height: 48px;
+    padding: 12px 44px 12px 42px; font: inherit; font-size: 16px;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    -webkit-appearance: none; appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.analogy-search-input::-webkit-search-cancel-button { display: none; }
+.analogy-search-input:focus { outline: none; border-color: var(--analogy-accent); box-shadow: 0 0 0 3px rgba(181, 84, 31, 0.18); }
+.analogy-search-clear {
+    position: absolute; right: 6px; width: 36px; height: 36px; border: 0; border-radius: 8px;
+    background: transparent; color: var(--text-muted); font-size: 22px; line-height: 1; cursor: pointer;
+}
+.analogy-search-clear:hover, .analogy-search-clear:focus-visible { background: var(--hover-bg); color: var(--text); }
+.analogy-search-filters { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; font-size: 13px; color: var(--text-muted); }
+.analogy-search-filters select {
+    margin-left: 4px; padding: 6px 8px; font: inherit; font-size: 13px; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+}
+.analogy-search-status { margin: 10px 0 0; min-height: 1.2em; font-size: 13px; color: var(--text-muted); }
+.analogy-search-results { margin-top: 12px; }
+.analogy-search-results .analogy-card { margin-bottom: 14px; }
+.analogy-search-results mark { background: rgba(181, 84, 31, 0.22); color: inherit; border-radius: 3px; padding: 0 1px; }
+.analogy-search-more {
+    display: block; width: 100%; min-height: 44px; margin-top: 4px; padding: 10px 16px;
+    font: inherit; font-size: 15px; font-weight: 600; color: var(--analogy-accent);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+}
+.analogy-search-more:hover, .analogy-search-more:focus-visible { border-color: var(--analogy-accent); }
+.analogy-search-open { display: inline-block; margin-left: 14px; font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+.analogy-search-open:hover { color: var(--analogy-accent); }
+
 .analogy-talk-title {
     margin-top: 0;
     color: var(--text-muted);
